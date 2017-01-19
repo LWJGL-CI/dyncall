@@ -47,7 +47,7 @@ void dcbInitThunk(DCThunk* p, void (*entry)())
 
   p->code_load_hi = 0x644bU;     /* oris  r11, r2, HI16(p) */
   p->addr_self_hi = HI16(p);
-  p->code_load_lo = 0x616bU; 	 /* ori   r11,r11, LO16(p) */
+  p->code_load_lo = 0x616bU;     /* ori   r11,r11, LO16(p) */
   p->addr_self_lo = LO16(p);
   p->code_jump[0] = 0xe98b0030U; /* ld    r12,48(r11) */
   p->code_jump[1] = 0xe84b0038U; /* ld    r2,56(r11) */
@@ -76,7 +76,7 @@ void dcbInitThunk(DCThunk* p, void (*entry)())
   p->code_rot       = 0x796b07c6U; /* rldicr r11,r11,32,31 */
   p->code_load_hi   = 0x656bU;     /* oris   r11,r11, HI16(p) */
   p->addr_self_hi   = HI16(p);
-  p->code_load_lo   = 0x616bU; 	   /* ori    r11,r11, LO16(p) */
+  p->code_load_lo   = 0x616bU;     /* ori    r11,r11, LO16(p) */
   p->addr_self_lo   = LO16(p);
   p->code_jump[0]   = 0xe98b0028U; /* ld     r12,40(r11) */
   p->code_jump[1]   = 0x7d8903a6U; /* mtclr  r12 */

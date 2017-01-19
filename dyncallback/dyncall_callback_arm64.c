@@ -6,8 +6,8 @@
  Description: Callback - Implementation for ARM64 / ARMv8 / AAPCS64
  License:
 
-   Copyright (c) 2015 Daniel Adler <dadler@uni-goettingen.de>,
-                      Tassilo Philipp <tphilipp@potion-studios.com>
+   Copyright (c) 2015-2016 Daniel Adler <dadler@uni-goettingen.de>,
+                           Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
    purpose with or without fee is hereby granted, provided that the above
@@ -23,23 +23,21 @@
 
 */
 
+
 #include "dyncall_callback.h"
 #include "dyncall_alloc_wx.h"
 #include "dyncall_thunk.h"
 
+/* Callback symbol. */
 extern void dcCallbackThunkEntry();
 
-struct DCCallback
-{
-                                //  off  size
-                                // ----|-----
-  DCThunk            thunk;	//   0     32
-  DCCallbackHandler* handler; 	//  32      8
-  void*              userdata;	//  40      8
-                                //
-                                //  size   48 
-                                // aligned 48 
-};
+struct DCCallback               /*  off  size */
+{                               /* ----|----- */
+  DCThunk            thunk;     /*   0     32 */
+  DCCallbackHandler* handler;   /*  32      8 */
+  void*              userdata;  /*  40      8 */
+};                              /* total   48 */ 
+                                /* aligned 48 */ 
 
 void dcbInitCallback(DCCallback* pcb, const char* signature, DCCallbackHandler* handler, void* userdata)
 {

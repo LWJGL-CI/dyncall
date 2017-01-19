@@ -62,12 +62,14 @@
 #  define FLDS(OP) fld OP
 #  define FLDL(OP) fld OP
 #  define LOCAL(NAME) NAME
+/* @@@ check if masm support wanted/needed */
+#  define SECTION_NOTE_NXSTACK
 #else
 /* GNU/SunPro Assembler AT&T Syntax */
 	.text
 #  define BEGIN_ASM
 #  define END_ASM 
-#  include "../autovar/autovar_OS.h"
+#  include "../autovar/autovar_ABI.h"
 #  if defined(OS_Win32) || defined(OS_Cygwin) || defined(OS_MinGW) || defined(OS_Darwin) || defined(OS_Minix)
 #    define CSYM(X) _##X
 #  else
@@ -124,5 +126,10 @@
 #  define FLDL(X)  fldl X
 #  define ADD(A,B) add A,B
 #  define LOCAL(X) .X
+#  if defined(ABI_ELF) && !defined(CC_SUN)
+#    define SECTION_NOTE_NXSTACK .section .note.GNU-stack,"",@progbits
+#  else
+#    define SECTION_NOTE_NXSTACK
+#  endif
 #endif
 

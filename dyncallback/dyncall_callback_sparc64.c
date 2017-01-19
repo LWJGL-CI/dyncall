@@ -6,7 +6,7 @@
  Description: Callback - Implementation for sparc64 (TODO: not implemented yet)
  License:
 
-   Copyright (c) 2007-2015 Daniel Adler <dadler@uni-goettingen.de>,
+   Copyright (c) 2007-2016 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -25,15 +25,24 @@
 
 
 #include "dyncall_callback.h"
-#include "dyncall_callback_sparc32.h"
-
 #include "dyncall_alloc_wx.h"
+#include "dyncall_thunk.h"
+
+/* Callback symbol. */
+extern void dcCallbackThunkEntry();
+
+struct DCCallback
+{
+  DCThunk            thunk;         /* offset  0, size ?? */
+  DCCallbackHandler* handler;       /* offset ??, size  4 */
+  size_t             stack_cleanup; /* offset ??, size  4 */
+  void*              userdata;      /* offset ??, size  4 */
+};
+
 
 void dcbInitCallback(DCCallback* pcb, const char* signature, DCCallbackHandler* handler, void* userdata)
 {
 }
-
-extern void dcCallbackThunkEntry();
 
 DCCallback* dcbNewCallback(const char* signature, DCCallbackHandler* handler, void* userdata)
 {
@@ -56,3 +65,4 @@ void* dcbGetUserData(DCCallback* pcb)
 {
   return pcb->userdata;
 }
+

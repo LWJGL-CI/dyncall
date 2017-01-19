@@ -51,7 +51,7 @@ void segv_handler(int sig)
 
 void my_entry(const char* text)
 {
-  printf("%s: 1\n", text);
+  printf("%s: %d\n", text, strcmp(text, "wx") == 0 || strcmp(text, "stack") == 0 || strcmp(text, "heap") == 0); /* @@@ */
 }
 
 typedef void (printfun)(const char*);

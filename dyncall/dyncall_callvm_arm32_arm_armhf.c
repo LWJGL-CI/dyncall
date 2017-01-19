@@ -100,7 +100,7 @@ static void a_double(DCCallVM* in_p, DCdouble x)
 
   DCCallVM_arm32_armhf* p = (DCCallVM_arm32_armhf*)in_p;
   if (p->d < 16) {
-    * (double*) &p->S[p->d] = x;
+    * (DCdouble*) &p->S[p->d] = x;
     p->d += 2;
     if (!(p->s & 1)) {
       /* if s is even it always equals d. otherwise, s points to an odd float register. */

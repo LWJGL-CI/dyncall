@@ -6,7 +6,7 @@
  Description: Callback - Implementation Header for ppc32
  License:
 
-   Copyright (c) 2007-2015 Daniel Adler <dadler@uni-goettingen.de>,
+   Copyright (c) 2007-2016 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -25,7 +25,20 @@
 
 
 #include "dyncall_callback.h"
-#include "dyncall_callback_ppc32.h"
+#include "dyncall_alloc_wx.h"
+#include "dyncall_thunk.h"
+
+/* Callback symbol. */
+extern void dcCallbackThunkEntry();
+
+struct DCCallback
+{
+  DCThunk            thunk;         /* offset  0 size 24 */
+  DCCallbackHandler* handler;       /* offset 24 size  4 */
+  size_t             stack_cleanup; /* offset 28 size  4 */
+  void*              userdata;      /* offset 32 size  4 */
+};                                  /*     total size 36 */                                  
+
 
 void dcbInitCallback(DCCallback* pcb, const char* signature, DCCallbackHandler* handler, void* userdata)
 {
@@ -35,8 +48,6 @@ void dcbInitCallback(DCCallback* pcb, const char* signature, DCCallbackHandler* 
   pcb->handler  = handler;
   pcb->userdata = userdata;
 }
-
-extern void dcCallbackThunkEntry();
 
 DCCallback* dcbNewCallback(const char* signature, DCCallbackHandler* handler, void* userdata)
 {

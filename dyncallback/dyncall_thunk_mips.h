@@ -31,8 +31,10 @@ struct DCThunk_
 {
   unsigned short data[6];
   unsigned int   jump;
-  unsigned short bddt[2];
+  unsigned short bddt[2]; // branch delay slots
 };
+
+#define DCTHUNK_MIPS_SIZE 20
 
 #endif /* DYNCALL_THUNK_MIPS_H */
 

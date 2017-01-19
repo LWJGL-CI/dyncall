@@ -6,7 +6,7 @@
  Description: mips "n64" ABI callvm C interface.
  License:
 
-   Copyright (c) 2007-2015 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2007-2016 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -38,10 +38,10 @@ extern "C" {
 
 typedef struct
 {
-  DCCallVM  mInterface;
-  int mRegCount;
+  DCCallVM                  mInterface;
+  DCint                     mRegCount;
   struct DCRegData_mips_n64 mRegData;
-  DCVecHead mVecHead;
+  DCVecHead                 mVecHead;
 } DCCallVM_mips_n64;
 
 #ifdef __cplusplus

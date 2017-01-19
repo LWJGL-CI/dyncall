@@ -1,7 +1,7 @@
 %//////////////////////////////////////////////////////////////////////////////
 %
-% Copyright (c) 2012 Daniel Adler <dadler@uni-goettingen.de>, 
-%                    Tassilo Philipp <tphilipp@potion-studios.com>
+% Copyright (c) 2012-2016 Daniel Adler <dadler@uni-goettingen.de>, 
+%                         Tassilo Philipp <tphilipp@potion-studios.com>
 %
 % Permission to use, copy, modify, and distribute this software for any
 % purpose with or without fee is hereby granted, provided that the above
@@ -22,7 +22,7 @@
 \paragraph{Overview}
 
 The SPARC family of processors is based on the SPARC instruction set architecture, which comes in basically tree revisions,
-V7, V8 and V9. The former two are 32-bit whereas the latter refers to the 64-bit SPARC architecture (see next chapter). SPARC is big endian.
+V7, V8 and V9. The former two are 32-bit whereas the latter refers to the 64-bit SPARC architecture (see next chapter). SPARC is big endian.\\
 
 \paragraph{\product{dyncall} support}
 
@@ -36,12 +36,11 @@ V7, V8 and V9. The former two are 32-bit whereas the latter refers to the 64-bit
 \item 32 32-bit integer/pointer registers
 \item 32 floating point registers (usable as 8 quad precision, 16 double precision or 32 single precision registers)
 \item 32 registers are accessible at a time (8 are global ones (g*), whereas the rest forms a register window with 8 input (i*), 8 output (o*) and 8 local (l*) ones)
-\item invoking a function shifts the register window, the old output registers become the new input registers (old local and input ones are not accessible anymore)
+\item calling a function shifts the register window, the old output registers become the new input registers (old local and input ones are not accessible anymore)
 \end{itemize}
 
 \begin{table}[h]
 \begin{tabular*}{0.95\textwidth}{lll}
-\hline
 Name                                 & Alias                   & Brief description\\
 \hline
 {\bf \%g0}                           &                         & Read-only, hardwired to 0 \\
@@ -56,13 +55,17 @@ Name                                 & Alias                   & Brief descripti
 
 \paragraph{Parameter passing}
 \begin{itemize}
-\item Stack parameter order: right-to-left @@@ really?
-\item Caller cleans up the stack @@@ really?
-\item Stack always aligned to 8 bytes.
+\item stack grows down
+\item stack parameter order: right-to-left
+\item caller cleans up the stack
+\item stack always aligned to 8 bytes
 \item first 6 integers and floats are passed independently in registers using \%o0-\%o5
 \item for every other argument the stack is used
-\item @@@ what about floats, 64bit integers, etc.?
-\item results are returned in \%i0, and structs/unions pass a pointer to them as a hidden stack parameter (see below)
+\item all arguments <= 32 bit are passed as 32 bit values
+\item 64 bit arguments are passed like two consecutive <= 32 bit values
+\item minimum stack size is 64 bytes, b/c stack pointer must always point at enough space to store all \%i* and \%l* registers, used when running out of register windows
+\item if needed, register spill area is adjacent to parameters
+\item results are expected by caller to be returned in \%o0\%o1 (after reg window restore, meaning callee writes to \%i0\%i1) for integers, \%f0/\%f1 for floats, and for structs/unions a pointer to them is used as a hidden stack parameter (see below)
 \end{itemize}
 
 \paragraph{Stack layout}
@@ -74,7 +77,7 @@ Stack directly after function prolog:\\
 \hhline{~-~~}
                                    & \vdots                      &                                &                               \\
 \hhline{~=~~}
-local data                         &                             &                                & \mrrbrace{10}{caller's frame} \\
+local data                         & \hspace{4cm}                &                                & \mrrbrace{10}{caller's frame} \\
 \hhline{~-~~}
 padding                            &                             &                                &                               \\
 \hhline{~-~~}

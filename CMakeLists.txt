@@ -19,7 +19,7 @@
 #
 
 cmake_minimum_required (VERSION 2.6)
-project(DynCall)
+project(DynCall C)
 
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "dyncall enables dynamic invocation of machine-level function calls")
 set(CPACK_PACKAGE_VENDOR "dyncall project")
@@ -35,6 +35,14 @@ include(CPack)
 # currently we have no use for this, but maybe later..
 #set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/buildsys/cmake/Modules" "${CMAKE_MODULE_PATH}")
 
+option(LANG_CXX "Enable and build C++ tests" ON)
+
+if(LANG_CXX)
+  enable_language(CXX)
+endif()
+
+include(CheckCCompilerFlag)
+check_c_compiler_flag("-fPIC -Werror" COMPILER_HAS_FPIC)
 
 if(MSVC)
   enable_language(ASM_MASM)
@@ -47,10 +55,12 @@ if(MSVC)
   #set(CMAKE_ASM_MASM_SOURCE_FILE_EXTENSIONS asm)
   #set(CMAKE_ASM_MASM_COMPILE_OBJECT "<CMAKE_ASM_MASM_COMPILER> <FLAGS> /c /Fo <OBJECT> <SOURCE>")
 elseif(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Intel")
-  # when used in shared libraries, -fPIC is required by several architectures
-  # and platforms (observed on AMD64, Solaris/Sparc).
-  # we enable it per default here.
-  add_definitions("-fPIC")
+  if(COMPILER_HAS_FPIC)
+    # when used in shared libraries, -fPIC is required by several architectures
+    # and platforms (observed on AMD64, Solaris/Sparc).
+    # we enable it per default here.
+    add_definitions("-fPIC")
+  endif()
   # enable gcc as front-end to assembler for .S files
   set(CMAKE_ASM_COMPILER "${CMAKE_C_COMPILER}")
   set(CMAKE_ASM_COMPILER_ARG1 "${CPPFLAGS} -c")
@@ -61,8 +71,10 @@ elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "SunPro")
   set(CMAKE_ASM_COMPILER_ARG1 "${CPPFLAGS} -c")
   enable_language(ASM)
 else()
-  if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  add_definitions("-fPIC")
+  if (CMAKE_C_COMPILER_ID STREQUAL "Clang")
+  if(COMPILER_HAS_FPIC)
+    add_definitions("-fPIC")
+  endif()
   # enable gcc as front-end to assembler for .S files
   set(CMAKE_ASM_COMPILER "${CMAKE_C_COMPILER}")
   set(CMAKE_ASM_COMPILER_ARG1 "${CPPFLAGS} -c")

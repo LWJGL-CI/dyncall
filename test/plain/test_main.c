@@ -26,7 +26,7 @@
 
 
 
-#include "test_framework.h"
+#include "../common/test_framework.h"
 #include "../../dyncall/dyncall.h"
 #include "../common/platformInit.h"
 #include "../common/platformInit.c" /* Impl. for functions only used in this translation unit */
@@ -70,7 +70,7 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallC)
     r = dcCallBool(pc, (DCpointer) &fun_c_b);
     DC_TEST(r == val);
 
-	val=DC_FALSE;
+    val=DC_FALSE;
     dcReset(pc);
     dcArgBool(pc, val);
     r = dcCallBool(pc, (DCpointer) &fun_c_b);
@@ -149,7 +149,7 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallStd)
     r = dcCallBool(pc, (DCpointer) &fun_std_b);
     DC_TEST(r == val);
 
-	val=DC_FALSE;
+    val=DC_FALSE;
     dcReset(pc);
     dcArgBool(pc, val);
     r = dcCallBool(pc, (DCpointer) &fun_std_b);
@@ -234,7 +234,7 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallFast)
     r = dcCallBool(pc, (DCpointer) &fun_fast_b);
     DC_TEST(r == val);
 
-	val=DC_FALSE;
+    val=DC_FALSE;
     dcReset(pc);
     dcArgBool(pc, val);
     r = dcCallBool(pc, (DCpointer) &fun_fast_b);

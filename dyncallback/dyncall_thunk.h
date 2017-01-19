@@ -47,10 +47,11 @@
  ** ppc:   r2
  ** arm:  r12
  ** arm64: x9
+ ** mips:  t4
  **
  **/
 
-#include "dyncall_macros.h"
+#include "../dyncall/dyncall_macros.h"
 
 typedef struct DCThunk_ DCThunk;
 
@@ -68,12 +69,12 @@ void   dcbInitThunk(DCThunk* p, void (*entry)());
 #include "dyncall_thunk_ppc32.h"
 #elif defined (DC__Arch_PPC64)
 #include "dyncall_thunk_ppc64.h"
-#elif defined (DC__Arch_ARM_ARM)
-#include "dyncall_thunk_arm32_arm.h"
-#elif defined (DC__Arch_ARM_THUMB)
-#include "dyncall_thunk_arm32_thumb.h"
+#elif defined (DC__Arch_ARM)
+#include "dyncall_thunk_arm32.h"
 #elif defined (DC__Arch_MIPS)
 #include "dyncall_thunk_mips.h"
+#elif defined (DC__Arch_MIPS64)
+#include "dyncall_thunk_mips64.h"
 #elif defined (DC__Arch_Sparc)
 #include "dyncall_thunk_sparc32.h"
 #elif defined (DC__Arch_Sparcv9)
@@ -88,3 +89,4 @@ void   dcbInitThunk(DCThunk* p, void (*entry)());
 
 
 #endif /* DYNCALL_THUNK_H */
+

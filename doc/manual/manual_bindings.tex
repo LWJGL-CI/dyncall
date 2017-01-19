@@ -86,7 +86,6 @@ functions in C.
 \begin{table}[h]
 \begin{center}
 \begin{tabular*}{0.75\textwidth}{cl}
-\hline
 Signature character & C/C++ data type \\
 \hline
 \sigchar{B} & \_Bool, bool \\
@@ -105,7 +104,6 @@ Signature character & C/C++ data type \\
 \sigchar{p} & void* \\
 \sigchar{Z} & const char* (pointing to C string) \\
 \sigchar{v} & void \\
-\hline
 \end{tabular*}
 \caption{Type signature encoding for function call data types}
 \label{sigchar}
@@ -124,7 +122,6 @@ editors.
 \begin{table}[h]
 \begin{center}
 \begin{tabular*}{0.75\textwidth}{rll}
-\hline
 & C function prototype & dyncall signature \\
 \hline
 void      & f1();                                     & \sigstr{)v}\\
@@ -132,7 +129,6 @@ int       & f2(int, int);                             & \sigstr{ii)i}\\
 long long & f3(void*);                                & \sigstr{p)L}\\
 void      & f3(int**);                                & \sigstr{p)v}\\
 double    & f4(int, bool, char, double, const char*); & \sigstr{iBcdZ)d}\\
-\hline
 \end{tabular*}
 \caption{Type signature examples of C function prototypes}
 \label{sigex}
@@ -148,7 +144,6 @@ The OTP library application {\tt erldc} implements the Erlang language bindings.
 \begin{table}[h]
 \begin{center}
 \begin{tabular*}{0.75\textwidth}{ll}
-\hline
 Signature character & accepted Erlang data types\\
 \hline
 \sigchar{B} & atoms 'true' and 'false' converted to bool\\
@@ -162,7 +157,6 @@ Signature character & accepted Erlang data types\\
 \sigchar{p}              & binary (previously returned from call\_ptr or callf) cast to void*\\
 \sigchar{Z}              & string cast to void*\\
 \sigchar{v}              & no return type\\
-\hline
 \end{tabular*}
 \caption{Type signature encoding for Erlang bindings}
 \label{Erlangsigchar}
@@ -178,7 +172,6 @@ A Go binding is provided through the {\tt godc} package. Since Go's type system 
 \begin{table}[h]
 \begin{center}
 \begin{tabular*}{0.75\textwidth}{ll}
-\hline
 Signature character & accepted Go data types\\
 \hline
 \sigchar{B} & bool\\
@@ -191,7 +184,6 @@ Signature character & accepted Go data types\\
 \sigchar{d}              & float64\\
 \sigchar{p}, \sigchar{Z} & uintptr, unsafe.Pointer\\
 \sigchar{v}              & no return type\\
-\hline
 \end{tabular*}
 \caption{Type signature encoding for Go bindings}
 \label{Gosigchar}
@@ -212,7 +204,6 @@ namely {\tt load}, {\tt find}, {\tt free}, {\tt call}.
 \begin{table}[h]
 \begin{center}
 \begin{tabular*}{0.75\textwidth}{ll}
-\hline
 Signature character & accepted Python data types\\
 \hline
 \sigchar{B} & bool \\
@@ -225,7 +216,6 @@ Signature character & accepted Python data types\\
 \sigchar{d} & double\\
 \sigchar{p} & string or long casted to void*\\
 \sigchar{v} & no return type\\
-\hline
 \end{tabular*}
 \caption{Type signature encoding for Python bindings}
 \label{Pysigchar}
@@ -242,7 +232,6 @@ The R package {\tt rdyncall} implements the R langugae bindings providing the fu
 \begin{table}[h]
 \begin{center}
 \begin{tabular*}{0.75\textwidth}{ll}
-\hline
 Signature character & accepted R data types\\
 \hline
 \sigchar{B} & coerced to logical vector, first item\\
@@ -261,7 +250,6 @@ Signature character & accepted R data types\\
 \sigchar{p} & external pointer or coerced to string vector, first item\\
 \sigchar{Z} & coerced to string vector, first item\\
 \sigchar{v} & no return type\\
-\hline
 \end{tabular*}
 \caption{Type signature encoding for R bindings}
 \label{Rsigchar}
@@ -284,7 +272,6 @@ The Ruby gem {\tt rbdc} implements the Ruby language bindings.
 \begin{table}[h]
 \begin{center}
 \begin{tabular*}{0.75\textwidth}{ll}
-\hline
 Signature character & accepted Ruby data types\\
 \hline
 \sigchar{B} & TrueClass, FalseClass, NilClass, Fixnum casted to bool\\
@@ -297,7 +284,6 @@ Signature character & accepted Ruby data types\\
 \sigchar{d}              & Float cast to double\\
 \sigchar{p}, \sigchar{Z} & String cast to void*\\
 \sigchar{v}              & no return type\\
-\hline
 \end{tabular*}
 \caption{Type signature encoding for Ruby bindings}
 \label{Rubysigchar}

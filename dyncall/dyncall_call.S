@@ -43,7 +43,7 @@
 #  if defined(DC__Arch_Intel_x86)
 #    include "dyncall_call_x86.S"
 #  elif defined(DC__Arch_AMD64)
-#    include "dyncall_call_x64-att.S"
+#    include "dyncall_call_x64.S"
 #  elif defined(DC__Arch_ARM_ARM)
 #    if defined(DC__ABI_ARM_HF)
 #      include "dyncall_call_arm32_arm_armhf.S"

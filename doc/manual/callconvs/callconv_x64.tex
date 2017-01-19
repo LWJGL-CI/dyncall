@@ -40,7 +40,7 @@ Under Linux/*BSD/... it's LP64.\\
 \\
 Compared to the x86 architecture, the 64 bit versions of the registers are
 called rax, rbx, etc.. Furthermore, there are eight new general purpose
-registers r8-r15.
+registers r8-r15.\\
 
 
 
@@ -57,7 +57,6 @@ registers r8-r15.
 
 \begin{table}[h]
 \begin{tabular*}{0.95\textwidth}{3 B}
-\hline
 Name                & Brief description\\
 \hline
 {\bf rax}           & scratch, return value\\
@@ -75,7 +74,6 @@ Name                & Brief description\\
 {\bf xmm1-xmm3}     & scratch, floating point parameters 1-3\\
 {\bf xmm4-xmm5}     & scratch, permanent if required by caller\\
 {\bf xmm6-xmm15}    & permanent\\
-\hline
 \end{tabular*}
 \caption{Register usage on x64 MS Windows platform}
 \end{table}
@@ -121,25 +119,25 @@ Stack frame is always 16-byte aligned. Stack directly after function prolog:\\
 \begin{figure}[h]
 \begin{tabular}{5|3|1 1}
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{9}{caller's frame} \\
+local data                        & \hspace{4cm}   &                                & \mrrbrace{9}{caller's frame} \\
 \hhline{~-~~}
-\mrlbrace{7}{parameter area}      & \ldots                     & \mrrbrace{3}{stack parameters} &                              \\
-                                  & \ldots                     &                                &                              \\
-                                  & \ldots                     &                                &                              \\
-                                  & r9 or xmm3                 & \mrrbrace{4}{spill area}       &                              \\
-                                  & r8 or xmm2                 &                                &                              \\
-                                  & rdx or xmm1                &                                &                              \\
-                                  & rcx or xmm0                &                                &                              \\
+\mrlbrace{7}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & r9 or xmm3     & \mrrbrace{4}{spill area}       &                              \\
+                                  & r8 or xmm2     &                                &                              \\
+                                  & rdx or xmm1    &                                &                              \\
+                                  & rcx or xmm0    &                                &                              \\
 \hhline{~-~~}
-                                  & return address             &                                &                              \\
+                                  & return address &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{3}{current frame}  \\
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
 \hhline{~-~~}
-parameter area                    &                            &                                &                              \\
+parameter area                    &                &                                &                              \\
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~-~~}
 \end{tabular}
 \caption{Stack layout on x64 Microsoft platform}
@@ -155,7 +153,6 @@ parameter area                    &                            &                
 
 \begin{table}[h]
 \begin{tabular*}{0.95\textwidth}{3 B}
-\hline
 Name                & Brief description\\
 \hline
 {\bf rax}           & scratch, return value\\
@@ -174,7 +171,6 @@ Name                & Brief description\\
 {\bf xmm8-xmm15}    & scratch\\
 {\bf st0-st1}       & scratch, 16 byte floating point return value\\
 {\bf st2-st7}       & scratch\\
-\hline
 \end{tabular*}
 \caption{Register usage on x64 System V (Linux/*BSD)}
 \end{table}
@@ -217,21 +213,21 @@ Stack directly after function prolog:\\
 \begin{figure}[h]
 \begin{tabular}{5|3|1 1}
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{5}{caller's frame} \\
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
 \hhline{~-~~}
-\mrlbrace{3}{parameter area}      & \ldots                     & \mrrbrace{3}{stack parameters} &                              \\
-                                  & \ldots                     &                                &                              \\
-                                  & \ldots                     &                                &                              \\
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
 \hhline{~-~~}
-                                  & return address             &                                &                              \\
+                                  & return address &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{3}{current frame}  \\
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
 \hhline{~-~~}
-parameter area                    &                            &                                &                              \\
+parameter area                    &                &                                &                              \\
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~-~~}
 \end{tabular}
 \caption{Stack layout on x64 System V (Linux/*BSD)}

@@ -25,7 +25,7 @@
 
 
 
-#include "test_framework.h"
+#include "../common/test_framework.h"
 #include "../../dyncall/dyncall.h"
 #include "../../dyncall/dyncall_signature.h"
 #include "../../dyncall/dyncall_struct.h"

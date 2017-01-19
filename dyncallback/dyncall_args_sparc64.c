@@ -28,15 +28,15 @@
 
 DCint       dcbArgInt      (DCArgs* p) { return 0; }
 DCuint      dcbArgUInt     (DCArgs* p) { return 0; }
-DCulonglong dcbArgULongLong (DCArgs* p) {  return 0; }
-DClonglong  dcbArgLongLong(DCArgs* p) { return (DClonglong)dcbArgULongLong(p); }
-DClong      dcbArgLong     (DCArgs* p) { return (DClong)  dcbArgUInt(p); }
-DCulong     dcbArgULong    (DCArgs* p) { return (DCulong) dcbArgUInt(p); }
-DCchar      dcbArgChar     (DCArgs* p) { return (DCchar)  dcbArgUInt(p); }
-DCuchar     dcbArgUChar    (DCArgs* p) { return (DCuchar) dcbArgUInt(p); }
-DCshort     dcbArgShort    (DCArgs* p) { return (DCshort) dcbArgUInt(p); }
-DCushort    dcbArgUShort   (DCArgs* p) { return (DCushort)dcbArgUInt(p); }
-DCbool      dcbArgBool     (DCArgs* p) { return (DCbool)  dcbArgUInt(p); }
-DCpointer   dcbArgPointer  (DCArgs* p) { return (DCpointer)dcbArgUInt(p); }
+DCulonglong dcbArgULongLong(DCArgs* p) { return 0; }
+DClonglong  dcbArgLongLong (DCArgs* p) { return (DClonglong)dcbArgULongLong(p); }
+DClong      dcbArgLong     (DCArgs* p) { return (DClong)    dcbArgUInt(p); }
+DCulong     dcbArgULong    (DCArgs* p) { return (DCulong)   dcbArgUInt(p); }
+DCchar      dcbArgChar     (DCArgs* p) { return (DCchar)    dcbArgUInt(p); }
+DCuchar     dcbArgUChar    (DCArgs* p) { return (DCuchar)   dcbArgUInt(p); }
+DCshort     dcbArgShort    (DCArgs* p) { return (DCshort)   dcbArgUInt(p); }
+DCushort    dcbArgUShort   (DCArgs* p) { return (DCushort)  dcbArgUInt(p); }
+DCbool      dcbArgBool     (DCArgs* p) { return (DCbool)    dcbArgUInt(p); }
+DCpointer   dcbArgPointer  (DCArgs* p) { return (DCpointer) dcbArgUInt(p); }
 DCdouble    dcbArgDouble   (DCArgs* p) { return 0.0; }
 DCfloat     dcbArgFloat    (DCArgs* p) { return 0.0f; }

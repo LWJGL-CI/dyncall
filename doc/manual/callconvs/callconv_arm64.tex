@@ -22,11 +22,9 @@
 
 \paragraph{Overview}
 
-ARMv8 introduced the AArch64 calling convention. ARM64 chips can be run in 64 or 32bit mode, but not by the same process. Interworking is only intre-process.\\
-The word size is defined to be 32 bits, a dword 64 bits. Note that this is due to historical reasons (terminology
-didn't change from ARM32).\\
-For more details, take a look at the Procedure Call Standard for the ARM 64-bit Architecture \cite{AAPCS64}.
-
+ARMv8 introduced the AArch64 calling convention. ARM64 chips can be run in 64 or 32bit mode, but not by the same process. Interworking is only intra-process.\\
+The word size is defined to be 32 bits, a dword 64 bits. Note that this is due to historical reasons (terminology didn't change from ARM32).\\
+For more details, take a look at the Procedure Call Standard for the ARM 64-bit Architecture \cite{AAPCS64}.\\
 
 \paragraph{\product{dyncall} support}
 
@@ -44,7 +42,6 @@ as q0-q31, d0-d31 and s0-s31, respectively, depending on their use:\\
 
 \begin{table}[h]
 \begin{tabular*}{0.95\textwidth}{3 B}
-\hline
 Name          & Brief description\\
 \hline        
 {\bf x0-x7}   & parameters, scratch, return value\\
@@ -58,7 +55,6 @@ Name          & Brief description\\
 {\bf x30}     & permanent, link register\\
 {\bf SP}      & permanent, stack pointer\\
 {\bf PC}      & program counter\\
-\hline
 \end{tabular*}
 \caption{Register usage on arm64}
 \end{table}
@@ -91,35 +87,35 @@ Stack directly after function prolog:\\
 \begin{figure}[h]
 \begin{tabular}{5|3|1 1}
 \hhline{~-~~}
-                                   & \vdots &                                       &                              \\
-\hhline{~=~~}                                                                       
-register save area                 &        &                                       & \mrrbrace{5}{caller's frame} \\
-\hhline{~-~~}                                                                       
-local data                         &        &                                       &                              \\
-\hhline{~-~~}                                                                       
-\mrlbrace{13}{parameter area}      & \ldots & \mrrbrace{3}{stack parameters}        &                              \\
-                                   & \ldots &                                       &                              \\
-                                   & \ldots &                                       &                              \\
-\hhline{~=~~}
-                                   & x0     & \mrrbrace{10}{spill area (if needed)} & \mrrbrace{15}{current frame} \\
-                                   & x1     &                                       &                              \\
-                                   & \ldots &                                       &                              \\
-                                   & x2     &                                       &                              \\
-                                   & x7     &                                       &                              \\
-                                   & d0     &                                       &                              \\
-                                   & d1     &                                       &                              \\
-                                   & \ldots &                                       &                              \\
-                                   & d2     &                                       &                              \\
-                                   & d7     &                                       &                              \\
-\hhline{~-~~}                                                                       
-register save area                 &        &                                       &                              \\
-\hhline{~-~~}                                                                       
-local data                         &        &                                       &                              \\
-\hhline{~-~~}                                                                       
-link and frame register            & x30    &                                       &                              \\
-                                   & x29    &                                       &                              \\
-\hhline{~-~~}                                                                       
-parameter area                     & \vdots &                                       &                              \\
+                                   & \vdots       &                                       &                              \\
+\hhline{~=~~}                                                                            
+register save area                 & \hspace{4cm} &                                       & \mrrbrace{5}{caller's frame} \\
+\hhline{~-~~}                                                                            
+local data                         &              &                                       &                              \\
+\hhline{~-~~}                                                                             
+\mrlbrace{13}{parameter area}      & \ldots       & \mrrbrace{3}{stack parameters}        &                              \\
+                                   & \ldots       &                                       &                              \\
+                                   & \ldots       &                                       &                              \\
+\hhline{~=~~}                                     
+                                   & x0           & \mrrbrace{10}{spill area (if needed)} & \mrrbrace{15}{current frame} \\
+                                   & x1           &                                       &                              \\
+                                   & \ldots       &                                       &                              \\
+                                   & x2           &                                       &                              \\
+                                   & x7           &                                       &                              \\
+                                   & d0           &                                       &                              \\
+                                   & d1           &                                       &                              \\
+                                   & \ldots       &                                       &                              \\
+                                   & d2           &                                       &                              \\
+                                   & d7           &                                       &                              \\
+\hhline{~-~~}                                                                             
+register save area                 &              &                                       &                              \\
+\hhline{~-~~}                                                                             
+local data                         &              &                                       &                              \\
+\hhline{~-~~}                                                                             
+link and frame register            & x30          &                                       &                              \\
+                                   & x29          &                                       &                              \\
+\hhline{~-~~}                                                                             
+parameter area                     & \vdots       &                                       &                              \\
 \hhline{~-~~}
 \end{tabular}
 \caption{Stack layout on arm64}

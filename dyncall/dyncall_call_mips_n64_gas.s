@@ -177,8 +177,8 @@ dcCall_mips_n64:
 	/* jump-and-link to register $25 */
 
 	jal	$31, $25
-
-	/* no nop according to gcc assembly output */	
+	nop /* branch-delay slot - no nop according to gcc assembly */
+	    /* output, but let's play safe */	
 
 	/* Stack-frame epilog */	
 	move	$sp,$fp 

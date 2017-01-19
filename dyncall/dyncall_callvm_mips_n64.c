@@ -6,7 +6,7 @@
  Description: mips "n64" ABI callvm implementation
  License:
 
-   Copyright (c) 2007-2015 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2007-2015 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -139,7 +139,7 @@ static void dc_callvm_argFloat_mips_n64(DCCallVM* in_self, DCfloat x)
 }
 
 
-/* Ellipsis calls: 
+/* Ellipsis calls:
    - float is promoted to double (due to ANSI C).
    - double is passed via integer register-file (due to MIPS ABI).
 */
@@ -161,7 +161,7 @@ void dc_callvm_call_mips_n64(DCCallVM* in_self, DCpointer target)
 {
   DCCallVM_mips_n64* self = (DCCallVM_mips_n64*)in_self;
   /* at minimum provide 16-bytes
-     which hold the first four integer register as spill area 
+     which hold the first four integer register as spill area
      and are automatically loaded to $4-$7
    */
   size_t size = DC_MAX(16, ( ( (unsigned) dcVecSize(&self->mVecHead) ) +7UL ) & (-8UL) );
@@ -177,7 +177,7 @@ DCCallVM_vt gVT_mips_n64 =
 , &dc_callvm_mode_mips_n64
 , &dc_callvm_argBool_mips_n64
 , &dc_callvm_argChar_mips_n64
-, &dc_callvm_argShort_mips_n64 
+, &dc_callvm_argShort_mips_n64
 , &dc_callvm_argInt_mips_n64
 , &dc_callvm_argLong_mips_n64
 , &dc_callvm_argLongLong_mips_n64
@@ -234,14 +234,14 @@ static void dc_callvm_mode_mips_n64(DCCallVM* in_self, DCint mode)
   switch(mode) {
     case DC_CALL_C_DEFAULT:
     case DC_CALL_C_MIPS64_N64:
+    case DC_CALL_C_ELLIPSIS:
       vt = &gVT_mips_n64;
       break;
-    case DC_CALL_C_ELLIPSIS:
     case DC_CALL_C_ELLIPSIS_VARARGS:
       vt = &gVT_mips_n64_ellipsis;
       break;
     default:
-      self->mInterface.mError = DC_ERROR_UNSUPPORTED_MODE; 
+      self->mInterface.mError = DC_ERROR_UNSUPPORTED_MODE;
       return;
   }
   dc_callvm_base_init(&self->mInterface, vt);

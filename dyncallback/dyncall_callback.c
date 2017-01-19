@@ -28,23 +28,21 @@
 
 #if defined(DC__Arch_Intel_x86)
 #include "dyncall_callback_x86.c"
-#elif defined (DC__Arch_AMD64)
+#elif defined(DC__Arch_AMD64)
 #include "dyncall_callback_x64.c"
-#elif defined (DC__Arch_PPC32)
+#elif defined(DC__Arch_PPC32)
 #include "dyncall_callback_ppc32.c"
-#elif defined (DC__Arch_PPC64)
+#elif defined(DC__Arch_PPC64)
 #include "dyncall_callback_ppc64.c"
-#elif defined (DC__Arch_ARM_ARM)
-#include "dyncall_callback_arm32_arm.c"
-#elif defined (DC__Arch_ARM_THUMB)
-#include "dyncall_callback_arm32_thumb.c"
-#elif defined (DC__Arch_MIPS)
+#elif defined(DC__Arch_ARM)
+#include "dyncall_callback_arm32.c"
+#elif defined(DC__Arch_MIPS) || defined(DC__Arch_MIPS64)
 #include "dyncall_callback_mips.c"
-#elif defined (DC__Arch_Sparc)
+#elif defined(DC__Arch_Sparc)
 #include "dyncall_callback_sparc32.c"
-#elif defined (DC__Arch_Sparcv9)
+#elif defined(DC__Arch_Sparcv9)
 #include "dyncall_callback_sparc64.c"
-#elif defined (DC__Arch_ARM64)
+#elif defined(DC__Arch_ARM64)
 #include "dyncall_callback_arm64.c"
 #endif
 

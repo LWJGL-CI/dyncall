@@ -37,6 +37,7 @@
 #  include <pspkernel.h>
 #  include <pspdebug.h>
 #  include <pspdisplay.h>
+#  include <stdio.h>
 #  define printf pspDebugScreenPrintf
 /* All other platforms, usually just pulling in standard headers and empty init function. */
 #else

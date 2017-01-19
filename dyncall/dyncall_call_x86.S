@@ -35,7 +35,7 @@ BEGIN_ASM
       ddCall_x86_sys_XXX(int_ptr target, void* args, size_t size);
  
    Where XXX is one of calling-conventions,
-	cdecl, win32_msthis, win32_std, win32_fastcall.
+      cdecl, win32_msthis, win32_std, win32_fastcall.
 
    Parameter Stack layout:
       size    :=  EBP + 16
@@ -67,14 +67,14 @@ BEGIN_PROC(dcCall_x86_cdecl)
 	ANDL(LIT(-16),ECX)
 	MOVL(ECX,DWORD(EBP,16))		/* save ECX. */
 	SUBL(ECX,ESP)			/* allocate stack size */
-	MOVL(ESP,EDI)			/* EDI = stack ptr */			
-	
+	MOVL(ESP,EDI)			/* EDI = stack ptr */
+
 	/* 
 		work around for rep movsd (not supported by SunPro) 
-	
-	SHRL(LIT(2),ECX)		
+
+	SHRL(LIT(2),ECX)
 	REP(MOVSD)
-	
+
 	*/
 
 	REP(MOVSB)
@@ -185,7 +185,7 @@ END_PROC(dcCall_x86_win32_fast)
 GLOBAL(dcCall_x86_sys_int80h_linux)
 BEGIN_PROC(dcCall_x86_sys_int80h_linux)
 	PUSH(EBP)        		/* prolog. */
- 	MOVL(ESP,EBP)
+	MOVL(ESP,EBP)
 	PUSH(EBX)			/* save preserved. */
 	PUSH(ESI)               
 	PUSH(EDI)
@@ -215,7 +215,7 @@ END_PROC(dcCall_x86_sys_int80h_linux)
 GLOBAL(dcCall_x86_sys_int80h_bsd)
 BEGIN_PROC(dcCall_x86_sys_int80h_bsd)
 	PUSH(EBP)			/* prolog. */
- 	MOVL(ESP,EBP)
+	MOVL(ESP,EBP)
 	PUSH(ESI)			/* save preserved. */
 	PUSH(EDI)
 	MOVL(DWORD(EBP,12),ESI)    	/* ESI = pointer on args. */
@@ -236,4 +236,7 @@ _do_int:
 END_PROC(dcCall_x86_sys_int80h_bsd)
 
 END_ASM
+
+
+SECTION_NOTE_NXSTACK /* mark object as not needing execstack */
 

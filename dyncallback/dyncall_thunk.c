@@ -39,12 +39,12 @@
 # endif
 #elif defined(DC__Arch_PPC64)
 # include "dyncall_thunk_ppc64.c"
-#elif defined(DC__Arch_ARM_ARM)
-#include "dyncall_thunk_arm32_arm.c"
-#elif defined(DC__Arch_ARM_THUMB)
-#include "dyncall_thunk_arm32_thumb.c"
+#elif defined(DC__Arch_ARM)
+#include "dyncall_thunk_arm32.c"
 #elif defined(DC__Arch_MIPS)
 #include "dyncall_thunk_mips.c"
+#elif defined(DC__Arch_MIPS64)
+#include "dyncall_thunk_mips64.c"
 #elif defined(DC__Arch_Sparc)
 #include "dyncall_thunk_sparc32.c"
 #elif defined(DC__Arch_Sparcv9)

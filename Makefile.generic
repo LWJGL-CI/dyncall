@@ -33,4 +33,6 @@ run-tests: all
 distclean: clean
 	rm -f Makefile.config
 	find . -type f -name "Makefile.generic" | sed s/\.generic$$// | xargs rm
+show-compiler-predefs:
+	${CC} ${CFLAGS} -dM -E - < /dev/null
 

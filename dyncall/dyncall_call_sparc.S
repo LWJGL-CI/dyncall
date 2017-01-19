@@ -148,7 +148,7 @@ dcCall_sparc:
 	/*leaf functions: may use the first six output registers.*/
 	/*o3-5:free to use */
 
-	/* Compute a matiching stack size (approximate): o3 = align(92+o1,16) */
+	/* Compute a matching stack size (approximate): o3 = align(92+o1,16) */
 
 	add     %o1, (16+1+6)*REGSIZE+ALIGN-1, %o3
 	and     %o3,   -ALIGN, %o3
@@ -167,15 +167,15 @@ dcCall_sparc:
 	ld	[%i2+REGSIZE*5 ],%o5
 
 	/* Copy on stack? */
-	sub	%i1,  REGSIZE*6, %i1   		/* i1 = decrement copy size by 6 regs (=6 regs x 4 bytes = 24 bytes total). */
+	sub	%i1, REGSIZE*6, %i1   		/* i1 = decrement copy size by 6 regs (=6 regs x 4 bytes = 24 bytes total). */
 	cmp %i1, 0
     ble .do_call
 	nop
 
 	/* Copy loop: */
-	add     %i2,  REGSIZE*6, %i2	/* i2 = address of 7th word of args buffer. */
+	add     %i2, REGSIZE*6, %i2		/* i2 = address of 7th word of args buffer. */
 	or      %g0, %g0, %l0			/* l0 = offset initialized to 0. */
-	add     %sp,  (16+1+6)*REGSIZE, %l2	/* l2 = argument area on stack space (7th word). (64+4+6*4 = byte offset 92). */
+	add     %sp, (16+1+6)*REGSIZE, %l2	/* l2 = argument area on stack space (7th word). (64+4+6*4 = byte offset 92). */
 .next:
 	ld      [%i2+%l0],%l1			/* Read from arg buffer(%i2) to %l1. */
 	st      %l1, [%l2+%l0]			/* Write %l1 to stack space(%l2). */
@@ -187,7 +187,7 @@ dcCall_sparc:
 .do_call:
 	call    %i0						/* Call target. */
 	nop
-    	or     %o0, %g0, %i0
-    	or     %o1, %g0, %i1
+	or      %o0, %g0, %i0
+	or      %o1, %g0, %i1
 	jmpl	%i7 + 8, %g0
 	restore

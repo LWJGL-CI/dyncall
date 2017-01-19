@@ -28,7 +28,7 @@
 #include "dyncall_callf.h"
 
 
-// Shareable implementation for argument binding used in ArgF and CallF  below.
+/* Shareable implementation for argument binding used in ArgF and CallF below. */
 static void dcArgF_impl(DCCallVM* vm, const DCsigchar** sigptr, va_list args)
 {
   DCsigchar ch;

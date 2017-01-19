@@ -149,9 +149,11 @@ static void dc_callvm_mode_sparc(DCCallVM* in_self, DCint mode)
 /* Public API. */
 DCCallVM* dcNewCallVM(DCsize size)
 {
+  DCCallVM_sparc* p;
+
   /* the six output registers %o0-%o5 are always loaded, thus we need to ensure the argument buffer has space for at least 24 bytes. */
   size = DC_MAX(size, sizeof(void*)*(6+1));
-  DCCallVM_sparc* p = (DCCallVM_sparc*)dcAllocMem(sizeof(DCCallVM_sparc)+size);
+  p = (DCCallVM_sparc*)dcAllocMem(sizeof(DCCallVM_sparc)+size);
 
   dc_callvm_mode_sparc((DCCallVM*)p, DC_CALL_C_DEFAULT);
 

@@ -2,19 +2,30 @@ This file lists bigger/noteworthy changes, only...
 
 Version 1.0 (upcoming)
 dyncall:
-  o better C++ compiler support (for pointer conversions)
   o PPC64 single-precision float fixes for more than 13 float args (thanks Masanori!)
-  o fixed potential buffer overrun on arm64
+  o fixed potential buffer overrun on ARM64
   o error code handling (dcGetError) changes, flag is now cleared (work still
     underway)
+  o MIPS n64 ellipsis call fixes
+  o ARM32 armhf ellipsis call fixes
+  o better C++ compiler support (for pointer conversions)
 dyncallback:
   o PPC64 single-precision float fixes for more than 13 float args (thanks Masanori!)
+  o MIPS o32 (big- and little-endian), EABI (32 bit, little-endian) and n64 (big-endian) support
+  o SPARC (32-bit) support
+general:
+  o marked assembly code as not needing an execstack, for security and better/easier integration
+    into other projects/builds; modern toolchains do that automatically on compilation, but not
+    for hand written assembly code (thanks Thorsten Behrens for report and analysis)
 doc:
   o working html doc generation from TEX sources
+  o SPARC (32-bit) calling convention description
 bindings:
   o better documentation, removed relative path dependencies, general cleanup
   o python: updated to latest signature format (was still on 0.1)
   o java: rewritten (old version was never complete, anyways)
+buildsys:
+  o cmake: made to work on systems without C++ compiler (thanks Franklin Mathieu)
 
 Version 0.9 (2015/12/31)
 dyncall:
@@ -24,7 +35,7 @@ dyncall:
   o introduced dcArgF and dcVArgF for flexible/convenient argument binding (works like dcCallF/dcVCallF but without the function call)
   o using -fPIC by default for FreeBSD
   o PPC32 linux syscall support
-  o fixed return value errors for arm32 on some platforms (e.g. freebsd/arm32, nintendo ds); arm & thumb mode
+  o fixed return value errors for ARM32 on some platforms (e.g. freebsd/arm32, nintendo ds); arm & thumb mode
 dyncallback:
   o ARM64 support (AAPCS64 on Linux, Apple's derived version on iOS)
   o armhf calling convention support for ARM32
@@ -63,7 +74,7 @@ dyncall:
   o fix for ARMv7 Thumb-2 code (tested on iPhone 4 CDMA / iOS 6.0.1)
   o bugfixes for -O2 builds for SPARC-v9 and SPARC-v7
   o new optimized call kernel for SPARC-v9 without conditionals
-  o bigger refactoring and optimization of mips o32
+  o bigger refactoring and optimization of MIPS o32
   o x64 optimizations
 dyncallback:
   o added callback support for plan9
@@ -161,7 +172,7 @@ dynload updates:
   o added support for resolving application images itself
 dyncall updates:
   o new platform support: arm/iphone (armv6), x86/Plan9
-  o new mips calling conventions: oabi, n64 (both endian models)
+  o new MIPS calling conventions: o32, n64 (both endian models)
   o cleanup: unexported functions in MASM files, b/c export not needed (thanks Olivier)
   o interface update: added error reporting facility 'dcGetError'
   o bugfix for ppc32/sysv: ellipsis calls were broken

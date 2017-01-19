@@ -54,11 +54,10 @@ void* dlFindSymbol(DLLib* libHandle, const char* symbol)
 void dlFreeLibrary(DLLib* libHandle)
 {
 
-  // Check for NULL for cross-platform consistency. *BSD seems
-  // to do that in dlclose, Linux does not. POSIX states "if handle
-  // does not refer to an open object, dlclose() returns a non-zero
-  // value", which unfortunately sounds like it's not explicitly
-  // specified.
+  /* Check for NULL for cross-platform consistency. *BSD seems to do that in
+     dlclose, Linux does not. POSIX states "if handle does not refer to an open
+     object, dlclose() returns a non-zero value", which unfortunately sounds
+     like it's not explicitly specified. */
   if(libHandle)
   	dlclose((void*)libHandle);
 }

@@ -160,7 +160,7 @@ DLSyms* dlSymsInit(const char* libPath)
         }
         break;
       case SHT_STRTAB:
-        // Do not trust pSyms->pElf_Ehdr->e_shstrndx!
+        /* Do not trust pSyms->pElf_Ehdr->e_shstrndx! */
         if (!pSyms->pStrTab) {
           pSyms->pStrTab  = (const char*)pSectionContent;
           pSyms->strTabSize = pSection->sh_size;

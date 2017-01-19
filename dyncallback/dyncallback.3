@@ -39,14 +39,15 @@ dynamically over the arguments once called back.
 .Fn dcbNewCallback
 creates a new callback object, where
 .Ar signature
-is a signature string describing the function to be called back (see manual for
-format). This is needed for
+is a signature string describing the function to be called back (see manual or
+dyncall_signature.h for format). This is needed for
 .Nm
 dyncallback to correctly prepare the arguments passed in by the function that
 calls the callback handler. Note that the handler doesn't return the value
-specified in the signature, directly, but simply 'i' or 'f' depending on whether
-it is a integral or floating point type. The return value itself is stored
-where the handler's 3rd parameter points to (see example).
+specified in the signature, directly, but a signature character, specifying the
+return value's type.
+The return value itself is stored where the handler's
+3rd parameter points to (see below).
 .Ar funcptr
 is a pointer to the
 .Nm
@@ -106,13 +107,12 @@ char cbHandler(DCCallback* cb,
   // .. do something ..
 
   result->s = 1244;
-  return 'i';
+  return 's';
 }
 .Ed
 .Pp
 Note that the return value of the handler is a signature character, not the
-actual return value, itself, and note that the actual return value is of type
-short.
+actual return value, itself.
 Now, let's call it through a DCCallback object:
 .Bd -literal -offset indent
   DCCallback* cb;
@@ -126,8 +126,7 @@ Now, let's call it through a DCCallback object:
 .Sh SEE ALSO
 .Xr dyncall 3 ,
 .Xr dynload 3
-and the dyncall manual (available in PDF format) for a way more detailed documentation of this
-library.
+and the dyncall manual (available in HTML and PDF format) for more information.
 .Sh AUTHORS
 .An "Daniel Adler" Aq dadler@uni-goettingen.de
 .An "Tassilo Philipp" Aq tphilipp@potion-studios.com

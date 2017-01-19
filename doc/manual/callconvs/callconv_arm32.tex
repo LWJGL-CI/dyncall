@@ -1,5 +1,5 @@
 %
-% Copyright (c) 2007,2010 Daniel Adler <dadler@uni-goettingen.de>, 
+% Copyright (c) 2007,2010 Daniel Adler <dadler@uni-goettingen.de>,
 %                         Tassilo Philipp <tphilipp@potion-studios.com>
 %
 % Permission to use, copy, modify, and distribute this software for any
@@ -22,23 +22,20 @@
 
 \paragraph{Overview}
 
-The ARM32 family of processors is based on 
-the Advanced RISC Machines (ARM) processor architecture (32 bit RISC). 
+The ARM32 family of processors is based on the Advanced RISC Machines (ARM)
+processor architecture (32 bit RISC).
 The word size is 32 bits (and the programming model is LLP64).\\
 Basically, this family of microprocessors can be run in 2 major modes:\\
 \\
 \begin{tabular*}{0.95\textwidth}{2 B}
-\hline
 Mode          & Description\\
 \hline
 {\bf ARM}     & 32bit instruction set\\
 {\bf THUMB}   & compressed instruction set using 16bit wide instruction encoding\\
-\hline
 \end{tabular*}
 \\
 \\
-For more details, take a look at the ARM-THUMB Procedure Call Standard (ATPCS) \cite{ATPCS}, the Procedure Call Standard for the ARM Architecture (AAPCS) \cite{AAPCS}, as well as the Debian ARM EABI port wiki \cite{armeabi}.
-
+For more details, take a look at the ARM-THUMB Procedure Call Standard (ATPCS) \cite{ATPCS}, the Procedure Call Standard for the ARM Architecture (AAPCS) \cite{AAPCS}, as well as the Debian ARM EABI port wiki \cite{armeabi}.\\
 
 \paragraph{\product{dyncall} support}
 
@@ -56,7 +53,6 @@ In ARM mode, the ARM32 processor has sixteen 32 bit general purpose registers, n
 \\
 \begin{table}[h]
 \begin{tabular*}{0.95\textwidth}{3 B}
-\hline
 Name         & Brief description\\
 \hline
 {\bf r0}     & parameter 0, scratch, return value\\
@@ -68,7 +64,6 @@ Name         & Brief description\\
 {\bf r13}    & stack pointer, permanent\\
 {\bf r14}    & link register, permanent\\
 {\bf r15}    & program counter (note: due to pipeline, r15 points to 2 instructions ahead)\\
-\hline
 \end{tabular*}
 \caption{Register usage on arm32}
 \end{table}
@@ -102,26 +97,26 @@ Stack directly after function prolog:\\
 \begin{figure}[h]
 \begin{tabular}{5|3|1 1}
 \hhline{~-~~}
-                                         & \vdots &                                      &                              \\
+                                         & \vdots       &                                      &                              \\
 \hhline{~=~~}
-register save area                       &        &                                      & \mrrbrace{5}{caller's frame} \\
+register save area                       & \hspace{4cm} &                                      & \mrrbrace{5}{caller's frame} \\
 \hhline{~-~~}
-local data                               &        &                                      &                              \\
+local data                               &              &                                      &                              \\
 \hhline{~-~~}
-\mrlbrace{7}{parameter area}             & \ldots & \mrrbrace{3}{stack parameters}       &                              \\
-                                         & \ldots &                                      &                              \\
-                                         & \ldots &                                      &                              \\
+\mrlbrace{7}{parameter area}             & \ldots       & \mrrbrace{3}{stack parameters}       &                              \\
+                                         & \ldots       &                                      &                              \\
+                                         & \ldots       &                                      &                              \\
 \hhline{~=~~}
-                                         & r3     & \mrrbrace{4}{spill area (if needed)} & \mrrbrace{7}{current frame}  \\
-                                         & r2     &                                      &                              \\
-                                         & r1     &                                      &                              \\
-                                         & r0     &                                      &                              \\
+                                         & r3           & \mrrbrace{4}{spill area (if needed)} & \mrrbrace{7}{current frame}  \\
+                                         & r2           &                                      &                              \\
+                                         & r1           &                                      &                              \\
+                                         & r0           &                                      &                              \\
 \hhline{~-~~}
-register save area (with return address) &        &                                      &                              \\
+register save area (with return address) &              &                                      &                              \\
 \hhline{~-~~}
-local data                               &        &                                      &                              \\
+local data                               &              &                                      &                              \\
 \hhline{~-~~}
-parameter area                           & \vdots &                                      &                              \\
+parameter area                           & \vdots       &                                      &                              \\
 \hhline{~-~~}
 \end{tabular}
 \caption{Stack layout on arm32}
@@ -147,7 +142,6 @@ In THUMB mode, the ARM32 processor family supports eight 32 bit general purpose 
 \\
 \begin{table}[h]
 \begin{tabular*}{0.95\textwidth}{3 B}
-\hline
 Name         & Brief description\\
 \hline
 {\bf r0}     & parameter 0, scratch, return value\\
@@ -160,7 +154,6 @@ Name         & Brief description\\
 {\bf r13}    & stack pointer, permanent\\
 {\bf r14}    & link register, permanent\\
 {\bf r15}    & program counter (note: due to pipeline, r15 points to 2 instructions ahead)\\
-\hline
 \end{tabular*}
 \caption{Register usage on arm32 thumb mode}
 \end{table}
@@ -194,26 +187,26 @@ Stack directly after function prolog:\\
 \begin{figure}[h]
 \begin{tabular}{5|3|1 1}
 \hhline{~-~~}
-                                         & \vdots &                                      &                              \\
+                                         & \vdots       &                                      &                              \\
 \hhline{~=~~}
-register save area                       &        &                                      & \mrrbrace{5}{caller's frame} \\
+register save area                       & \hspace{4cm} &                                      & \mrrbrace{5}{caller's frame} \\
 \hhline{~-~~}
-local data                               &        &                                      &                              \\
+local data                               &              &                                      &                              \\
 \hhline{~-~~}
-\mrlbrace{7}{parameter area}             & \ldots & \mrrbrace{3}{stack parameters}       &                              \\
-                                         & \ldots &                                      &                              \\
-                                         & \ldots &                                      &                              \\
+\mrlbrace{7}{parameter area}             & \ldots       & \mrrbrace{3}{stack parameters}       &                              \\
+                                         & \ldots       &                                      &                              \\
+                                         & \ldots       &                                      &                              \\
 \hhline{~=~~}
-                                         & r3     & \mrrbrace{4}{spill area (if needed)} & \mrrbrace{7}{current frame}  \\
-                                         & r2     &                                      &                              \\
-                                         & r1     &                                      &                              \\
-                                         & r0     &                                      &                              \\
+                                         & r3           & \mrrbrace{4}{spill area (if needed)} & \mrrbrace{7}{current frame}  \\
+                                         & r2           &                                      &                              \\
+                                         & r1           &                                      &                              \\
+                                         & r0           &                                      &                              \\
 \hhline{~-~~}
-register save area (with return address) &        &                                      &                              \\
+register save area (with return address) &              &                                      &                              \\
 \hhline{~-~~}
-local data                               &        &                                      &                              \\
+local data                               &              &                                      &                              \\
 \hhline{~-~~}
-parameter area                           & \vdots &                                      &                              \\
+parameter area                           & \vdots       &                                      &                              \\
 \hhline{~-~~}
 \end{tabular}
 \caption{Stack layout on arm32 thumb mode}
@@ -256,7 +249,6 @@ Typically code is compiled in Thumb mode.
 
 \begin{table}[h]
 \begin{tabular*}{0.95\textwidth}{3 B}
-\hline
 Name         & Brief description\\
 \hline
 {\bf R0}     & parameter 0, scratch, return value\\
@@ -276,7 +268,6 @@ Name         & Brief description\\
 {\bf D8-D15} & permanent, aliases S16-S31, on ARMv7 also as Q4-A7. Not accesible from Thumb mode on ARMv6.\\
 {\bf D16-D31}& Only available in ARMv7, aliases Q8-Q15.\\
 {\bf FPSCR}  & VFP status register.\\
-\hline
 \end{tabular*}
 \caption{Register usage on ARM Apple iOS}
 \end{table}
@@ -302,7 +293,6 @@ Code is little-endian, rest is similar to EABI with an 8-byte aligned stack, etc
 
 \begin{table}[h]
 \begin{tabular*}{0.95\textwidth}{3 B}
-\hline
 Name         & Brief description\\
 \hline
 {\bf R0}     & parameter 0, scratch, non floating point return value\\
@@ -324,7 +314,6 @@ Name         & Brief description\\
 {\bf S1-S15} & floating point arguments, single precision\\
 {\bf D1-D7}  & aliases S2-S15, floating point arguments, double precision\\
 {\bf FPSCR}  & VFP status register.\\
-\hline
 \end{tabular*}
 \caption{Register usage on armhf}
 \end{table}
@@ -344,6 +333,7 @@ Name         & Brief description\\
 \item parameters \textless=\ 32 bits are passed as 32 bit words
 \item structures and unions are passed by value, with the first four words of the parameters in r0-r3 @@@?check doc
 \item if return value is a structure, a pointer pointing to the return value's space is passed in r0, the first parameter in r1, etc. (see {\bf return values})
+\item callee spills, caller reserves spill area space, though
 \end{itemize}
 
 \paragraph{Return values}
@@ -355,14 +345,44 @@ Name         & Brief description\\
 \item if return value is a structure, the caller allocates space for the return value on the stack in its frame and passes a pointer to it in r0
 \end{itemize}
 
+\paragraph{Stack layout}
 
+Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                         & \vdots       &                                      &                              \\
+\hhline{~=~~}
+register save area                       & \hspace{4cm} &                                      & \mrrbrace{6}{caller's frame} \\
+\hhline{~-~~}
+local data                               &              &                                      &                              \\
+\hhline{~-~~}
+\mrlbrace{7}{parameter area}             & r0-r3        & \mrrbrace{1}{spill area (if needed)} &                              \\
+\hhline{~-~~}
+                                         & \ldots       & \mrrbrace{3}{stack parameters}       &                              \\
+                                         & \ldots       &                                      &                              \\
+                                         & \ldots       &                                      &                              \\
+\hhline{~=~~}
+register save area (with return address) &              &                                      & \mrrbrace{3}{current frame}  \\
+\hhline{~-~~}
+local data                               &              &                                      &                              \\
+\hhline{~-~~}
+parameter area                           & \vdots       &                                      &                              \\
+\hhline{~-~~}
+\end{tabular}
+\caption{Stack layout on arm32 armhf}
+\end{figure}
+
+
+\newpage
 
 
 \subsubsection{Architectures}
 
 The ARM architecture family contains several revisions with capabilities and
-extensions (such as thumb-interworking, more vector registers, ...) 
-The following table sums up the most important properties of the various 
+extensions (such as thumb-interworking, more vector registers, ...)
+The following table sums up the most important properties of the various
 architecture standards, from a calling convention perspective.
 
 % iPhone 3GS : ARM Cortex-A8
@@ -376,17 +396,11 @@ architecture standards, from a calling convention perspective.
 Arch   & Platforms & Details \\
 \hline
 ARMv4  & & \\
-\hline
 ARMv4T & ARM 7, ARM 9, Neo FreeRunner (OpenMoko) & \\
-\hline
 ARMv5  & ARM 9E & BLX instruction available \\
-\hline
 ARMv6  & & No vector registers available in thumb \\
-\hline
-ARMv7  & iPod touch, iPhone 3GS/4, Raspberry Pi 2 & VFP throughout available, armhf calling convention on some platforms \\ 
-\hline
-ARMv8  & iPhone 6 and higher & 64bit support \\ 
-\hline
+ARMv7  & iPod touch, iPhone 3GS/4, Raspberry Pi 2 & VFP throughout available, armhf calling convention on some platforms \\
+ARMv8  & iPhone 6 and higher & 64bit support \\
 \end{tabular*}
 \caption{Overview of ARM Architecture, Platforms and Details}
 \end{table}

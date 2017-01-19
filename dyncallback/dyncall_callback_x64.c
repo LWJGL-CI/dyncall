@@ -6,7 +6,7 @@
  Description: Callback - Implementation for x64
  License:
 
-   Copyright (c) 2007-2015 Daniel Adler <dadler@uni-goettingen.de>,
+   Copyright (c) 2007-2016 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -24,15 +24,20 @@
 */
 
 
-
-#include "dyncall_callback_x64.h"
-#include "dyncall_args_x64.h"
+#include "dyncall_callback.h"
 #include "dyncall_alloc_wx.h"
-
+#include "dyncall_thunk.h"
 
 /* Callback symbol. */
 extern void dcCallback_x64_sysv();
 extern void dcCallback_x64_win64();
+
+struct DCCallback
+{
+  DCThunk  	         thunk;    // offset 0,  size 24
+  DCCallbackHandler* handler;  // offset 24
+  void*              userdata; // offset 32
+};
 
 
 void dcbInitCallback(DCCallback* pcb, const char* signature, DCCallbackHandler* handler, void* userdata)

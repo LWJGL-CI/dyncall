@@ -3,7 +3,7 @@
  Package: dyncall
  Library: dyncallback
  File: dyncallback/dyncall_args_sparc64.h
- Description: Callback's Arguments VM - Header for sparc32 - not yet
+ Description: Callback's Arguments VM - Header for sparc64 - not yet
  License:
 
    Copyright (c) 2007-2015 Daniel Adler <dadler@uni-goettingen.de>,

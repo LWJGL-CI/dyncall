@@ -3,7 +3,7 @@
  Package: dyncall
  Library: dyncall
  File: dyncall/dyncall_call_mips_gas.S
- Description: auto-select (via gnu c preprocessor) mips abi call kernel
+ Description: auto-select (via C preprocessor) mips abi call kernel
  License:
 
    Copyright (c) 2007-2015 Daniel Adler <dadler@uni-goettingen.de>,

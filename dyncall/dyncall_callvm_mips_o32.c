@@ -116,7 +116,7 @@ static void dc_callvm_argFloat_mips_o32(DCCallVM* in_self, DCfloat x)
 
   dcVecAppend(&self->mVecHead, &x, sizeof(DCfloat) );
   if (self->mArgCount < 2) {
-#if defined(__MIPSEL__)
+#if defined(DC__Endian_LITTLE)
     self->mRegData.u[self->mArgCount].f[0] = x;
 #else
     self->mRegData.u[self->mArgCount].f[1] = x;
@@ -136,7 +136,7 @@ static void dc_callvm_argFloat_mips_o32(DCCallVM* in_self, DCfloat x)
 	lwc1	$f14, 8($5)      <--- byte offset 12 
 	lwc1	$f15, 12($5)
 
-#if defined(__MIPSEL__)
+#if defined(DC__Endian_LITTLE)
     /* index 0 and 2 */
     self->mRegData.floats[self->mArgCount*2] = x;
 #else

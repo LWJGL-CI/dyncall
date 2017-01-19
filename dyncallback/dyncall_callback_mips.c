@@ -6,7 +6,7 @@
  Description: Callback - Implementation Header for MIPS
  License:
 
-   Copyright (c) 2013-2015 Daniel Adler <dadler@uni-goettingen.de>,
+   Copyright (c) 2013-2016 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -25,30 +25,40 @@
 
 
 #include "dyncall_callback.h"
-#include "dyncall_callback_mips.h"
+#include "dyncall_alloc_wx.h"
+#include "dyncall_thunk.h"
+
+/* Callback symbol. */
+extern void dcCallbackThunkEntry();
+
+/* might want to make use of __packed__ or so @@@ */
+struct DCCallback              /*       mips32      |       mips64      */
+{                              /* ------------------+------------------ */
+  DCThunk            thunk;    /* offset  0 size 20 | offset  0 size 56 */
+  DCCallbackHandler* handler;  /* offset 20 size  4 | offset 56 size  8 */
+  void*              userdata; /* offset 24 size  4 | offset 64 size  8 */
+};
+
 
 void dcbInitCallback(DCCallback* pcb, const char* signature, DCCallbackHandler* handler, void* userdata)
 {
-  const char* ptr;
-  char ch;
-
   pcb->handler  = handler;
   pcb->userdata = userdata;
 }
 
-extern void dcCallbackThunkEntry();
 
 DCCallback* dcbNewCallback(const char* signature, DCCallbackHandler* handler, void* userdata)
 {
+  int err;
   DCCallback* pcb;
-  int err = dcAllocWX(sizeof(DCCallback), (void**)&pcb);
-  if (err != 0) return 0;
-
+  err = dcAllocWX(sizeof(DCCallback), (void**)&pcb);
+  if(err || !pcb)
+    return 0;
   dcbInitThunk(&pcb->thunk, dcCallbackThunkEntry);
   dcbInitCallback(pcb, signature, handler, userdata);
-
   return pcb;
 }
+
 
 void dcbFreeCallback(DCCallback* pcb)
 {
@@ -59,4 +69,3 @@ void* dcbGetUserData(DCCallback* pcb)
 {
   return pcb->userdata;
 }
-

@@ -43,8 +43,9 @@ extern "C" {
   32-bit floating pointer registers.
   Float arguments map as following:
   
-    float argument 0 is at floats[1] and
-    float argument 1 is at floats[3] of DCRegData_mips_o32 union.
+    float argument 0 is at u[0][0] for little, u[0][1] for big endian and
+    float argument 1 is at u[1][0] for little, u[1][1] for big endian of
+	DCRegData_mips_o32 union.
 
 */
 

@@ -42,7 +42,6 @@ dcCall_mips_o32:
 	.mask	0xc0000000,-4
 	.fmask	0x00000000,0
 	.set	noreorder
-	.set	nomacro
 	
 	addiu	$sp,$sp,-8
 	sw	$31,4($sp)	/* save link register */
@@ -77,8 +76,8 @@ dcCall_mips_o32:
 
 	l.d     $f12, 0($5)
 	l.d     $f14, 8($5)
-	/* prepare call */
 
+	/* prepare call */
 
 	move	$12, $7		/* $12  stack data */
 	move	$25, $4		/* $25  target function */
@@ -102,7 +101,6 @@ dcCall_mips_o32:
 	j	$31		/* return */
 	nop
 
-	.set	macro
 	.set	reorder
 	.end	dcCall_mips_o32 
 	.ident 	"handwritten"

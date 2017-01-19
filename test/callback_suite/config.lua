@@ -1,10 +1,10 @@
--- auto-generated file from temlate config-random.lua (created by GNUmake)
+-- auto-generated file from template config-random.lua (created by GNUmake)
 -- section 'main' --------------------------------------------------------------
                   
-nsigs     = 400         -- number of test cases
+nsigs     = 800         -- number of test cases
 mode      = "random"    -- generatore mode: 'random' or 'ordered' type sequences
 minargs   = 0           -- minimum num. of supported arguments (>= 0)
-maxargs   = 64          -- maximum num. of supported arguments (>= minargs)
+maxargs   = 67          -- maximum num. of supported arguments (>= minargs)
 
 
 -- section 'types' -------------------------------------------------------------
@@ -21,7 +21,7 @@ step      = 1           -- permutation index increment (default = 1)
 
 -- section 'random' ------------------------------------------------------------
                         
-seed      = 1           -- random seed
+seed      = 40           -- random seed
 
 
 -- section 'calling convention' (useful on Windows for now) --------------------

@@ -3,10 +3,10 @@
  Package: dyncall
  Library: dyncall
  File: dyncall/dyncall_call_mips_n32.h
- Description: mips "n32" ABI call-kernel C interface.
+ Description: mips64 "n32" ABI call-kernel C interface.
  License:
 
-   Copyright (c) 2007-2015 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2007-2016 Daniel Adler <dadler@uni-goettingen.de>, 
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -52,12 +52,13 @@ extern "C" {
 
 struct DCRegData_mips_n32
 {
-  DClonglong   mIntData[8];
+  DClonglong                       mIntData[8];
   union { DCfloat f; DCdouble d; } mFloatData[8];
-  DClonglong   mUseDouble; /* bitmask: lower 8 bits specifies to use float or double from union array. */
+  DClonglong                       mUseDouble; /* bitmask: lower 8 bits specify to use float or double from union array. */
 };
 
 void dcCall_mips_n32(DCpointer target, struct DCRegData_mips_n32* regdata, DCsize stksize, DCpointer stkdata);
+/* @@@ this is the same as n64, combine code */
 
 #ifdef __cplusplus
 }

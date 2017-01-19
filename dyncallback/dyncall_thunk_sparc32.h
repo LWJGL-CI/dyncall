@@ -6,7 +6,7 @@
  Description: Thunk - Header for sparc32 - not yet implemented
  License:
 
-   Copyright (c) 2007-2015 Daniel Adler <dadler@uni-goettingen.de>,
+   Copyright (c) 2007-2016 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -29,9 +29,10 @@
 
 struct DCThunk_
 {
-  int x[4]; /* dummy */
+  unsigned int code[6];
 };
 
-#define DCTHUNK_SIZE_SPARC32 32
+#define DCTHUNK_SIZE_SPARC32 24
 
 #endif /* DYNCALL_THUNK_SPARC32_H */
+

@@ -33,7 +33,7 @@ struct DCThunk_
   void (*entry)();
 };
 
-#define DCTHUNK_X64_SIZE	24
+#define DCTHUNK_X64_SIZE 24
 
 
 #endif /* DYNCALL_THUNK_X64_H */

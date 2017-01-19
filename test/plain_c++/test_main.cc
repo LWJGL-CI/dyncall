@@ -26,7 +26,7 @@
 
 
 
-#include "test_framework.h"
+#include "../common/test_framework.h"
 #include "../../dyncall/dyncall.h"
 #include "../common/platformInit.h"
 #include "../common/platformInit.c" /* Impl. for functions only used in this translation unit */

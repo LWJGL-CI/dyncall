@@ -31,7 +31,7 @@ fastcall \cite{x86GNUfastcall}, Borland fastcall \cite{x86Borlandfastcall}, Watc
 fastcall \cite{x86Watcomfastcall}, Win32 stdcall \cite{x86Winstdcall}, MS thiscall
 \cite{x86Winthiscall}, GNU thiscall \cite{x86GNUthiscall}, the pascal calling
 convention \cite{x86Pascal} and a cdecl-like version for Plan9 \cite{x86Plan9}
-(dubbed plan9call by us), etc.
+(dubbed plan9call by us), etc.\\
 
 
 \paragraph{\product{dyncall} support}
@@ -47,7 +47,6 @@ plan9call are supported.\\
 
 \begin{table}[h]
 \begin{tabular*}{0.95\textwidth}{3 B}
-\hline
 Name          & Brief description\\
 \hline
 {\bf eax}     & scratch, return value\\
@@ -60,7 +59,6 @@ Name          & Brief description\\
 {\bf esp}     & stack pointer\\
 {\bf st0}     & scratch, floating point return value\\
 {\bf st1-st7} & scratch\\
-\hline
 \end{tabular*}
 \caption{Register usage on x86 cdecl calling convention}
 \end{table}
@@ -81,7 +79,7 @@ Name          & Brief description\\
 \begin{itemize}
 \item return values of pointer or integral type (\textless=\ 32 bits) are returned via the eax register
 \item integers \textgreater\ 32 bits are returned via the eax and edx registers
-\item floating point types are returned via the st0 register
+\item floating point types are returned via the st0 register (except on Minix, where they are returned as integers are)
 \end{itemize}
 
 
@@ -92,21 +90,21 @@ Stack directly after function prolog:\\
 \begin{figure}[h]
 \begin{tabular}{5|3|1 1}
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{5}{caller's frame} \\
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
 \hhline{~-~~}
-\mrlbrace{3}{parameter area}      & \ldots                     & \mrrbrace{3}{stack parameters} &                              \\
-                                  & \ldots                     &                                &                              \\
-                                  & \ldots                     &                                &                              \\
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
 \hhline{~-~~}
-                                  & return address             &                                &                              \\
+                                  & return address &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{3}{current frame}  \\
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
 \hhline{~-~~}
-parameter area                    &                            &                                &                              \\
+parameter area                    &                &                                &                              \\
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~-~~}
 \end{tabular}
 \caption{Stack layout on x86 cdecl calling convention}
@@ -121,7 +119,6 @@ parameter area                    &                            &                
 
 \begin{table}[h]
 \begin{tabular*}{0.95\textwidth}{3 B}
-\hline
 Name          & Brief description\\
 \hline
 {\bf eax}     & scratch, return value\\
@@ -134,7 +131,6 @@ Name          & Brief description\\
 {\bf esp}     & stack pointer\\
 {\bf st0}     & scratch, floating point return value\\
 {\bf st1-st7} & scratch\\
-\hline
 \end{tabular*}
 \caption{Register usage on x86 fastcall (MS) calling convention}
 \end{table}
@@ -169,21 +165,21 @@ Stack directly after function prolog:\\
 \begin{figure}[h]
 \begin{tabular}{5|3|1 1}
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{5}{caller's frame} \\
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
 \hhline{~-~~}
-\mrlbrace{3}{parameter area}      & \ldots                     & \mrrbrace{3}{stack parameters} &                              \\
-                                  & \ldots                     &                                &                              \\
-                                  & \ldots                     &                                &                              \\
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
 \hhline{~-~~}
-                                  & return address             &                                &                              \\
+                                  & return address &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{3}{current frame}  \\
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
 \hhline{~-~~}
-parameter area                    &                            &                                &                              \\
+parameter area                    &                &                                &                              \\
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~-~~}
 \end{tabular}
 \caption{Stack layout on x86 fastcall (MS) calling convention}
@@ -198,7 +194,6 @@ parameter area                    &                            &                
 
 \begin{table}[h]
 \begin{tabular*}{0.95\textwidth}{3 B}
-\hline
 Name          & Brief description\\
 \hline
 {\bf eax}     & scratch, return value\\
@@ -211,7 +206,6 @@ Name          & Brief description\\
 {\bf esp}     & stack pointer\\
 {\bf st0}     & scratch, floating point return value\\
 {\bf st1-st7} & scratch\\
-\hline
 \end{tabular*}
 \caption{Register usage on x86 fastcall (GNU) calling convention}
 \end{table}
@@ -245,21 +239,21 @@ Stack directly after function prolog:\\
 \begin{figure}[h]
 \begin{tabular}{5|3|1 1}
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{5}{caller's frame} \\
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
 \hhline{~-~~}
-\mrlbrace{3}{parameter area}      & \ldots                     & \mrrbrace{3}{stack parameters} &                              \\
-                                  & \ldots                     &                                &                              \\
-                                  & \ldots                     &                                &                              \\
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
 \hhline{~-~~}
-                                  & return address             &                                &                              \\
+                                  & return address &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{3}{current frame}  \\
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
 \hhline{~-~~}
-parameter area                    &                            &                                &                              \\
+parameter area                    &                &                                &                              \\
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~-~~}
 \end{tabular}
 \caption{Stack layout on x86 fastcall (GNU) calling convention}
@@ -272,7 +266,6 @@ parameter area                    &                            &                
 
 \begin{table}[h]
 \begin{tabular*}{0.95\textwidth}{3 B}
-\hline
 Name          & Brief description\\
 \hline
 {\bf eax}     & scratch, parameter 0, return value\\
@@ -285,7 +278,6 @@ Name          & Brief description\\
 {\bf esp}     & stack pointer\\
 {\bf st0}     & scratch, floating point return value\\
 {\bf st1-st7} & scratch\\
-\hline
 \end{tabular*}
 \caption{Register usage on x86 fastcall (Borland) calling convention}
 \end{table}
@@ -320,21 +312,21 @@ Stack directly after function prolog:\\
 \begin{figure}[h]
 \begin{tabular}{5|3|1 1}
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{5}{caller's frame} \\
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
 \hhline{~-~~}
-\mrlbrace{3}{parameter area}      & \ldots                     & \mrrbrace{3}{stack parameters} &                              \\
-                                  & \ldots                     &                                &                              \\
-                                  & \ldots                     &                                &                              \\
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
 \hhline{~-~~}
-                                  & return address             &                                &                              \\
+                                  & return address &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{3}{current frame}  \\
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
 \hhline{~-~~}
-parameter area                    &                            &                                &                              \\
+parameter area                    &                &                                &                              \\
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~-~~}
 \end{tabular}
 \caption{Stack layout on x86 fastcall (Borland) calling convention}
@@ -348,7 +340,6 @@ parameter area                    &                            &                
 
 \begin{table}[h]
 \begin{tabular*}{0.95\textwidth}{3 B}
-\hline
 Name          & Brief description\\
 \hline
 {\bf eax}     & scratch, parameter 0, return value@@@\\
@@ -361,7 +352,6 @@ Name          & Brief description\\
 {\bf esp}     & stack pointer\\
 {\bf st0}     & scratch, floating point return value\\
 {\bf st1-st7} & scratch\\
-\hline
 \end{tabular*}
 \caption{Register usage on x86 fastcall (Watcom) calling convention}
 \end{table}
@@ -393,21 +383,21 @@ Stack directly after function prolog:\\
 \begin{figure}[h]
 \begin{tabular}{5|3|1 1}
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{5}{caller's frame} \\
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
 \hhline{~-~~}
-\mrlbrace{3}{parameter area}      & \ldots                     & \mrrbrace{3}{stack parameters} &                              \\
-                                  & \ldots                     &                                &                              \\
-                                  & \ldots                     &                                &                              \\
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
 \hhline{~-~~}
-                                  & return address             &                                &                              \\
+                                  & return address &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{3}{current frame}  \\
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
 \hhline{~-~~}
-parameter area                    &                            &                                &                              \\
+parameter area                    &                &                                &                              \\
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~-~~}
 \end{tabular}
 \caption{Stack layout on x86 fastcall (Watcom) calling convention}
@@ -421,7 +411,6 @@ parameter area                    &                            &                
 
 \begin{table}[h]
 \begin{tabular*}{0.95\textwidth}{3 B}
-\hline
 Name          & Brief description\\
 \hline
 {\bf eax}     & scratch, return value\\
@@ -434,7 +423,6 @@ Name          & Brief description\\
 {\bf esp}     & stack pointer\\
 {\bf st0}     & scratch, floating point return value\\
 {\bf st1-st7} & scratch\\
-\hline
 \end{tabular*}
 \caption{Register usage on x86 stdcall calling convention}
 \end{table}
@@ -466,21 +454,21 @@ Stack directly after function prolog:\\
 \begin{figure}[h]
 \begin{tabular}{5|3|1 1}
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{5}{caller's frame} \\
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
 \hhline{~-~~}
-\mrlbrace{3}{parameter area}      & \ldots                     & \mrrbrace{3}{stack parameters} &                              \\
-                                  & \ldots                     &                                &                              \\
-                                  & \ldots                     &                                &                              \\
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
 \hhline{~-~~}
-                                  & return address             &                                &                              \\
+                                  & return address &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{3}{current frame}  \\
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
 \hhline{~-~~}
-parameter area                    &                            &                                &                              \\
+parameter area                    &                &                                &                              \\
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~-~~}
 \end{tabular}
 \caption{Stack layout on x86 stdcall calling convention}
@@ -492,7 +480,6 @@ parameter area                    &                            &                
 
 \begin{table}[h]
 \begin{tabular*}{0.95\textwidth}{3 B}
-\hline
 Name          & Brief description\\
 \hline
 {\bf eax}     & scratch, return value\\
@@ -505,7 +492,6 @@ Name          & Brief description\\
 {\bf esp}     & stack pointer\\
 {\bf st0}     & scratch, floating point return value\\
 {\bf st1-st7} & scratch\\
-\hline
 \end{tabular*}
 \caption{Register usage on x86 thiscall (MS) calling convention}
 \end{table}
@@ -540,21 +526,21 @@ Stack directly after function prolog:\\
 \begin{figure}[h]
 \begin{tabular}{5|3|1 1}
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{5}{caller's frame} \\
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
 \hhline{~-~~}
-\mrlbrace{3}{parameter area}      & \ldots                     & \mrrbrace{3}{stack parameters} &                              \\
-                                  & \ldots                     &                                &                              \\
-                                  & \ldots                     &                                &                              \\
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
 \hhline{~-~~}
-                                  & return address             &                                &                              \\
+                                  & return address &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{3}{current frame}  \\
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
 \hhline{~-~~}
-parameter area                    &                            &                                &                              \\
+parameter area                    &                &                                &                              \\
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~-~~}
 \end{tabular}
 \caption{Stack layout on x86 thiscall (MS) calling convention}
@@ -568,7 +554,6 @@ parameter area                    &                            &                
 
 \begin{table}[h]
 \begin{tabular*}{0.95\textwidth}{3 B}
-\hline
 Name          & Brief description\\
 \hline
 {\bf eax}     & scratch, return value\\
@@ -581,7 +566,6 @@ Name          & Brief description\\
 {\bf esp}     & stack pointer\\
 {\bf st0}     & scratch, floating point return value\\
 {\bf st1-st7} & scratch\\
-\hline
 \end{tabular*}
 \caption{Register usage on x86 thiscall (GNU) calling convention}
 \end{table}
@@ -611,21 +595,21 @@ Stack directly after function prolog:\\
 \begin{figure}[h]
 \begin{tabular}{5|3|1 1}
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{5}{caller's frame} \\
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
 \hhline{~-~~}
-\mrlbrace{3}{parameter area}      & \ldots                     & \mrrbrace{3}{stack parameters} &                              \\
-                                  & \ldots                     &                                &                              \\
-                                  & \ldots                     &                                &                              \\
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
 \hhline{~-~~}
-                                  & return address             &                                &                              \\
+                                  & return address &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{3}{current frame}  \\
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
 \hhline{~-~~}
-parameter area                    &                            &                                &                              \\
+parameter area                    &                &                                &                              \\
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~-~~}
 \end{tabular}
 \caption{Stack layout on x86 thiscall (GNU) calling convention}
@@ -641,7 +625,6 @@ The best known uses of the pascal calling convention are the 16 bit OS/2 APIs, M
 
 \begin{table}[h]
 \begin{tabular*}{0.95\textwidth}{3 B}
-\hline
 Name          & Brief description\\
 \hline
 {\bf eax}     & scratch, return value\\
@@ -654,7 +637,6 @@ Name          & Brief description\\
 {\bf esp}     & stack pointer\\
 {\bf st0}     & scratch, floating point return value\\
 {\bf st1-st7} & scratch\\
-\hline
 \end{tabular*}
 \caption{Register usage on x86 pascal calling convention}
 \end{table}
@@ -684,21 +666,21 @@ Stack directly after function prolog:\\
 \begin{figure}[h]
 \begin{tabular}{5|3|1 1}
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{5}{caller's frame} \\
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
 \hhline{~-~~}
-\mrlbrace{3}{parameter area}      & \ldots                     & \mrrbrace{3}{stack parameters} &                              \\
-                                  & \ldots                     &                                &                              \\
-                                  & \ldots                     &                                &                              \\
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
 \hhline{~-~~}
-                                  & return address             &                                &                              \\
+                                  & return address &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{3}{current frame}  \\
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
 \hhline{~-~~}
-parameter area                    &                            &                                &                              \\
+parameter area                    &                &                                &                              \\
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~-~~}
 \end{tabular}
 \caption{Stack layout on x86 pascal calling convention}
@@ -713,7 +695,6 @@ parameter area                    &                            &                
 
 \begin{table}[h]
 \begin{tabular*}{0.95\textwidth}{3 B}
-\hline
 Name          & Brief description\\
 \hline
 {\bf eax}     & scratch, return value\\
@@ -726,7 +707,6 @@ Name          & Brief description\\
 {\bf esp}     & stack pointer\\
 {\bf st0}     & scratch, floating point return value\\
 {\bf st1-st7} & scratch\\
-\hline
 \end{tabular*}
 \caption{Register usage on x86 plan9call calling convention}
 \end{table}
@@ -758,21 +738,21 @@ Stack directly after function prolog:\\
 \begin{figure}[h]
 \begin{tabular}{5|3|1 1}
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{5}{caller's frame} \\
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
 \hhline{~-~~}
-\mrlbrace{3}{parameter area}      & \ldots                     & \mrrbrace{3}{stack parameters} &                              \\
-                                  & \ldots                     &                                &                              \\
-                                  & \ldots                     &                                &                              \\
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
 \hhline{~-~~}
-                                  & return address             &                                &                              \\
+                                  & return address &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{3}{current frame}  \\
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
 \hhline{~-~~}
-parameter area                    &                            &                                &                              \\
+parameter area                    &                &                                &                              \\
 \hhline{~-~~}
-                                  & \vdots                     &                                &                              \\
+                                  & \vdots         &                                &                              \\
 \hhline{~-~~}
 \end{tabular}
 \\

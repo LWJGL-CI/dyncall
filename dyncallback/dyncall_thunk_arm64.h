@@ -26,17 +26,12 @@
 #ifndef DYNCALL_THUNK_ARM64_H
 #define DYNCALL_THUNK_ARM64_H
 
-struct DCThunk_
-{
-                                // off  size
-                                //-----|----------
-  unsigned int code[4];		//   0    16
-  void (*entry)();		//  16     8
-  void* reserved;         	//  24     8
-
-                                //  32 total size
-  
-};
+struct DCThunk_          /* off  size */
+{                        /* ----|---- */
+  unsigned int code[4];  /*   0   16  */
+  void (*entry)();       /*  16    8  */
+  void* reserved;        /*  24    8  */
+};                       /*  32 total */
 
 #endif /* DYNCALL_THUNK_ARM64_H */
 

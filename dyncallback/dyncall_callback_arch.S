@@ -64,6 +64,8 @@
 #    include "dyncall_callback_ppc32.S"
 #  elif defined(DC__Arch_PPC64)
 #    include "dyncall_callback_ppc64.S"
+#  elif defined(DC__Arch_MIPS) || defined(DC__Arch_MIPS64)
+#    include "dyncall_callback_mips_gas.S"
 #  elif defined(DC__Arch_ARM_ARM)
 #    include "dyncall_callback_arm32_arm_gas.S"
 #  elif defined(DC__Arch_ARM_THUMB)

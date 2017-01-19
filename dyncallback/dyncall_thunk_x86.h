@@ -35,6 +35,6 @@ struct DCThunk_
   void        (*addr_entry)();
 };
 
-#define DCTHUNK_X86_SIZE	16
+#define DCTHUNK_X86_SIZE 16
 
 #endif /* DYNCALL_THUNK_X86_H */

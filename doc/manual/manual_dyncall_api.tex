@@ -33,7 +33,6 @@ use the following C source code style.
 \begin{table}[h]
 \begin{center}
 \begin{tabular*}{0.8\textwidth}{llll}
-\hline
 Subject    & C symbol & Details & Example \\
 \hline  
 Types      
@@ -44,7 +43,6 @@ Structures
   & camel-case 
   & \capi{DCCallVM}\\
 Functions  & {\tt dc\group{function name}}  & camel-case & \capi{dcNewCallVM}, \capi{dcArgInt}, \ldots\\
-\hline
 \end{tabular*}
 \caption{C interface conventions}
 \label{sourcecode}
@@ -56,7 +54,6 @@ Functions  & {\tt dc\group{function name}}  & camel-case & \capi{dcNewCallVM}, \
 \begin{table}[h]
 \begin{center}
 \begin{tabular*}{0.75\textwidth}{ll}
-\hline
 Type alias & C/C++ data type\\
 \hline
 DCbool     & \_Bool, bool\\
@@ -69,7 +66,6 @@ DCfloat    & float\\
 DCdouble   & double\\
 DCpointer  & void*\\
 DCvoid     & void\\
-\hline
 \end{tabular*}
 \caption{Supported C/C++ argument and return types}
 \label{types}
@@ -127,12 +123,10 @@ Returns the most recent error state code out of the following:
 \begin{table}[h]
 \begin{center}
 \begin{tabular*}{0.95\textwidth}{ll}
-\hline
 Constant & Description\\
 \hline
 \lstinline@DC_ERROR_NONE@             & No error occured. \\
 \lstinline@DC_ERROR_UNSUPPORTED_MODE@ & Unsupported mode, caused by \lstinline@dcMode()@ \\
-\hline
 \end{tabular*}
 \caption{CallVM calling convention modes}
 \label{errorcodes}
@@ -158,7 +152,6 @@ platform) and are silently ignored.
 \begin{table}[h]
 \begin{center}
 \begin{tabular*}{0.95\textwidth}{ll}
-\hline
 Constant & Description\\
 \hline
 \lstinline@DC_CALL_C_DEFAULT@            & C default function call for current platform\\
@@ -196,7 +189,6 @@ Constant & Description\\
 \lstinline@DC_CALL_SYS_X86_INT80H_BSD@   & C syscall for x86 BSD platforms\\
 \lstinline@DC_CALL_SYS_X86_INT80H_LINUX@ & C syscall for x86 Linux\\
 \lstinline@DC_CALL_SYS_PPC32@            & C syscall for ppc32 Linux\\
-\hline
 \end{tabular*}
 \caption{CallVM calling convention modes}
 \label{callingconventionmodes}
@@ -281,8 +273,8 @@ need to clear the argument bindings, you have to reset the \emph{CallVM}.
 \paragraph{Functions}
 
 \begin{lstlisting}[language=c]
-void dcArgF (DCCallVM* vm, const DCsigchar* signature, ...);
-void dcVArgF(DCCallVM* vm, const DCsigchar* signature, va_list args);
+void dcArgF  (DCCallVM* vm, const DCsigchar* signature, ...);
+void dcVArgF (DCCallVM* vm, const DCsigchar* signature, va_list args);
 void dcCallF (DCCallVM* vm, DCValue* result, DCpointer funcptr, 
               const DCsigchar* signature, ...);
 void dcVCallF(DCCallVM* vm, DCValue* result, DCpointer funcptr, 

@@ -3,7 +3,7 @@
  Package: dyncall
  Library: dyncallback
  File: dyncallback/dyncall_args_mips.c
- Description: Callback's Arguments VM - Implementation for MIPS
+ Description: Callback's Arguments VM - Implementation for non-o32 MIPS
  License:
 
    Copyright (c) 2013-2015 Daniel Adler <dadler@uni-goettingen.de>,
@@ -26,25 +26,31 @@
 
 #include "dyncall_args_mips.h"
 
-DCint dcbArgInt(DCArgs* p) 
+DCint dcbArgInt(DCArgs* p)
 {
   DCint value;
-  if(p->ireg_count < 8)
-    value = p->ireg_data[p->ireg_count++];
+  if(p->reg_count.i < DCARGS_MIPS_NUM_IREGS)
+    value = p->ireg_data[p->reg_count.i++];
   else {
-    value = *((int*)p->stackptr);
-    p->stackptr += sizeof(int);
+    value = *((DCint*)p->stackptr);
+    p->stackptr += sizeof(DCint);
   }
   return value;
 }
 DCuint dcbArgUInt(DCArgs* p) { return (DCuint)dcbArgInt(p); }
 
-DCulonglong dcbArgULongLong(DCArgs* p) 
+DCulonglong dcbArgULongLong(DCArgs* p)
 {
   DCulonglong value;
-  p->ireg_count += (p->ireg_count & 1); // Skip one reg if not aligned.
+  p->reg_count.i += (p->reg_count.i & 1);         /* Skip one reg if not aligned. */
+  p->stackptr += ((DCulong)p->stackptr & 4) & -4; /* 64bit values are also always aligned on stack */
+#if defined(DC__Endian_LITTLE)
+  value  = dcbArgUInt(p);
+  value |= ((DCulonglong)dcbArgUInt(p)) << 32;
+#else
   value  = ((DCulonglong)dcbArgUInt(p)) << 32;
   value |= dcbArgUInt(p);
+#endif
   return value;
 }
 DClonglong dcbArgLongLong(DCArgs* p) { return (DClonglong)dcbArgULongLong(p); }
@@ -59,24 +65,23 @@ DCbool      dcbArgBool   (DCArgs* p) { return (DCbool)   dcbArgUInt(p); }
 DCpointer   dcbArgPointer(DCArgs* p) { return (DCpointer)dcbArgUInt(p); }
 
 DCfloat dcbArgFloat(DCArgs* p)
-{ 
+{
   DCfloat result;
-  if(p->freg_count < 8)
-    result = (DCfloat)p->freg_data[p->freg_count++];
+  if(p->reg_count.f < DCARGS_MIPS_NUM_FREGS)
+    result = p->freg_data[p->reg_count.f++];
   else {
-    result = *((float*)p->stackptr);
-    p->stackptr += sizeof(float);
+    result = *((DCfloat*)p->stackptr);
+    p->stackptr += sizeof(DCfloat);
   }
-  return result; 
+  return result;
 }
-DCdouble dcbArgDouble(DCArgs* p) 
-{ 
+DCdouble dcbArgDouble(DCArgs* p)
+{
   union {
     DCdouble result;
-    DCfloat f[2];
+    DCulonglong i;
   } d;
-  p->freg_count += (p->freg_count & 1); // Skip one reg if not aligned.
-  d.f[0] = dcbArgFloat(p);
-  d.f[1] = dcbArgFloat(p);
+  d.i = dcbArgULongLong(p); /* those are passed via int regs */
   return d.result;
 }
+

@@ -45,8 +45,7 @@ install(FILES
   dyncall_thunk_x86.h
   dyncall_thunk_ppc32.h
   dyncall_thunk_x64.h
-  dyncall_thunk_arm32_arm.h
-  dyncall_thunk_arm32_thumb.h
+  dyncall_thunk_arm32.h
   dyncall_alloc_wx.h
   dyncall_args.h
   dyncall_callback.h

@@ -19,11 +19,11 @@ install:
 	cp ${APP} ${PREFIX}/test
 config: clean-config ${AUTOS}
 config-random:
-	echo "-- auto-generated file from temlate config-random.lua (created by GNUmake)" >config.lua
+	echo "-- auto-generated file from template config-random.lua (created by GNUmake)" >config.lua
 	cat config-random.lua >>config.lua
 	${MAKE} config
 config-stress1:
-	echo "-- auto-generated file from temlate config-stress1.lua (created by GNUmake)" >config.lua
+	echo "-- auto-generated file from template config-stress1.lua (created by GNUmake)" >config.lua
 	cat config-stress1.lua >>config.lua
 	${MAKE} config
 

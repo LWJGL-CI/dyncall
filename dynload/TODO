@@ -15,6 +15,3 @@ dynload_syms_elf.c:164: error: `DT_SYMTAB' undeclared (first use in this functio
 dynload_syms_elf.c:165: error: `DT_HASH' undeclared (first use in this function)
 make: *** [dynload_syms.o] Error 1
 
-DONE:
-- remove dependencies dyncall_{alloc,macros}.h
-

@@ -6,7 +6,7 @@
  Description: Callback - Implementation for x86
  License:
 
-   Copyright (c) 2007-2015 Daniel Adler <dadler@uni-goettingen.de>,
+   Copyright (c) 2007-2016 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -24,22 +24,27 @@
 */
 
 
-
-#include "dyncall_callback_x86.h"
+#include "dyncall_callback.h"
+#include "dyncall_alloc_wx.h"
+#include "dyncall_thunk.h"
 #include "dyncall_args_x86.h"
 
-#include "dyncall_alloc_wx.h"
-#include "dyncall_signature.h"
-
-/*
- * assembly thunk entry for callbacks
- */
-
+/* Callback symbol. */
 extern void dcCallbackThunkEntry();
+
+struct DCCallback
+{
+  DCThunk            thunk;         /* offset 0,  size 16 */
+  DCCallbackHandler* handler;       /* offset 16 */
+  DCArgsVT*          args_vt;       /* offset 20 */
+  size_t             stack_cleanup; /* offset 24 */
+  void*              userdata;      /* offset 28 */
+};
+
 
 /* compute stacksize for callee cleanup calling conventions:
  *
- * stdcall,fastcall_ms,fastcall_gnu
+ * cdecl,stdcall,thiscall_ms,fastcall_ms,fastcall_gnu
  */
 
 static int dcbCleanupSize_x86_cdecl(const char* signature)

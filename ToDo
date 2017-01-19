@@ -1,10 +1,22 @@
 1.0:
 ----
-- !!! the CallVM-free functions are per VTable, however the latter can be changed out
-      at runtime... which basically changes potentially the deallocator...
-      same goes for functions setting the mode. think about how to make this safer - currently
-      we have a higher flexibility and we need to potentially clean up from the mode we are in,
-      however, this is open to misuse
+- make sure all assembly files declare (or are built) by setting the noexecstack flag,
+  compared to translating code with gcc, it's manual for the assembler; this depends on arch
+  support (currently it's only done for x86/x64 ELF, but doesn't always work I think... e.g. openbsd 4.0, maybe too old?):
+
+    "When you compile source code normally, gcc takes care of adding the GNU_STACK
+    markings so that the final object code is not marked with an executable stack
+    unless it actually needs it. However, if you compile assembly code, gcc will
+    not automatically add GNU_STACK markings."
+
+- dyncallback's "stack_cleanup" can be removed from non x86 impls... test if they still work
+- target a minimum c version, for use with -pedantic, etc.? Right now we use e.g. extensions
+  for anon structs, etc.
+- the CallVM-free functions are per VTable, however the latter can be changed out
+  at runtime... which basically changes potentially the deallocator...
+  same goes for functions setting the mode. think about how to make this safer - currently
+  we have a higher flexibility and we need to potentially clean up from the mode we are in,
+  however, this is open to misuse
 - check all vararg calling conv implementations if they promote correctly
   (e.g. float to double); we used to not care as it was the user's job to
   think of that, but we allow users to use ArgFloat, etc. on "..." now,
@@ -19,13 +31,12 @@
 - mailing list announcements (html email?)
 - fix for NDS:
   * ARM:
-    - callback_plain retval wrong (not only platform)
+    - callback_plain retval wrong (not only platform), area on stack where
+      it's stored is probably not zeroed, so half-words, etc., come with garbage
   * THUMB:
     - ellipsis (might be test itself, not respecting fixed part of args)
-    - callback_plain retval
+    - callback_plain retval, see above under ARM
     - callf
-- fix Minix/x86 callbacks (see callback_suite)
-- armhf ellipsis: fix weirdness with long long as first ... arg
 - support Solaris11 CFLAGS with -D_FILE_OFFSET_BITS=64
 - make sure selinux works (esp. regarding NX bits, asm might need (or similar): .section .note.GNU-stack,"",@progbits)
   Daniel has a patch for it, if needed, implementing allocwx with two memory blocks, one for w^x, mmaped to one for r|x
@@ -33,6 +44,10 @@
 - test code functions should be in .so files, optionally, so the suites can directly
   be used to test dycnall bindings
 - pkg-config support?
+- quadmath support (long double)
+- add tests using alloca(), as this might depend on the frame pointer being correctly
+  set; we don't check for this, currently, at all
+- test on OpenBSD 6.0 which comes with W^X by default
 
 portasm:
 --------
@@ -40,16 +55,28 @@ portasm:
 
 dyncall:
 --------
+- find big endian arm box (also hardfloat), e.g. cubietruck: http://blog.netbsd.org/tnf/entry/working_arm_multiprocessor_support
+- test if armhf/thumb is actually working... pulls in arm mode code in dyncall_callvm.c
+- dyncall_call_mips_n32.h and dyncall_call_mips_n64.h are pretty much the same, share code
 - support for return values: aggregate return values
 - support for argument values: structures, half-precision, vector types, long double
-- varargs for mips (might exist, but test all ABIs)
 - consider automatic type-promotion for arguments passed through DC_CALL_C_ELLIPSIS_VARARGS;
   this would make it easier to just pass arguments instead of having to know about the C
-  type promotions
+  type promotions (this is partly done, see todo-item above under 1.0)
 - syscalls for x64
   * bsd
   * linux
 - other syscalls
+- MIPS32 softfloat support (-msoft-float)
+- test MIPS32 eabi big endian (current port works on psp, which is little endian)
+- implement MIPS64 N32 (gcc -mabi=n32); both, little and big-endian (looks like NetNBSD on and
+  EdgeRouter lite uses this: https://blog.netbsd.org/tnf/entry/hands_on_experience_with_edgerouter)
+- implement MIPS64 EABI (gcc -mabi=eabi); both, little and big-endian
+- support for Minix/arm
+- improve ellipsis test:
+  * test not just with one fixed arg, to also simulate alignment problems
+  * test return values
+  * convert from c++ to c, to have it also on plan9, and more portability
 
 dynload:
 --------
@@ -64,9 +91,17 @@ dynload:
 
 dyncallback:
 ------------
-- callback_plain's return value not correct anymore on NDS (maybe just broken testcode?)
-- add MIPS callbacks for eabi, n32, o32 (thunks are working)
+- add SPARC64 callback support
+- callback_plain's return value not correct anymore on NDS (maybe just broken testcode?),
+  see above under 1.0 items
+  * check other platforms also, if asm stub initializes retval space, correctly
 - finish PPC32 callbacks (see bugs section, below, BSD not working)
+- MIPS32 softfloat support (-msoft-float)
+- test MIPS32 eabi big endian (current port works on psp, which is little endian)
+- implement MIPS64 N32 (gcc -mabi=n32); both, little and big-endian (looks like NetNBSD on and
+  EdgeRouter lite uses this: https://blog.netbsd.org/tnf/entry/hands_on_experience_with_edgerouter)
+- implement MIPS64 EABI (gcc -mabi=eabi); both, little and big-endian
+- support for Minix/arm
 
 bindings:
 ---------
@@ -84,14 +119,20 @@ bindings:
 
 manual:
 -------
-- finish tex4ht manual generation (use \ifhtml and \ifnhtml, ...)
+- introduce doc overview tables and common vocab for calling convention specifics, following example of table on page 13 of https://www.linux-mips.org/pub/linux/mips/doc/ABI/MIPS-N32-ABI-Handbook.pdf
+- callconv diagrams:
+  * good idea to review it all, anyways, if the calling conventions are actually
+    represented correctly (and if they are in sync with the .pdf, we used to have
+    problems with multirow.4ht)
 - provide more examples on how to use dyncall, dynload and dyncallback
   * e.g. enhance manual with a couple of examples (e.g. calling MessageBoxA on windows, etc.)
 - manuals for bindings (as stated in bindings-section, above)
+- under "dyncall support", in each calling convention appendix, list crucial details of e.g. big/little endian support, etc.
+- specify integer models in use, use common ILP32, LLP64, etc. terms
 
-urgent issues:
---------------
-- finish SPARC/SPARC64 calling conventions in doc's callconv-appendix !!!
+regressions:
+------------
+- finish SPARC64 calling conventions in doc's callconv-appendix !!!
 - Haiku/gmake build doesn't build dynload due to the fact, that elf.h is not found
   on default installations (one has to install the system headers)
   * add to doc
@@ -110,10 +151,9 @@ nice to have:
 
 bugs:
 -----
-- callconv set specifically for platform that has only one (default) excepts for some
+- setting callconv, specifically for platforms that have only one (default)) excepts on some
   platforms, eg. setting X64_sysv on amd64/Linux - keeping cdecl which is the same in
-  this case, works
-- callbacks on ppc32 only work on linux and apple (osx abi), but not BSD
+  this case, works (this should work now...)
 - vararg function calls don't work for ARM THUMB mode (Daniel's new interface for modesetting for varag
   args should be used); adapt test/ellipsis and/or retest
 
@@ -121,11 +161,13 @@ missing implementations (descending priority):
 ----------------------------------------------
 - riscv
 - itanium
+- superh/j-core
 - 68k, 88k, 6502, etc.
+- arc
 - alpha
-- superh
 - cell
 - blackfin
+- seaforth
 - s/390
 - z80
 - hppa
@@ -133,6 +175,4 @@ missing implementations (descending priority):
 - atmel avr
 - propeller
 - amd29k
-- arc
-- seaforth
 

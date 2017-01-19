@@ -33,7 +33,6 @@
 \item PowerPC EABI is defined in the "PowerPC Embedded Application Binary Interface 32-Bit Implementation".
 \end{itemize}
 
-
 \paragraph{\product{dyncall} support}
 
 \product{Dyncall} and \product{dyncallback} are supported for PowerPC (32bit) Big Endian (MSB) on Darwin (tested on Apple Mac OS X) and Linux, however, fail for *BSD.
@@ -45,7 +44,6 @@
 
 \begin{table}[h]
 \begin{tabular*}{0.95\textwidth}{3 B}
-\hline
 Name                & Brief description\\
 \hline
 {\bf gpr0}          & scratch\\
@@ -68,7 +66,6 @@ Name                & Brief description\\
 {\bf cr0-cr1}       & scratch\\
 {\bf cr2-cr4}       & permanent\\
 {\bf cr5-cr7}       & scratch\\
-\hline
 \end{tabular*}
 \caption{Register usage on Darwin PowerPC 32-Bit}
 \end{table}
@@ -89,10 +86,10 @@ needed - e.g. varargs)
 as defined for ellipsis calls)
 \item all nonvector parameters are aligned on 4-byte boundaries
 \item vector parameters are aligned on 16-byte boundaries
-\item integer parameters \textless\ 32 bit occupy high-order bytes of their 4-byte area
 \item composite parameters with size of 1 or 2 bytes occupy low-order bytes of their 4-byte area. INCONSISTENT with other 32-bit PPC
 binary interfaces. In AIX and OS 9, padding bytes always follow the data structure
 \item composite parameters 3 bytes or larger in size occupy high-order bytes
+\item integer parameters \textless\ 32 bit are right-justified (meaning occupy higher-address bytes) in their 4-byte slot on the stack, requiring extra-care for big-endian targets
 \end{itemize}
 
 
@@ -117,7 +114,7 @@ Stack frame is always 16-byte aligned. Stack directly after function prolog:\\
 \hhline{~-~~}
                                   & \vdots              &                                      &                               \\
 \hhline{~=~~}
-local data                        &                     &                                      & \mrrbrace{13}{caller's frame} \\
+local data                        & \hspace{4cm}        &                                      & \mrrbrace{13}{caller's frame} \\
 \hhline{~-~~}
 \mrlbrace{6}{parameter area}      & \ldots              & \mrrbrace{3}{stack parameters}       &                               \\
                                   & \ldots              &                                      &                               \\
@@ -156,7 +153,6 @@ linkage area                      & \vdots              &                       
 
 \begin{table}[h]
 \begin{tabular*}{0.95\textwidth}{3 B}
-\hline
 Name              & Brief description\\
 \hline
 {\bf r0}          & scratch\\
@@ -178,7 +174,6 @@ Name              & Brief description\\
 {\bf ctr}         & Count register (scratch) \\
 {\bf xer}         & Fixed-point exception register (scratch)\\
 {\bf fpscr}       & Floating-point Status and Control Register\\
-
 % {\bf v0-v1}         & scratch\\
 % {\bf v2-v13}        & vector parameters\\
 % {\bf v14-v19}       & scratch\\
@@ -188,7 +183,6 @@ Name              & Brief description\\
 % {\bf cr0-cr1}       & scratch\\
 % {\bf cr2-cr4}       & permanent\\
 % {\bf cr5-cr7}       & scratch\\
-\hline
 \end{tabular*}
 \caption{Register usage on System V ABI PowerPC Processor}
 \end{table}
@@ -204,7 +198,7 @@ Name              & Brief description\\
  32-bit general purpose registers (an odd and an even e.g. r3 and r4), probably skipping an even integer register.
  or passed on the stack. They are never splitted into a register and stack part.
 \item Ellipse calls set CR bit 6 
-
+\item integer parameters \textless\ 32 bit are right-justified (meaning occupy high-order bytes) in their 4-byte area, requiring extra-care for big-endian targets
 \end{itemize}
 
 \paragraph{Return values}
@@ -225,7 +219,7 @@ Stack frame is always 16-byte aligned. Stack directly after function prolog:\\
 \hhline{~-~~}
                                   & \vdots                     &                                &                              \\
 \hhline{~=~~}
-local data                        &                            &                                & \mrrbrace{6}{caller's frame} \\
+local data                        & \hspace{4cm}               &                                & \mrrbrace{6}{caller's frame} \\
 \hhline{~-~~}
 \mrlbrace{3}{parameter area}      & \ldots                     & \mrrbrace{3}{stack parameters} &                              \\
                                   & \ldots                     &                                &                              \\

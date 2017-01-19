@@ -32,7 +32,7 @@ void syscallvm_init()
 {
   callvm = dcNewCallVM(4096);
   dcMode(callvm, DC_CALL_SYS_DEFAULT);
-  assert( dcGetError(callvm) == 0 );
+  assert( dcGetError(callvm) == DC_ERROR_NONE );
 }
 
 int syscall_write(int fd, char* buf, size_t len)
