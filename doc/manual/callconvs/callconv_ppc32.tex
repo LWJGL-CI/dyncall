@@ -49,13 +49,14 @@ Name                & Brief description\\
 {\bf gpr0}          & scratch\\
 {\bf gpr1}          & stack pointer\\
 {\bf gpr2}          & scratch\\
-{\bf gpr3}          & return value, parameter 0 if integer or pointer\\
-{\bf gpr4-gpr10}    & return value, parameter 1-7 for integer or pointer parameters\\
+{\bf gpr3,gpr4}     & return value, parameter 0 and 1 for integer or pointer\\
+{\bf gpr5-gpr10}    & parameter 2-7 for integer or pointer parameters\\
 {\bf gpr11}         & permanent\\
 {\bf gpr12}         & branch target for dynamic code generation\\
 {\bf gpr13-31}      & permanent\\
 {\bf fpr0}          & scratch\\
-{\bf fpr1-fpr13}    & parameter 0-12 for floating point (always double precision)\\
+{\bf fpr1}          & floating point return value, floating point parameter 0 (always double precision)\\
+{\bf fpr2-fpr13}    & floating point parameters 1-12 (always double precision)\\
 {\bf fpr14-fpr31}   & permanent\\
 {\bf v0-v1}         & scratch\\
 {\bf v2-v13}        & vector parameters\\
@@ -73,8 +74,8 @@ Name                & Brief description\\
 \paragraph{Parameter passing}
 
 \begin{itemize}
-\item stack parameter order: right-to-left@@@?
-\item caller cleans up the stack@@@?
+\item stack parameter order: right-to-left
+\item caller cleans up the stack
 \item the first 8 integer parameters are passed in registers gpr3-gpr10
 \item the first 12 floating point parameters are passed in registers fpr1-fpr13
 \item if a float parameter is passed via a register, gpr registers are skipped for subsequent integer parameters (based on the size of
@@ -146,7 +147,6 @@ linkage area                      & \vdots              &                       
 
 \begin{itemize}
 \item C++ this calls do not work.
-\item Callbacks don't work on *BSD.
 \end{itemize}
 
 \paragraph{Registers and register usage}

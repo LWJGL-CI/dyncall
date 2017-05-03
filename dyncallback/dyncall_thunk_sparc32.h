@@ -3,7 +3,7 @@
  Package: dyncall
  Library: dyncallback
  File: dyncallback/dyncall_thunk_sparc32.h
- Description: Thunk - Header for sparc32 - not yet implemented
+ Description: Thunk - Header for sparc32
  License:
 
    Copyright (c) 2007-2016 Daniel Adler <dadler@uni-goettingen.de>,

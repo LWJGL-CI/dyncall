@@ -6,7 +6,7 @@
  Description: Callback's Arguments VM - Header for sparc64 - not yet
  License:
 
-   Copyright (c) 2007-2015 Daniel Adler <dadler@uni-goettingen.de>,
+   Copyright (c) 2007-2017 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -29,9 +29,13 @@
 
 #include "dyncall_args.h"
 
+#define DCARGS_SPARC64_NUM_DOUBLE_REGS 16
 struct DCArgs
 {
-  int dummy;
+	/* Don't change order or types, laid out for asm code to fill in! */
+	DClonglong *arg_ptr;
+	DCdouble   dreg_data[DCARGS_SPARC64_NUM_DOUBLE_REGS];
+	DClonglong i; /* args fetched */
 };
 
 #endif /* DYNCALLBACK_ARGS_SPARC64_H */

@@ -2,28 +2,44 @@ This file lists bigger/noteworthy changes, only...
 
 Version 1.0 (upcoming)
 dyncall:
-  o PPC64 single-precision float fixes for more than 13 float args (thanks Masanori!)
+  o PPC64 single-precision float fixes for more than 13 float args (thanks Masanori Mitsugi!)
   o fixed potential buffer overrun on ARM64
-  o error code handling (dcGetError) changes, flag is now cleared (work still
-    underway)
+  o error code handling (dcGetError) changes, flag is now cleared (work still underway)
   o MIPS n64 ellipsis call fixes
   o ARM32 armhf ellipsis call fixes
+  o fixed ARM32-THUMB stack alignment issues (found on Cortex-m0, thanks Darren Whobrey!)
   o better C++ compiler support (for pointer conversions)
 dyncallback:
-  o PPC64 single-precision float fixes for more than 13 float args (thanks Masanori!)
+  o PPC64 single-precision float fixes for more than 13 float args (thanks Masanori Mitsugi!)
   o MIPS o32 (big- and little-endian), EABI (32 bit, little-endian) and n64 (big-endian) support
-  o SPARC (32-bit) support
+  o SPARC32 (v7/v8) support
+  o SPARC64 (v9) support
+  o PPC32 fixes for (old) Darwin/OS X systems
+  o POSIX compliance: fallback for wx alloc on systems that don't have mmap()'s MAP_ANON
+  o allocated space used for thunk now always W^X (req. for e.g. OpenBSD >= 6.0)
+dynload:
+  o major reliability/stability fixes for Mach-O dlSyms* functions to (thanks Stéphane Mons for help):
+    better handle loading dylibs by symlink, relative path, random casing, etc.
+    fixes to symbol name lookups that used wrong offsets before
+    64-bit platform fixes (was broken on x64 and never supported on others)
+  o allowing Mach-O dlSyms* lib to be used standalone (consistent with ELF and PE impls now)
+  o simplifications of implemention on Darwin, sharing parts with *nix implementation
+  o potentially breaking change on macos/Darwin platforms: all functions now consistently accept or
+    return symbol names as they would appear in C code, instead of the raw ones in object files
 general:
-  o marked assembly code as not needing an execstack, for security and better/easier integration
-    into other projects/builds; modern toolchains do that automatically on compilation, but not
-    for hand written assembly code (thanks Thorsten Behrens for report and analysis)
+  o marked assembly code as not needing an execstack, for safer/easier integration into other
+    projects/builds, where needed; this is needed b/c of questionable default behaviours of some
+    toolchains (thanks Thorsten Behrens for report and analysis)
 doc:
   o working html doc generation from TEX sources
-  o SPARC (32-bit) calling convention description
+  o SPARC32 (v7/v8) calling convention description
+  o SPARC64 (v9) calling convention description
 bindings:
   o better documentation, removed relative path dependencies, general cleanup
   o python: updated to latest signature format (was still on 0.1)
   o java: rewritten (old version was never complete, anyways)
+tests:
+  o added new dynload_plain test covering basic use of all dynload functions
 buildsys:
   o cmake: made to work on systems without C++ compiler (thanks Franklin Mathieu)
 
@@ -31,7 +47,7 @@ Version 0.9 (2015/12/31)
 dyncall:
   o ARM64 support (AAPCS64 on Linux & Apple's derived version on iOS)
   o armhf calling convention support for ARM32
-  o PPC64 support, including syscalls (thanks Masanori!)
+  o PPC64 support, including syscalls (thanks Masanori Mitsugi!)
   o introduced dcArgF and dcVArgF for flexible/convenient argument binding (works like dcCallF/dcVCallF but without the function call)
   o using -fPIC by default for FreeBSD
   o PPC32 linux syscall support
@@ -39,7 +55,7 @@ dyncall:
 dyncallback:
   o ARM64 support (AAPCS64 on Linux, Apple's derived version on iOS)
   o armhf calling convention support for ARM32
-  o PPC64 support (thanks Masanori!)
+  o PPC64 support (thanks Masanori Mitsugi!)
   o PPC32 System V support (Linux)
   o fix for PPC32 Darwin/OS X
   o more intuitive specification of callback return type
@@ -97,12 +113,12 @@ Version 0.7 (2012/01/02)
 architecture:
   o added subproject: portasm - portable (GNU AS,+Apple and MASM) assembly framework
   o added subproject: autovar - predefined macro framework (was dyncall_macros.h)
-  o added support for sparc (32-bit) (tested on linux/debian,openbsd,solaris)
-  o added support for sparc (64-bit) (tested on linux/debian,openbsd,solaris)
   o added support for Solaris and SunPro compiler for i386, x86_64, sparc and sparc64
   o improved auto-detection via preprocessor defines
 dyncall updates:
   o uses portasm (GNU,Apple,Microsoft) common sources for x86,x64,ppc32,arm32_arm
+  o added support for sparc (32-bit) (tested on linux/debian,openbsd,solaris)
+  o added support for sparc (64-bit) (tested on linux/debian,openbsd,solaris)
   o bug fixes for x64/win64 calling convention
   o added support for mingw32-w64 on x64
   o improved cdecl x86 calling convention: stack always 16 byte aligned
@@ -199,8 +215,7 @@ Version 0.4 (2009/07/06)
   o fixed nmake buildfiles and configure.bat (were out of date and wrong)
   o test suite clean up (GNUmake, BSDmake):
     target "config" modified, phony without dependencies to other builds
-  o bugfix: GNU fastcall calling convention for float and double arguments
-    was wrong. no skip of register.
+  o bugfix: GNU fastcall calling convention for float and double arguments was wrong (no skip of register)
   o update: x86win32* suite tests are built on cygwin now, added total result output
   o signature types change:
     C Strings: 'S' -> 'Z'

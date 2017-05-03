@@ -47,7 +47,7 @@
 #include "dyncall_thunk_mips64.c"
 #elif defined(DC__Arch_Sparc)
 #include "dyncall_thunk_sparc32.c"
-#elif defined(DC__Arch_Sparcv9)
+#elif defined(DC__Arch_Sparc64)
 #include "dyncall_thunk_sparc64.c"
 #elif defined(DC__Arch_ARM64)
 #include "dyncall_thunk_arm64.c"

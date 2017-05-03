@@ -1,6 +1,6 @@
-ALL=call_suite callback_suite plain plain_c++ suite suite2 suite3 suite_floats ellipsis callf syscall nm resolve_self thunk malloc_wx callback_plain
-PACK=call_suite callback_suite plain plain_c++ suite suite2 suite3 suite_floats ellipsis callf resolve_self callback_plain
-ALL_C=plain call_suite suite callf syscall nm resolve_self thunk malloc_wx callback_plain callback_suite
+ALL=call_suite callback_suite plain plain_c++ suite suite2 suite3 suite_floats ellipsis callf syscall nm dynload_plain resolve_self thunk malloc_wx callback_plain
+PACK=call_suite callback_suite plain plain_c++ suite suite2 suite3 suite_floats ellipsis callf dynload_plain resolve_self callback_plain
+ALL_C=plain call_suite suite callf syscall nm dynload_plain resolve_self thunk malloc_wx callback_plain callback_suite
 .PHONY: all clean run-tests install distclean ${ALL} 
 all clean install: 
 	${MAKE} TARGET=$@ ${ALL}
@@ -15,6 +15,7 @@ all-c:
 	cd callf && ${MAKE}
 	cd syscall && ${MAKE}
 	cd nm && ${MAKE}
+	cd dynload_plain && ${MAKE}
 	cd resolve_self && ${MAKE}
 	cd thunk && ${MAKE}
 	cd malloc_wx && ${MAKE}
@@ -56,9 +57,11 @@ run-dyncall:
 #	cd plain && ${MAKE}
 all-dynload:
 	cd nm && ${MAKE}
+	cd dynload_plain && ${MAKE}
 	cd resolve_self && ${MAKE}
 run-dynload:
 	#nm/nm
+	dynload_plain/dynload_plain
 	resolve_self/resolve_self
 all-dyncallback:
 	cd thunk && ${MAKE}

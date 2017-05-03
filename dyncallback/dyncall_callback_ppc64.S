@@ -147,9 +147,9 @@ Input:
 	bctrl
 
 	/* check result type */
-	cmpi    cr0, r3, 'f
+	cmpi    cr0, r3, 0x66 /* 'f */
 	beq     .f32
-	cmpi    cr0, r3, 'd
+	cmpi    cr0, r3, 0x64 /* 'd */
 	beq     .f64
 .i64:
 	ld      r3, SP_RESULT(r1)

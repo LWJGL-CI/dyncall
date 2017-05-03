@@ -6,7 +6,7 @@
  Description: Callback's Arguments VM - Implementation for ppc32
  License:
 
-   Copyright (c) 2007-2015 Daniel Adler <dadler@uni-goettingen.de>,
+   Copyright (c) 2007-2017 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -41,7 +41,7 @@ DCuint      dcbArgUInt     (DCArgs* p) { return (DCuint)  dcbArgInt(p);  }
 DCulonglong  dcbArgULongLong (DCArgs* p) 
 {
   DCulonglong value;
-  value  = ( (DCulonglong) dcbArgUInt(p) ) << 16UL;
+  value  = ( (DCulonglong) dcbArgUInt(p) ) << 32UL;
   value |= dcbArgUInt(p);
   return value;
 }

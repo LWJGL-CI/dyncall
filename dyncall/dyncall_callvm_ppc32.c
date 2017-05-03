@@ -50,10 +50,12 @@
 
 /* Support for Mac OS X (Darwin) and Systen V ABI for Power PC 32-bit */
 
-#if defined(DC__OS_Darwin)
-#  define DC__ABI_Darwin
-#elif defined(DC__OS_Linux) || defined(DC__OS_FreeBSD) || defined(DC__OS_OpenBSD) || defined(DC__OS_NetBSD) || defined(DC__OS_DragonFlyBSD) || defined(DC__OS_SunOS)
-#  define DC__ABI_SysV
+#if defined(DC_UNIX)
+#  if defined(DC__OS_Darwin)
+#    define DC__ABI_Darwin
+#  else
+#    define DC__ABI_SysV
+#  endif
 #else
 #  error Unsupported OS for ppc32 architecture.
 #endif

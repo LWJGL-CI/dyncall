@@ -31,3 +31,5 @@ callback_plain\callback_plain.exe
 pause
 callback_suite\callback_suite.exe
 pause
+dynload_plain\dynload_plain.exe
+pause

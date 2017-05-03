@@ -3,10 +3,10 @@
  Package: dyncall
  Library: dyncallback
  File: dyncallback/dyncall_callback_sparc64.c
- Description: Callback - Implementation for sparc64 (TODO: not implemented yet)
+ Description: Callback - Implementation for sparc64
  License:
 
-   Copyright (c) 2007-2016 Daniel Adler <dadler@uni-goettingen.de>,
+   Copyright (c) 2007-2017 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -33,25 +33,33 @@ extern void dcCallbackThunkEntry();
 
 struct DCCallback
 {
-  DCThunk            thunk;         /* offset  0, size ?? */
-  DCCallbackHandler* handler;       /* offset ??, size  4 */
-  size_t             stack_cleanup; /* offset ??, size  4 */
-  void*              userdata;      /* offset ??, size  4 */
+  DCThunk            thunk;         /* offset  0, size 56 */
+  DCCallbackHandler* handler;       /* offset 56, size  8 */
+  void*              userdata;      /* offset 64, size  8 */
 };
 
 
 void dcbInitCallback(DCCallback* pcb, const char* signature, DCCallbackHandler* handler, void* userdata)
 {
+  pcb->handler  = handler;
+  pcb->userdata = userdata;
 }
 
 DCCallback* dcbNewCallback(const char* signature, DCCallbackHandler* handler, void* userdata)
 {
   DCCallback* pcb;
   int err = dcAllocWX(sizeof(DCCallback), (void**) &pcb);
-  if (err != 0) return 0;
+  if(err)
+    return NULL;
 
   dcbInitThunk(&pcb->thunk, dcCallbackThunkEntry);
   dcbInitCallback(pcb, signature, handler, userdata);
+
+  err = dcInitExecWX(pcb, sizeof(DCCallback));
+  if(err) {
+    dcFreeWX(pcb, sizeof(DCCallback));
+    return NULL;
+  }
 
   return pcb;
 }

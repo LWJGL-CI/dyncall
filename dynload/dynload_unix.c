@@ -41,7 +41,7 @@
 
 DLLib* dlLoadLibrary(const char* libPath)
 {
-  return (DLLib*)dlopen(libPath,RTLD_NOW|RTLD_GLOBAL);
+  return (DLLib*)dlopen(libPath, RTLD_NOW|RTLD_GLOBAL); //@@@ should use RTLD_LAZY, maybe?
 }
 
 

@@ -52,7 +52,8 @@ DCCallback* dcbNewCallback(const char* signature, DCCallbackHandler* handler, vo
   int err;
   DCCallback* pcb;
   err = dcAllocWX(sizeof(DCCallback), (void**) &pcb);
-  if (err != 0) return 0;
+  if(err)
+    return NULL;
 
 #if defined (DC__OS_Win64)
   dcbInitThunk(&pcb->thunk, dcCallback_x64_win64); 
@@ -60,6 +61,13 @@ DCCallback* dcbNewCallback(const char* signature, DCCallbackHandler* handler, vo
   dcbInitThunk(&pcb->thunk, dcCallback_x64_sysv); 
 #endif
   dcbInitCallback(pcb, signature, handler, userdata);
+
+  err = dcInitExecWX(pcb, sizeof(DCCallback));
+  if(err) {
+    dcFreeWX(pcb, sizeof(DCCallback));
+    return NULL;
+  }
+
   return pcb;
 }
 

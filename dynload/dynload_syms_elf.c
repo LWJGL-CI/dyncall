@@ -6,7 +6,7 @@
  Description: 
  License:
 
-   Copyright (c) 2007-2015 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2007-2017 Daniel Adler <dadler@uni-goettingen.de>, 
                            Tassilo Philipp <tphilipp@potion-studios.com>,
                            Olivier Chafik <olivier.chafik@gmail.com>
 
@@ -38,6 +38,9 @@
 #if defined(OS_OpenBSD)
 #  include <stdint.h>
 #  include <elf_abi.h>
+#elif defined(OS_NetBSD)
+#  include <stddef.h>
+#  include <elf.h>
 #elif defined(OS_SunOS)
 #  include <libelf.h>
 #elif defined(OS_BeOS)
@@ -121,14 +124,21 @@ struct DLSyms_
 DLSyms* dlSymsInit(const char* libPath)
 {
   unsigned char* pMem;
-  void* pSectionContent;
   int i;
   struct stat st;
   Elf_Shdr* pS;
-  DLSyms* pSyms = (DLSyms*)dlAllocMem(sizeof(DLSyms));
+  DLSyms* pSyms;
+
+  if(stat(libPath, &st) == -1)
+    return NULL;
+
+  i = open(libPath, O_RDONLY);
+  if(i == -1)
+    return NULL;
+
+  pSyms = (DLSyms*)dlAllocMem(sizeof(DLSyms));
   memset(pSyms, 0, sizeof(DLSyms));
-  pSyms->file = open(libPath, O_RDONLY);
-  stat(libPath, &st);
+  pSyms->file = i;
   pSyms->fileSize = st.st_size;
   pSyms->pElf_Ehdr = (Elf_Ehdr*) mmap((void*) NULL, pSyms->fileSize, PROT_READ, MAP_SHARED, pSyms->file, 0);
 
@@ -150,7 +160,7 @@ DLSyms* dlSymsInit(const char* libPath)
   for (i = 1; i < pSyms->pElf_Ehdr->e_shnum; i++) 
   {
     Elf_Shdr* pSection = &pS[i];
-    pSectionContent = ((char*)pMem) + pSection->sh_offset;
+    void* pSectionContent = ((char*)pMem) + pSection->sh_offset;
     switch (pSection->sh_type)
     {
       case SHT_DYNSYM:
@@ -186,9 +196,7 @@ void dlSymsCleanup(DLSyms* pSyms)
 
 int dlSymsCount(DLSyms* pSyms)
 {
-  if (!pSyms)
-    return 0;
-  return pSyms->nSymbols;
+  return pSyms ? pSyms->nSymbols : 0;
 }
 
 
@@ -197,7 +205,7 @@ const char* dlSymsName(DLSyms* pSyms, int index)
   int str_index;
   if(!pSyms || !pSyms->pSymTab || index < 0 || index >= pSyms->nSymbols)
     return NULL;
-  
+
   str_index = pSyms->pSymTab[index].st_name;
   if (str_index < 0 || str_index >= pSyms->strTabSize)
     return NULL;

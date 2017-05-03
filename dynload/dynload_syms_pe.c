@@ -3,10 +3,10 @@
  Package: dyncall
  Library: dynload
  File: dynload/dynload_syms_pe.c
- Description: 
+ Description:
  License:
 
-   Copyright (c) 2007-2015 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2007-2017 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
                            Olivier Chafik <olivier.chafik@gmail.com>
 
@@ -31,12 +31,6 @@
 
 #include <windows.h>
 
-struct DLLib_
-{
-  IMAGE_DOS_HEADER dos_header;
-};
-
-
 struct DLSyms_
 {
   DLLib*                pLib;
@@ -50,14 +44,25 @@ struct DLSyms_
 
 DLSyms* dlSymsInit(const char* libPath)
 {
-  DLLib* pLib = dlLoadLibrary(libPath);
-  DLSyms* pSyms = (DLSyms*)dlAllocMem(sizeof(DLSyms));
-  const char* base = (const char*) pLib;
-  IMAGE_DOS_HEADER*       pDOSHeader      = (IMAGE_DOS_HEADER*) base;  
-  IMAGE_NT_HEADERS*       pNTHeader       = (IMAGE_NT_HEADERS*) ( base + pDOSHeader->e_lfanew );  
-  IMAGE_DATA_DIRECTORY*   pExportsDataDir = &pNTHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
-  IMAGE_EXPORT_DIRECTORY* pExports        = (IMAGE_EXPORT_DIRECTORY*) (base + pExportsDataDir->VirtualAddress);  
+  DLLib*                  pLib;
+  DLSyms*                 pSyms;
+  IMAGE_DOS_HEADER*       pDOSHeader;
+  IMAGE_NT_HEADERS*       pNTHeader;
+  IMAGE_DATA_DIRECTORY*   pExportsDataDir;
+  IMAGE_EXPORT_DIRECTORY* pExports;
+  const char*             base;
 
+  pLib = dlLoadLibrary(libPath);
+  if(!pLib)
+    return NULL;
+
+  base            = (const char*)pLib;
+  pDOSHeader      = (IMAGE_DOS_HEADER*)base;
+  pNTHeader       = (IMAGE_NT_HEADERS*)(base + pDOSHeader->e_lfanew);
+  pExportsDataDir = &pNTHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
+  pExports        = (IMAGE_EXPORT_DIRECTORY*)(base + pExportsDataDir->VirtualAddress);
+
+  pSyms         = (DLSyms*)dlAllocMem(sizeof(DLSyms));
   pSyms->pBase  = base;
   pSyms->pNames = (DWORD*)(base + pExports->AddressOfNames);
   pSyms->pFuncs = (DWORD*)(base + pExports->AddressOfFunctions);
@@ -86,25 +91,20 @@ int dlSymsCount(DLSyms* pSyms)
 
 const char* dlSymsName(DLSyms* pSyms, int index)
 {
-  return (const char*)((const char*)pSyms->pBase + pSyms->pNames[index]);
+  return pSyms->pBase + pSyms->pNames[index];
 }
 
 
-void* dlSymsValue(DLSyms* pSyms, int index)
-{
-  return (void*)(pSyms->pBase + pSyms->pFuncs[pSyms->pOrds[index]]);
-}
-
-
-const char* dlSymsNameFromValue(DLSyms* pSyms, void* value) 
+const char* dlSymsNameFromValue(DLSyms* pSyms, void* value)
 {
   int i, c=dlSymsCount(pSyms);
   for(i=0; i<c; ++i)
   {
-    if(dlSymsValue(pSyms, i) == value)
+    if((void*)(pSyms->pBase + pSyms->pFuncs[pSyms->pOrds[i]]) == value)
       return dlSymsName(pSyms, i);
   }
 
   /* Not found. */
   return NULL;
 }
+
