@@ -1,4 +1,4 @@
-.\" Copyright (c) 2007-2014 Daniel Adler <dadler AT uni-goettingen DOT de>, 
+.\" Copyright (c) 2007-2017 Daniel Adler <dadler AT uni-goettingen DOT de>, 
 .\"                         Tassilo Philipp <tphilipp AT potion-studios DOT com>
 .\" 
 .\" Permission to use, copy, modify, and distribute this software for any
@@ -26,7 +26,17 @@ gives access to functions in foreign dynamic libraries and code modules.
 .Ft void
 .Fn dlFreeLibrary "DLLib * pLib"
 .Ft void *
-.Fn dlFindSymbol "DLLib pLibode" "const char * pSymbolName"
+.Fn dlFindSymbol "DLLib * pLib" "const char * pSymbolName"
+.Ft DLSyms*
+.Fn dlSymsInit "const char * libPath"
+.Ft void
+.Fn dlSymsCleanup "DLSyms * pSyms"
+.Ft int
+.Fn dlSymsCount "DLSyms * pSyms"
+.Ft const char*
+.Fn dlSymsName "DLSyms * pSyms" "int index"
+.Ft const char*
+.Fn dlSymsNameFromValue "DLSyms * pSyms" "void * value"
 .Sh DESCRIPTION
 The
 .Nm
@@ -40,7 +50,9 @@ and returns a handle to it for use in
 .Fn dlFreeLibrary 
 and
 .Fn dlFindSymbol
-calls.
+calls. Passing a null pointer for the
+.Ar libpath
+argument is valid, and returns a handle to the main executable of the calling code. Returns a null pointer on error.
 .Pp
 .Fn dlFreeLibrary 
 frees the loaded library with handle
@@ -51,7 +63,24 @@ returns a pointer to a symbol with name
 .Ar pSymbolName
 in the library with handle
 .Ar pLib ,
-or returns a null pointer if the symbol cannot be found.
+or returns a null pointer if the symbol cannot be found. The name is specified as it would appear in C source code (mangled if C++, etc.).
+.Pp
+The dlSyms* functions can be used to iterate over symbols. Note that they are made
+for symbol name lookups, not to get a symbol's address. For that refer to
+.Fn dlFindSymbol .
+.Fn dlSymsInit
+will return a handle (or null pointer on error) to the shared object specified by
+.Ar libPath .
+The returned handle is to be used with the other dlSyms* functions. The handle must be freed with
+.Fn dlSymsCleanup .
+.Fn dlSymsCount
+returns the number of symbols in the shared object,
+.Fn dlSymsName
+and
+.Fn dlSymsNameFromValue
+are used to lookup symbol names using an index or symbol's address, respectively, returning a null pointer on error. The names are returned as they would appear in C source code (mangled if C++, etc.). The address passed to
+.Fn dlSymsNameFromValue
+must point to a loaded symbol.
 .Sh SEE ALSO
 .Xr dyncall 3 ,
 .Xr dyncallback 3

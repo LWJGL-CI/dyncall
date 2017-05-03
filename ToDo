@@ -1,5 +1,11 @@
 1.0:
 ----
+- dyncall supports calls to functions where prototype exists (with and without varargs); however not when no
+  prototype exist (e.g. just calling some pointer), without any declaration... even possible in C, as one has
+  to cast to the function type? need to support?
+
+- Add doc note (and on website) on dyncall's c standard compatibility, which is c99 + anon struct extension
+
 - make sure all assembly files declare (or are built) by setting the noexecstack flag,
   compared to translating code with gcc, it's manual for the assembler; this depends on arch
   support (currently it's only done for x86/x64 ELF, but doesn't always work I think... e.g. openbsd 4.0, maybe too old?):
@@ -91,7 +97,6 @@ dynload:
 
 dyncallback:
 ------------
-- add SPARC64 callback support
 - callback_plain's return value not correct anymore on NDS (maybe just broken testcode?),
   see above under 1.0 items
   * check other platforms also, if asm stub initializes retval space, correctly
@@ -119,7 +124,8 @@ bindings:
 
 manual:
 -------
-- introduce doc overview tables and common vocab for calling convention specifics, following example of table on page 13 of https://www.linux-mips.org/pub/linux/mips/doc/ABI/MIPS-N32-ABI-Handbook.pdf
+- introduce doc overview tables and common vocab for calling convention specifics, following example of table on page 13 of https://www.linux-mips.org/pub/linux/mips/doc/ABI/MIPS-N32-ABI-Handbook.pdf; also as inspiration, e.g. user 'preserved' instead of 'permanent', etc. https://developer.apple.com/library/content/documentation/Xcode/Conceptual/iPhoneOSABIReference/Articles/ARMv6FunctionCallingConventions.html#//apple_ref/doc/uid/TP40009021-SW4
+- make stack layout diagrams better, e.g. add grow direction (example: https://developer.apple.com/library/content/documentation/Xcode/Conceptual/iPhoneOSABIReference/art/arm_stack.jpg on https://developer.apple.com/library/content/documentation/Xcode/Conceptual/iPhoneOSABIReference/Articles/ARMv6FunctionCallingConventions.html#//apple_ref/doc/uid/TP40009021-SW1)
 - callconv diagrams:
   * good idea to review it all, anyways, if the calling conventions are actually
     represented correctly (and if they are in sync with the .pdf, we used to have
@@ -132,7 +138,6 @@ manual:
 
 regressions:
 ------------
-- finish SPARC64 calling conventions in doc's callconv-appendix !!!
 - Haiku/gmake build doesn't build dynload due to the fact, that elf.h is not found
   on default installations (one has to install the system headers)
   * add to doc

@@ -28,11 +28,16 @@
 #include <windows.h>
 #include <assert.h>
 
-int dcAllocWX(size_t size, void** ptr)
+DCerror dcAllocWX(size_t size, void** ptr)
 {
   LPVOID p = VirtualAlloc(0, size, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
   if (p == NULL) return -1;
   *ptr = p;
+  return 0;
+}
+
+DCerror dcInitExecWX(void* p, size_t size)
+{
   return 0;
 }
 

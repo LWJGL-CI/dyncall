@@ -6,7 +6,7 @@
  Description: Platform detection macros
  License:
 
-   Copyright (c) 2007-2015 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2007-2015 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -123,7 +123,9 @@
 #define DC__OS_Minix
 
 #else
-	#error Unsupported OS.
+
+/* Unable to determine OS, which is probably ok (e.g. baremetal stuff, etc.). */
+#define DC__OS_UNKNOWN
 #endif
 
 
@@ -191,11 +193,12 @@
 # define DC__Arch_ARM64
 #elif defined(__sh__)
 # define DC__Arch_SuperH
-#elif defined(__sparcv9) || defined(__sparc64__) || ( defined(__sparc) && defined(__arch64__) ) 
-/* this could be needed on Linux/GNU sparc64 in the future: || ( defined(__sparc) && defined(__arch64__) ) */
-# define DC__Arch_Sparcv9
-#elif defined(__sparc)
-# define DC__Arch_Sparc
+#elif defined(__sparc) || defined(__sparc__)
+# if defined(__sparcv9) || defined(__sparc_v9__) || defined(__sparc64__) || defined(__arch64__)
+#  define DC__Arch_Sparc64
+# else
+#  define DC__Arch_Sparc
+# endif
 #endif
 
 
@@ -259,7 +262,7 @@
 /* Endian detection. */
 #if defined(DC__Arch_Intel_x86) || defined(DC__Arch_AMD64) /* always little */
 # define DC__Endian_LITTLE
-#elif defined(DC__Arch_Sparc)                              /*always big until v9*/
+#elif defined(DC__Arch_Sparc)                              /* always purely big until v9 */
 # define DC__Endian_BIG
 #else                                                      /* all others are bi-endian */
 /* @@@check flags used on following bi-endianness archs:
@@ -268,20 +271,27 @@ DC__Arch_ARM64
 DC__Arch_Itanium
 DC__Arch_PPC32
 DC__Arch_PPC64
-DC__Arch_Sparcv9
 DC__Arch_SuperH
 */
 # if (defined(DC__Arch_PPC64) && (DC__ABI_PPC64_ELF_V == 1)) || defined(_BIG_ENDIAN) || defined(MIPSEB) || defined(__MIPSEB) || defined(__MIPSEB__)
 #  define DC__Endian_BIG
 # elif (defined(DC__Arch_PPC64) && (DC__ABI_PPC64_ELF_V == 2)) || defined(_LITTLE_ENDIAN) || defined(MIPSEL) || defined(__MIPSEL) || defined(__MIPSEL__)
 #  define DC__Endian_LITTLE
+# elif defined(DC__Arch_Sparc64) && !defined(__BYTE_ORDER__) /* Sparc64 default is big-endian, except if explicitly defined */
+#    define DC__Endian_BIG
+# elif defined(__BYTE_ORDER__) /* explicitly set */
+#  if defined(__ORDER_BIG_ENDIAN__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+#    define DC__Endian_BIG
+#  elif defined(__ORDER_LITTLE_ENDIAN__) && (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+#    define DC__Endian_LITTLE
+#  endif
 # endif /* no else, leave unset if not sure */
 #endif
 
 
 /* Internal macro/tag. */
 #if !defined(DC_API)
-#define DC_API
+# define DC_API
 #endif
 
 #endif /* DYNCALL_MACROS_H */

@@ -1,6 +1,6 @@
 %//////////////////////////////////////////////////////////////////////////////
 %
-% Copyright (c) 2007,2009 Daniel Adler <dadler@uni-goettingen.de>, 
+% Copyright (c) 2007-2017 Daniel Adler <dadler@uni-goettingen.de>, 
 %                         Tassilo Philipp <tphilipp@potion-studios.com>
 %
 % Permission to use, copy, modify, and distribute this software for any
@@ -26,7 +26,7 @@ gives access to functions in foreign dynamic libraries and code modules.
 \subsection{Loading code}
 
 \begin{lstlisting}[language=c,label=dl-load]
-void* dlLoadLibrary(const char* libpath);
+DLLib* dlLoadLibrary(const char* libpath);
 void  dlFreeLibrary(void* libhandle);
 \end{lstlisting}
 
@@ -42,6 +42,29 @@ and returns a handle to it for use in \lstinline{dlFreeLibrary} and
 void* dlFindSymbol(void* libhandle, const char* symbol);
 \end{lstlisting}
 
-returns a pointer to a symbol with name \lstinline{pSymbolName} in the
+This function returns a pointer to a symbol with name \lstinline{pSymbolName} in the
 library with handle \lstinline{pLib}, or returns a null pointer if the symbol cannot
-be found.
+be found. The name is specified as it would appear in C source code (mangled if C++, etc.).
+
+\subsection{Symbol iteration}
+
+\begin{lstlisting}[language=c]
+DLSyms*     dlSymsInit(const char* libPath);
+void        dlSymsCleanup(DLSyms* pSyms);
+int         dlSymsCount(DLSyms* pSyms);
+const char* dlSymsName(DLSyms* pSyms, int index);
+const char* dlSymsNameFromValue(DLSyms* pSyms, void* value); /* symbol must be loaded */
+\end{lstlisting}
+
+These functions can be used to iterate over symbols. Note that they are made
+for symbol name lookups, not to get a symbol's address. For that refer to
+\lstinline{dlFindSymbol}. \lstinline{dlSymsInit} will return a handle (or a null pointer
+on error) to the shared object specified by \lstinline{libPath}. The returned
+handle is to be used with the other functions. The handle must be freed with
+\lstinline{dlSymsCleanup}. \lstinline{dlSymsCount} returns the number of
+symbols in the shared object, \lstinline{dlSymsName} and \lstinline{dlSymsNameFromValue}
+are used to lookup symbol names using an index or symbol's address, respectively,
+returning a null pointer on error. The names are returned as they would appear
+in C source code (mangled if C++, etc.). The address passed to \lstinline{dlSymsNameFromValue}
+must point to a loaded symbol.
+

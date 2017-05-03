@@ -40,6 +40,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <setjmp.h>
+#include <string.h>
 
 jmp_buf jbuf;
 
@@ -97,6 +98,12 @@ void test_wx()
     return;
   }
   dcbInitThunk(p, &my_entry);
+  err = dcInitExecWX((void*)p, sizeof(DCThunk));
+  if(err) {
+    dcFreeWX((void*)p, sizeof(DCThunk));
+    printf("0\n");
+    return;
+  }
   fp = (printfun*)p;
   if(setjmp(jbuf) != 0)
     printf("sigsegv\n");

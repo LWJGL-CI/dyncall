@@ -49,10 +49,17 @@ DCCallback* dcbNewCallback(const char* signature, DCCallbackHandler* handler, vo
 {
   DCCallback* pcb;
   int err = dcAllocWX(sizeof(DCCallback), (void**) &pcb);
-  if (err != 0) return 0;
+  if(err)
+    return NULL;
 
   dcbInitThunk(&pcb->thunk, dcCallbackThunkEntry);
   dcbInitCallback(pcb, signature, handler, userdata);
+
+  err = dcInitExecWX(pcb, sizeof(DCCallback));
+  if(err) {
+    dcFreeWX(pcb, sizeof(DCCallback));
+    return NULL;
+  }
 
   return pcb;
 }

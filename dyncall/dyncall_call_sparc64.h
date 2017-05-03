@@ -24,8 +24,8 @@
 
 
 
-#ifndef DYNCALL_CALL_SPARC64_H
-#define DYNCALL_CALL_SPARC64_H
+#ifndef DYNCALL_CALL_SPARC_V9_H
+#define DYNCALL_CALL_SPARC_V9_H
 
 #include "dyncall_types.h"
 
@@ -33,11 +33,11 @@
 extern "C" {
 #endif
 
-void dcCall_sparc64 (DCpointer target, DCsize size, DCpointer data);
+void dcCall_v9 (DCCallVM* vm, DCpointer target);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* DYNCALL_CALL_SPARC64_H */
+#endif /* DYNCALL_CALL_SPARC_v9_H */
 

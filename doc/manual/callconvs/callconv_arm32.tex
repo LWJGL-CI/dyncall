@@ -36,7 +36,7 @@ Mode          & Description\\
 \\
 \\
 For more details, take a look at the ARM-THUMB Procedure Call Standard (ATPCS) \cite{ATPCS}, the Procedure Call Standard for the ARM Architecture (AAPCS) \cite{AAPCS}, as well as the Debian ARM EABI port wiki \cite{armeabi}.\\
-
+\\
 \paragraph{\product{dyncall} support}
 
 Currently, the \product{dyncall} library supports the ARM and THUMB mode of the ARM32 family (ATPCS \cite{ATPCS} and EABI \cite{armeabi}), excluding manually triggered ARM-THUMB interworking calls. Although it's quite possible that the current implementation runs on other ARM processor families as well, please note that only the ARMv4t family has been thoroughly tested at the time of writing. Please report if the code runs on other ARM families, too.\\
@@ -226,9 +226,8 @@ are aligned on 8-byte boundaries on the stack and 2-registers for a parameter
 passed via register. In order to achieve such an alignment, a register might
 have to be skipped for parameters passed via registers, or 4-bytes on the stack
 for parameters passed via the stack. Refer to the Debian ARM EABI port wiki
-for more information \cite{armeabi}.
-
-
+for more information \cite{armeabi}.\\
+\\
 \paragraph{Status}
 
 \begin{itemize}
@@ -243,8 +242,8 @@ for more information \cite{armeabi}.
 
 
 The iOS runs on ARMv6 (iOS 2.0) and ARMv7 (iOS 3.0) architectures.
-Typically code is compiled in Thumb mode.
-
+Typically code is compiled in Thumb mode.\\
+\\
 \paragraph{Register usage}
 
 \begin{table}[h]
@@ -287,8 +286,8 @@ Most debian-based Linux systems on ARMv7 (or ARMv6 with FPU) platforms use a cal
 as armhf, using 16 32-bit floating point registers of the FPU of the VFPv3-D16 extension to the ARM architecture.
 The instruction set used for armhf is Thumb-2. Refer to the debian wiki for more information \cite{armhf}.
 
-Code is little-endian, rest is similar to EABI with an 8-byte aligned stack, etc..
-
+Code is little-endian, rest is similar to EABI with an 8-byte aligned stack, etc..\\
+\\
 \paragraph{Register usage}
 
 \begin{table}[h]

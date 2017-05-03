@@ -58,7 +58,7 @@ union DCValue_
   struct { DCshort S_pad;    DCshort S; };
   DCint       i;
   DCuint      I;
-#elif defined(DC__Endian_BIG) && (defined(DC__Arch_PPC64) || defined(DC__Arch_MIPS64) || defined(DC__Arch_Sparcv9))
+#elif defined(DC__Endian_BIG) && (defined(DC__Arch_PPC64) || defined(DC__Arch_MIPS64) || defined(DC__Arch_Sparc64))
   struct { DCbool  B_pad;    DCbool  B; };
   struct { DCchar  c_pad[7]; DCchar  c; };
   struct { DCuchar C_pad[7]; DCuchar C; };

@@ -3,6 +3,7 @@ MAKE_CMD = ${MAKE} -f ${MAKEFILE}
 all: all-dyncall all-dyncallback all-dynload
 all-dynload:
 	cd nm && ${MAKE_CMD}
+	cd dynload_plain && ${MAKE_CMD}
 	cd resolve_self && ${MAKE_CMD}
 all-dyncall:
 	cd suite && ${MAKE_CMD}
@@ -26,6 +27,7 @@ all-c:
 	cd call_suite && ${MAKE_CMD}
 	cd callf && ${MAKE_CMD}
 	cd nm && ${MAKE_CMD}
+	cd dynload_plain && ${MAKE_CMD}
 	cd resolve_self && ${MAKE_CMD}
 	cd thunk && ${MAKE_CMD}
 	cd malloc_wx && ${MAKE_CMD}
@@ -57,6 +59,7 @@ clean:
 	cd ellipsis && ${MAKE_CMD} clean
 	cd callf && ${MAKE_CMD} clean
 	cd nm && ${MAKE_CMD} clean
+	cd dynload_plain && ${MAKE_CMD} clean
 	cd resolve_self && ${MAKE_CMD} clean
 	cd thunk && ${MAKE_CMD} clean
 	cd malloc_wx && ${MAKE_CMD} clean

@@ -82,7 +82,7 @@ BEGIN_PROC(dcCall_x64_sysv)
 	POP(RBX)			/* Restore RBX. */
 	POP(RBP)			/* Pseudo-epilog. */
 	RET()
-END_PROC(dcCALl_x64_sysv)
+END_PROC(dcCall_x64_sysv)
 
 /*---------------------------------------------------------------------------
 

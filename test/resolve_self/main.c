@@ -6,7 +6,7 @@
  Description: 
  License:
 
-   Copyright (c) 2011-2015 Daniel Adler <dadler@uni-goettingen.de>,
+   Copyright (c) 2011-2017 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -46,13 +46,28 @@ int main(int argc, char* argv[])
   void* address;
   double result;
   int status;
+  DLSyms* pSyms;
   DLLib* pLib = dlLoadLibrary(NULL);
   assert(pLib);
+  printf("self loaded at %p\n", pLib);
 
   address = dlFindSymbol(pLib, "add_dd_d");
-  assert(address);
-  result = ( (double (*) (double,double) ) address ) (20.0, 3.0);
-  status = (result == 23); 
+  if(address) {
+    printf("address of function add_dd_d at %p\n", address);
+    result = ( (double (*) (double,double) ) address ) (20.0, 3.0);
+    status = (result == 23);
+  } else {
+    printf("can't resolve address of add_dd_d, it doesn't seem to be a *dynamic* symbol\n");
+    status = 0;
+  }
+
+  dlFreeLibrary(pLib);
+
+  /*pSyms = dlSymsInit(NULL);
+  printf("syms handle: %p\n", pSyms);
+  dlSymsCleanup(pSyms);*/
+
   printf("result: resolve_self: %d\n", status);
   return 0;
 }
+

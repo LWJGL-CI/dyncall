@@ -29,9 +29,14 @@
 #include <stdlib.h>
 
 
-int dcAllocWX(size_t size, void** pp)
+DCerror dcAllocWX(size_t size, void** pp)
 {
   *pp = malloc(size);
+  return 0;
+}
+
+DCerror dcInitExecWX(void* p, size_t size)
+{
   return 0;
 }
 
@@ -39,3 +44,4 @@ void dcFreeWX(void* p, size_t size)
 {
   free(p);
 }
+

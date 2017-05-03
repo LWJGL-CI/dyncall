@@ -40,7 +40,7 @@
 #include "dyncall_callback_mips.c"
 #elif defined(DC__Arch_Sparc)
 #include "dyncall_callback_sparc32.c"
-#elif defined(DC__Arch_Sparcv9)
+#elif defined(DC__Arch_Sparc64)
 #include "dyncall_callback_sparc64.c"
 #elif defined(DC__Arch_ARM64)
 #include "dyncall_callback_arm64.c"
