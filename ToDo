@@ -1,10 +1,10 @@
 1.0:
 ----
+- support platforms without shared libraries so they can be built by just typing `./configure;make` (e.g. minix < 3.2.1)
+  * also make sure minix with shared library support builds and works in general (>= 3.2.1) as well as ELF on Minix (>= 3.2.0) to begin with (as that's the base, and we only test on 3.1.8 so far)
 - dyncall supports calls to functions where prototype exists (with and without varargs); however not when no
   prototype exist (e.g. just calling some pointer), without any declaration... even possible in C, as one has
   to cast to the function type? need to support?
-
-- Add doc note (and on website) on dyncall's c standard compatibility, which is c99 + anon struct extension
 
 - make sure all assembly files declare (or are built) by setting the noexecstack flag,
   compared to translating code with gcc, it's manual for the assembler; this depends on arch
@@ -44,7 +44,7 @@
     - callback_plain retval, see above under ARM
     - callf
 - support Solaris11 CFLAGS with -D_FILE_OFFSET_BITS=64
-- make sure selinux works (esp. regarding NX bits, asm might need (or similar): .section .note.GNU-stack,"",@progbits)
+- make sure selinux works (esp. regarding NX bits)
   Daniel has a patch for it, if needed, implementing allocwx with two memory blocks, one for w^x, mmaped to one for r|x
 - support /SAFESEH on cl/win32
 - test code functions should be in .so files, optionally, so the suites can directly
@@ -86,6 +86,7 @@ dyncall:
 
 dynload:
 --------
+- dlGetLibraryPath: dl_iterate_phdr() used on OpenBSD, but not available on version < 3.7
 - bug: test/nm crashes on qemu mips linux o32 debian etch
 - test/resolve_self crashes/asserts on windows and bsds
 - rename SymsInit to InitSyms and similar for cleanup function to reflect naming

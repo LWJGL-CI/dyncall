@@ -53,18 +53,18 @@ int main(int argc, char* argv[])
   int i, n;
   DLLib* pLib;
   const char* libPath;
-  
+
   if (argc == 1) {
     fprintf(stderr, "usage : %s <dllpath>\n", argv[0]);
     return 1;
   }
-  
+
   libPath = argv[1];
-  
+
   /* load lib */
 
   pLib = dlLoadLibrary(libPath);
-  
+
   if (!pLib) {
     fprintf(stderr, "unable to open library %s\n", libPath);
     return 2;

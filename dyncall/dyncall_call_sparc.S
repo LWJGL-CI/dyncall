@@ -123,10 +123,10 @@ r24-r31 -> ins
 
 */
 
-.set REGSIZE,         4
-.set ALIGN,          16
-.set CALLVM_size,    12
-.set CALLVM_dataoff, 16
+REGSIZE        =  4
+ALIGN          = 16
+CALLVM_size    = 12
+CALLVM_dataoff = 16
 
 .text
 .global dcCall_sparc

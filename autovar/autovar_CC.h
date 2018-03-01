@@ -33,6 +33,8 @@
 #define CC_INTEL
 #elif defined(_MSC_VER)
 #define CC_MSVC
+#elif defined(__clang__) || defined(__llvm__)
+#define CC_CLANG
 #elif defined(__GNUC__)
 #define CC_GNU
 #elif defined(__WATCOMC__)

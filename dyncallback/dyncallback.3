@@ -123,6 +123,13 @@ Now, let's call it through a DCCallback object:
     (123, 23.f, 3, 1.82, 9909ll);
   dcbFreeCallback(cb);
 .Ed
+.Sh CONFORMING TO
+The dyncallback library needs at least a c99 compiler with additional support
+for anonymous structs/unions (which were introduced officially in c11). Given
+that those are generally supported by pretty much all major c99 conforming
+compilers (as default extension), it should build fine with a c99 toolchain.
+Strictly speaking, dyncall conforms to c11, though.
+.Ed
 .Sh SEE ALSO
 .Xr dyncall 3 ,
 .Xr dynload 3

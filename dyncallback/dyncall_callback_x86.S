@@ -110,6 +110,3 @@ LOCAL(return_void):
 END_PROC(dcCallbackThunkEntry)
 END_ASM
 
-
-SECTION_NOTE_NXSTACK /* mark object as not needing execstack */
-

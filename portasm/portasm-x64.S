@@ -152,13 +152,8 @@
 #  define JNE(X)    jne X
 #  define FLDS(X)  flds X
 #  define FLDL(X)  fldl X
-#  define SET(K,V) .set K,V
+/* not available on some platforms, e.g. old solaris, so use K=V syntax #  define SET(K,V) .set K,V */
+#  define SET(K,V) K = V
 #  define LOCAL(X) .X
-#  if defined(ABI_ELF) && !defined(CC_SUN)/*syntax error*/ && !defined(OS_OpenBSD)/*does this by default, and better*/ && !defined(OS_DragonFlyBSD)/*does this by default, and better*/
-/* explicitly passing no args to mark stack nx */
-#    define SECTION_NOTE_NXSTACK .section .note.GNU-stack,"",@progbits
-#  else
-#    define SECTION_NOTE_NXSTACK
-#  endif
 #endif
 

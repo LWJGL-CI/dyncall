@@ -6,7 +6,7 @@
  Description: 
  License:
 
-   Copyright (c) 2007-2015 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2007-2017 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -37,8 +37,10 @@ int main()
   dcTest_initPlatform();
 
   err = dcAllocWX(23, &ptr);
-  if(!err) err = dcInitExecWX(ptr, 23);
-  if(!err) dcFreeWX(ptr, 23);
+  if(!err) {
+    err = dcInitExecWX(ptr, 23);
+    dcFreeWX(ptr, 23);
+  }
   printf("result: test_alloc_wx: %d\n", (!err) ? 1 : 0 );
 
   dcTest_deInitPlatform();

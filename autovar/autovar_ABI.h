@@ -32,13 +32,15 @@
 #define ABI_PE
 #elif defined(OS_Darwin)
 #define ABI_Mach
-#else
+#elif !defined(OS_Minix) || defined(__ELF__) /* Minix >= 3.2 (2012) uses ELF */
 #define ABI_ELF
 # if defined(__LP64__) || defined(_LP64)
 #   define ABI_ELF64
 # else
 #   define ABI_ELF32
 # endif
+#else
+#define ABI_Unknown
 #endif
 
 #endif /* AUTOVAR_ABI_H */

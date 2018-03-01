@@ -27,6 +27,8 @@ gives access to functions in foreign dynamic libraries and code modules.
 .Fn dlFreeLibrary "DLLib * pLib"
 .Ft void *
 .Fn dlFindSymbol "DLLib * pLib" "const char * pSymbolName"
+.Ft int
+.Fn dlGetLibraryPath "DLLib * pLib" "char * sOut" "int bufSize"
 .Ft DLSyms*
 .Fn dlSymsInit "const char * libPath"
 .Ft void
@@ -52,7 +54,7 @@ and
 .Fn dlFindSymbol
 calls. Passing a null pointer for the
 .Ar libpath
-argument is valid, and returns a handle to the main executable of the calling code. Returns a null pointer on error.
+argument is valid, and returns a handle to the main executable of the calling code. Also, searching libraries in library paths (e.g. by just passing the library's leaf name) should work, however, they are OS specific. Returns a null pointer on error.
 .Pp
 .Fn dlFreeLibrary 
 frees the loaded library with handle
@@ -65,13 +67,26 @@ in the library with handle
 .Ar pLib ,
 or returns a null pointer if the symbol cannot be found. The name is specified as it would appear in C source code (mangled if C++, etc.).
 .Pp
-The dlSyms* functions can be used to iterate over symbols. Note that they are made
-for symbol name lookups, not to get a symbol's address. For that refer to
+.Fn dlGetLibraryPath
+can be used to get a copy of the path to the library loaded with handle
+.Ar pLib .
+The parameter
+.Ar sOut
+is a pointer to a buffer of size
+.Ar bufSize
+(in bytes), to hold the output string. The return value is the size of the buffer (in bytes) needed to hold the null-terminated string, or 0 if it can't be looked up. If
+.Ar bufSize
+>= return value > 1, a null-terminted string with the path to the library should be in
+.Ar sOut .
+If it returns 0, the library name wasn't able to be found. Please note that this might happen in some rare cases, so make sure to always check.
+.Pp
+The dlSyms* functions can be used to iterate over symbols. Since they can be used on libraries that are not linked, they are made
+for symbol name lookups, not to get symbols' addresses. For that refer to
 .Fn dlFindSymbol .
 .Fn dlSymsInit
 will return a handle (or null pointer on error) to the shared object specified by
-.Ar libPath .
-The returned handle is to be used with the other dlSyms* functions. The handle must be freed with
+.Ar libPath ,
+to be used with the other dlSyms* functions. Note that contrary to loading and linking libraries, no (OS-specific) rules for searching libraries in library paths, etc. apply. The handle must be freed with
 .Fn dlSymsCleanup .
 .Fn dlSymsCount
 returns the number of symbols in the shared object,
@@ -81,6 +96,20 @@ and
 are used to lookup symbol names using an index or symbol's address, respectively, returning a null pointer on error. The names are returned as they would appear in C source code (mangled if C++, etc.). The address passed to
 .Fn dlSymsNameFromValue
 must point to a loaded symbol.
+.Sh BUGS
+.Fn dlGetLibraryPath
+is not thread-safe on Darwin (macOS, iOS, ...) and OpenBSD.
+.Fn dlSymsInit
+is not thread-safe on Darwin.
+.Fn dlGetLibraryPath
+will not work on the following platforms when the library in question doesn't have the (default)
+.Fn _init
+and
+.Fn _fini
+symbols exported (rare, but possible): Haiku (all versions), OpenBSD < 3.7, NetBSD < 5.1, FreeBSD < 4.8
+.Sh CONFORMING TO
+The dynload library conforms to c99.
+.Ed
 .Sh SEE ALSO
 .Xr dyncall 3 ,
 .Xr dyncallback 3

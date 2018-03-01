@@ -126,11 +126,5 @@
 #  define FLDL(X)  fldl X
 #  define ADD(A,B) add A,B
 #  define LOCAL(X) .X
-#  if defined(ABI_ELF) && !defined(CC_SUN)/*syntax error*/ && !defined(OS_OpenBSD)/*does this by default, and better*/ && !defined(OS_DragonFlyBSD)/*does this by default, and better*/
-/* explicitly passing no args to mark stack nx */
-#    define SECTION_NOTE_NXSTACK .section .note.GNU-stack,"",@progbits
-#  else
-#    define SECTION_NOTE_NXSTACK
-#  endif
 #endif
 

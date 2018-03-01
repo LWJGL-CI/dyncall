@@ -38,7 +38,7 @@ void dcbInitThunk(DCThunk* p, void (*entry)())
                       ; jump - write link to %g0, effectively discarding it; also nop for delay slot
   16:   81 c0 80 00   jmpl   %g2, %g0
   20:   01 00 00 00   nop
-*/
+  */
 
   p->code[0] = 0x03000000 | ((unsigned int)p >> 10);       /* sethi %hi(p), %g1      -- hi 22 bits */
   p->code[1] = 0x82106000 | ((unsigned int)p & 0x3ff);     /* or %g1, <p&0x3ff>, %g1 -- lo 10 bits */

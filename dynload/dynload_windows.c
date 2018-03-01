@@ -44,13 +44,21 @@ DLLib* dlLoadLibrary(const char* libPath)
   return (DLLib*)(libPath != NULL ? LoadLibraryA(libPath) : GetModuleHandle(NULL));
 }
 
-void* dlFindSymbol(DLLib* libHandle, const char* symbol)
+
+void* dlFindSymbol(DLLib* pLib, const char* pSymbolName)
 {
-  return (void*) GetProcAddress((HINSTANCE)libHandle, symbol);
+  return (void*)GetProcAddress((HINSTANCE)pLib, pSymbolName);
 }
 
-void dlFreeLibrary(DLLib* libHandle)
+
+void dlFreeLibrary(DLLib* pLib)
 {
-  FreeLibrary((HINSTANCE)libHandle);
+  FreeLibrary((HINSTANCE)pLib);
+}
+
+
+int dlGetLibraryPath(DLLib* pLib, char* sOut, int bufSize)
+{
+  return GetModuleFileNameA((HMODULE)pLib, sOut, bufSize)+1; /* strlen + '\0' */
 }
 

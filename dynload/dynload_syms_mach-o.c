@@ -7,7 +7,7 @@
  License:
 
    Copyright (c) 2007-2015 Olivier Chafik <olivier.chafik@gmail.com>,
-                      2017 refactored completely for stability, API
+                 2017-2018 refactored completely for stability, API
                            consistency and portability by Tassilo Philipp.
 
    Permission to use, copy, modify, and distribute this software for any
@@ -97,6 +97,7 @@ DLSyms* dlSymsInit(const char* libPath)
 			if(st0.st_ino == st1.st_ino/*!strcmp(name, libPath)*/)
 			{
 				pHeader = (const struct MACH_HEADER_TYPE*) _dyld_get_image_header(i);
+//@@@ slide = _dyld_get_image_vmaddr_slide(i);
 				break; /* found header */
 			}
 		}
@@ -113,12 +114,20 @@ DLSyms* dlSymsInit(const char* libPath)
 			if(cmd->cmd == SEGMEND_COMMAND_ID)
 			{
 				const struct SEGMENT_COMMAND* seg = (struct SEGMENT_COMMAND*)cmd;
-				if((seg->fileoff == 0) && (seg->filesize != 0))
+				/*@@@ unsure why I used this instead of checking __TEXT: if((seg->fileoff == 0) && (seg->filesize != 0))*/
+				if(strcmp(seg->segname, "__TEXT") == 0)
 					slide = (uintptr_t)pHeader - seg->vmaddr; /* effective offset of segment from header */
 
+				/* If we have __LINKEDIT segment (= raw data for dynamic linkers), use that one to find symbal table address. */
 				if(strcmp(seg->segname, "__LINKEDIT") == 0) {
-					/* Adjust pBase depending on where __LINKEDIT segment is */
+					/* Recompute pBase relative to where __LINKEDIT segment is in memory. */
 					pBase = (const char*)(seg->vmaddr - seg->fileoff) + slide;
+
+					/*@@@ we might want to also check maxprot and initprot here:
+						VM_PROT_READ    ((vm_prot_t) 0x01)
+						VM_PROT_WRITE   ((vm_prot_t) 0x02)
+						VM_PROT_EXECUTE ((vm_prot_t) 0x04)*/
+
 					symOffset = slide; /* this is also offset of symbols */
 				}
 			}
@@ -137,13 +146,15 @@ DLSyms* dlSymsInit(const char* libPath)
 				pSyms->symOffset    = symOffset;
 				pSyms->pLib         = pLib;
 			}
-			else if(cmd->cmd == LC_DYSYMTAB)
+			else if(cmd->cmd == LC_DYSYMTAB && !dysymtab_cmd/* only init once - just safety check */)
 			{
-				dysymtab_cmd = (const struct dysymtab_command*)cmd;
-				/*@@@ check if(cmd->cmdsize != sizeof(struct dysymtab_command)) {
-					dlFreeMem....
+				/* @@@ unused, we'll always run over all symbols, and not check locals, globals, etc.
+				if(cmd->cmdsize != sizeof(struct symtab_command)) {
+					dlSymsCleanup(pSyms);
 					break;
-				}*/
+				}
+
+				dysymtab_cmd = (const struct dysymtab_command*)cmd;*/
 			}
 		}
 	}

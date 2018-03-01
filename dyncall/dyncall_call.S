@@ -77,3 +77,11 @@
 #  endif
 #endif
 
+
+/* Use .note.GNU-stack to explicitly indicate a non-exec stack, b/c of bad   */
+/* default behaviour when translating handwritten assembly files (needed on  */
+/* GNU platforms, Android and FreeBSD, as tests have shown).                 */
+#if (defined(DC__C_CLANG) || defined(DC__C_GNU)) && defined(__ELF__) && (defined(DC__OS_Linux) || defined(DC__OS_FreeBSD))
+.section .note.GNU-stack,"",%progbits
+#endif
+

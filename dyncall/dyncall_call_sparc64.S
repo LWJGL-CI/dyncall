@@ -24,7 +24,7 @@
 
 
 /* NOTE: %sp/%fp for v9 are offset, using them needs a "BIAS" of 2047 */
-.set BIAS, 2047
+BIAS = 2047
 
 .text
 .global dcCall_v9

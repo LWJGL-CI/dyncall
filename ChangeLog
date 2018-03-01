@@ -26,9 +26,10 @@ dynload:
   o simplifications of implemention on Darwin, sharing parts with *nix implementation
   o potentially breaking change on macos/Darwin platforms: all functions now consistently accept or
     return symbol names as they would appear in C code, instead of the raw ones in object files
+  o added new function dlGetLibraryPath, allowing lookups of path to library via handle
 general:
-  o marked assembly code as not needing an execstack, for safer/easier integration into other
-    projects/builds, where needed; this is needed b/c of questionable default behaviours of some
+  o assembly code now built by explicitily asking for non-execstack, for safer/easier integration
+    into other projects/builds, where needed; needed b/c of questionable default behaviours of some
     toolchains (thanks Thorsten Behrens for report and analysis)
 doc:
   o working html doc generation from TEX sources
