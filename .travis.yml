@@ -1,30 +1,35 @@
-dist: trusty
 sudo: false
 env:
   global:
-  - secure: "pD469J6GBmmwW4XAT5xBXkyAgC3bM14IdfYAAyoXBSm5SsydKieQbYxq2FvtTsj+ldySfdglsVWCAZo2Mc6/2keK1JMv35dQLxQ1/oAOibW4XKIks32UieRDaJHogodCa7WTgkLqgqEjW1e66cAQZ7enBJv0yUdvbRogIwTrUNHlaOshTrpl39CIbr5DqpBMIHhTOeUo4LwluQ2s/dEdX//fg6FSYjhNbKamaM4UeIjp4gfbWqix9/JoQY3drSpcI5oRyhVATrwmy+naddYY3McytbS7KI4mYaj/Hl5zDJ6PjSq8veUQylZRP7SB7KpbgRt3B5dZubgG9knIDjjyLnEXg/ByVdhPuRf4rb4cPcyB47mBWgsw1Zvh3orruua7q/Ds49+ets7nENTz/BpnOoTy0kYm+LdG0g7crEynPDfa/kaSpeZCUBaqIrr951g/sRd4T0SMpm8eOoHaXLtshOU6E03C/d8ao0AiJCyuvOYkh7wiFm6MNHrnjdHOq/hTvwhDEUUo2G/RkrIK0qaVMZzsri05fYsR1wkdukw0eW/f6g0Sew6TWtQOmvKr6AwlME9HiBCUIrASB7MUMdome+s5pNMeldxvGMd+NwubJZdXJ+u1Sf7RNHKb7qPimlk6MmCvhw5Knv/LZtYPfq7uZkta35F8bJb5oE9ReX+9CGM="
-  - secure: "sYnqdCAZn1n9nZSm9SAzhiVVCQCVMxBszKC/jLO0u3MMrJHoZ9PZFxHfs9c3dx5TByNSYO8kq8W92TxDu0sKf7TziZ9LjYRmHxwpmqk8K4yMZeUP5/XuIvrxvW17eeifZswhTTJy0gqRd6SvXbfQ74q7ilhVso3qlLUPi+j2bK6WTb9P/y5X/2H/mgfyZS8tEobxpBQUeyqg6g3rBfgtXNVlJlLPMDmsYbXf5bXjhjiEmCDo7ST2KxtOuXEHpHtiHcWkUwiqyMlXWtvlaUWPlhYR1QVnjiOubYpx+8NJ10ShXUdNzQJ9QeGbORwZjzz9nXLzj8xKINRNBhEfPfBulTbBll1oK4tCVUaCae/qU1V5F592lK7bOdXkviE+3D53de8gWI5VeR6M9A3cZduaJkab4vwTN4ssbWuG1gsvxds4WdYfU8v4aR+Y/02AZELeQ2uPtfeLYVDpXgEn1E/oMHr2iU+xWY8ZFO/K6vQ0sVYv64o2ab/VQE9UnWEjZBrKNZbLXBMmpRJX2Pnjl4ZXqpILXtRxfwGzSCx3Voz2zjAWs1Dlo0QXOsxwaW7tp+StEpdzR7wvsGnwsbR1WORbm6Ha7dJZL1pRPuDU9wTbvzrbPMeNPZIXoopYAsoiYwFYPEBb+Et0tb3xCdHvozZ7Scz1URoJbRHB450w+Hr0zho="
-language: c
-compiler: gcc
-
+#  - secure: "pD469J6GBmmwW4XAT5xBXkyAgC3bM14IdfYAAyoXBSm5SsydKieQbYxq2FvtTsj+ldySfdglsVWCAZo2Mc6/2keK1JMv35dQLxQ1/oAOibW4XKIks32UieRDaJHogodCa7WTgkLqgqEjW1e66cAQZ7enBJv0yUdvbRogIwTrUNHlaOshTrpl39CIbr5DqpBMIHhTOeUo4LwluQ2s/dEdX//fg6FSYjhNbKamaM4UeIjp4gfbWqix9/JoQY3drSpcI5oRyhVATrwmy+naddYY3McytbS7KI4mYaj/Hl5zDJ6PjSq8veUQylZRP7SB7KpbgRt3B5dZubgG9knIDjjyLnEXg/ByVdhPuRf4rb4cPcyB47mBWgsw1Zvh3orruua7q/Ds49+ets7nENTz/BpnOoTy0kYm+LdG0g7crEynPDfa/kaSpeZCUBaqIrr951g/sRd4T0SMpm8eOoHaXLtshOU6E03C/d8ao0AiJCyuvOYkh7wiFm6MNHrnjdHOq/hTvwhDEUUo2G/RkrIK0qaVMZzsri05fYsR1wkdukw0eW/f6g0Sew6TWtQOmvKr6AwlME9HiBCUIrASB7MUMdome+s5pNMeldxvGMd+NwubJZdXJ+u1Sf7RNHKb7qPimlk6MmCvhw5Knv/LZtYPfq7uZkta35F8bJb5oE9ReX+9CGM="
+#  - secure: "sYnqdCAZn1n9nZSm9SAzhiVVCQCVMxBszKC/jLO0u3MMrJHoZ9PZFxHfs9c3dx5TByNSYO8kq8W92TxDu0sKf7TziZ9LjYRmHxwpmqk8K4yMZeUP5/XuIvrxvW17eeifZswhTTJy0gqRd6SvXbfQ74q7ilhVso3qlLUPi+j2bK6WTb9P/y5X/2H/mgfyZS8tEobxpBQUeyqg6g3rBfgtXNVlJlLPMDmsYbXf5bXjhjiEmCDo7ST2KxtOuXEHpHtiHcWkUwiqyMlXWtvlaUWPlhYR1QVnjiOubYpx+8NJ10ShXUdNzQJ9QeGbORwZjzz9nXLzj8xKINRNBhEfPfBulTbBll1oK4tCVUaCae/qU1V5F592lK7bOdXkviE+3D53de8gWI5VeR6M9A3cZduaJkab4vwTN4ssbWuG1gsvxds4WdYfU8v4aR+Y/02AZELeQ2uPtfeLYVDpXgEn1E/oMHr2iU+xWY8ZFO/K6vQ0sVYv64o2ab/VQE9UnWEjZBrKNZbLXBMmpRJX2Pnjl4ZXqpILXtRxfwGzSCx3Voz2zjAWs1Dlo0QXOsxwaW7tp+StEpdzR7wvsGnwsbR1WORbm6Ha7dJZL1pRPuDU9wTbvzrbPMeNPZIXoopYAsoiYwFYPEBb+Et0tb3xCdHvozZ7Scz1URoJbRHB450w+Hr0zho="
+  - ARM_TOOLCHAIN=arm-linux-gnueabihf
+  - LINARO_VER=7.3.1-2018.05-x86_64
+  - S3_TARGET="s3://build.lwjgl.org/nightly/linux/aarch32/ --acl public-read --storage-class REDUCED_REDUNDANCY --cache-control"
+  - S3_CC="public, must-revalidate, proxy-revalidate, max-age=0"
+  
 addons:
   apt:
-#    sources:
-#    - ubuntu-toolchain-r-test
     packages:
-#    - gcc-7
     - cmake
+    - cmake-data
 
-before_install:
-- pip install --user awscli
-- export PATH=$PATH:$HOME/.local/bin
+#before_install:
+#- pip install --user awscli
+#- export PATH=$PATH:$HOME/.local/bin
+
+before_script:
+- wget http://releases.linaro.org/components/toolchain/binaries/latest/${ARM_TOOLCHAIN}/gcc-linaro-${LINARO_VER}_${ARM_TOOLCHAIN}.tar.xz
+- tar -xf gcc-linaro-${LINARO_VER}_${ARM_TOOLCHAIN}.tar.xz
+- export ARM_TOOLCHAIN_HOME=`pwd`/gcc-linaro-${LINARO_VER}_${ARM_TOOLCHAIN}
 
 script:
 - mkdir build
 - cd build
-#- CC="gcc-7" cmake -DCMAKE_BUILD_TYPE=Release ..
-- cmake -DCMAKE_BUILD_TYPE=Release ..
+- cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=../arm.toolchain.cmake ..
 - cmake --build .
-- "aws s3 cp dyncall/libdyncall_s.a s3://build.lwjgl.org/nightly/linux/x64/ --acl public-read --storage-class REDUCED_REDUNDANCY --cache-control \"public, must-revalidate, proxy-revalidate, max-age=0\""
-- "aws s3 cp dyncallback/libdyncallback_s.a s3://build.lwjgl.org/nightly/linux/x64/ --acl public-read --storage-class REDUCED_REDUNDANCY --cache-control \"public, must-revalidate, proxy-revalidate, max-age=0\""
-- "aws s3 cp dynload/libdynload_s.a s3://build.lwjgl.org/nightly/linux/x64/ --acl public-read --storage-class REDUCED_REDUNDANCY --cache-control \"public, must-revalidate, proxy-revalidate, max-age=0\""
+
+#after_success:
+#- "aws s3 cp dyncall/libdyncall_s.a $S3_TARGET \"$S3_CC\""
+#- "aws s3 cp dyncallback/libdyncallback_s.a $S3_TARGET \"$S3_CC\""
+#- "aws s3 cp dynload/libdynload_s.a $S3_TARGET \"$S3_CC\""
