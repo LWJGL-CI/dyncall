@@ -6,7 +6,7 @@
  Description: Callback's Arguments VM - Implementation for MIPS o32
  License:
 
-   Copyright (c) 2013-2015 Daniel Adler <dadler@uni-goettingen.de>,
+   Copyright (c) 2013-2018 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any

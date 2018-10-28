@@ -1,8 +1,8 @@
 # path to default libc.so file, easier to do via shell than in code (see main() in dynload_plain.c)
 # for compat: first gmake style, then assignment op which will use ! as part of var name on gmake<4
 #             and thus not override previously set var
-DEF_C_DYLIB=$(shell ((ls /lib*/libc.so* || ls /usr/lib/libc.so*) | (sort -V -r || sort -t . -n -k 2)) 2>/dev/null | head -1)
-DEF_C_DYLIB!=((ls /lib*/libc.so* || ls /usr/lib/libc.so*) | (sort -V -r || sort -t . -n -k 2)) 2>/dev/null | head -1
+DEF_C_DYLIB=$(shell ((ls /lib*/libc.so* || ls /usr/lib/libc.so*) | grep -v '\.a$$' | (sort -V -r || sort -t . -n -k 2)) 2>/dev/null | head -1)
+DEF_C_DYLIB!=((ls /lib*/libc.so* || ls /usr/lib/libc.so*) | grep -v '\.a$$' | (sort -V -r || sort -t . -n -k 2)) 2>/dev/null | head -1
 
 APP       = dynload_plain
 OBJS      = dynload_plain.o

@@ -6,7 +6,7 @@
  Description: Thunk - Header for sparc64
  License:
 
-   Copyright (c) 2007-2017 Daniel Adler <dadler@uni-goettingen.de>,
+   Copyright (c) 2007-2018 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any

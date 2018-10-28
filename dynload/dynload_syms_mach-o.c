@@ -103,7 +103,7 @@ DLSyms* dlSymsInit(const char* libPath)
 		}
 	}
 
-	if(pHeader && (pHeader->magic == MACH_HEADER_MAGIC_NR) && (pHeader->filetype == MH_DYLIB) && !(pHeader->flags & MH_SPLIT_SEGS))
+	if(pHeader && (pHeader->magic == MACH_HEADER_MAGIC_NR) && (pHeader->filetype == MH_DYLIB)/*@@@ ignore for now, seems to work without it on El Capitan && !(pHeader->flags & MH_SPLIT_SEGS)*/)
 	{
 		const char* pBase = (const char*)pHeader;
 		uintptr_t slide = 0, symOffset = 0;

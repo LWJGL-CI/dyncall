@@ -1,6 +1,6 @@
 This file lists bigger/noteworthy changes, only...
 
-Version 1.0 (upcoming)
+Version 1.0 (2018/04/23)
 dyncall:
   o PPC64 single-precision float fixes for more than 13 float args (thanks Masanori Mitsugi!)
   o fixed potential buffer overrun on ARM64

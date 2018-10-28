@@ -1,19 +1,12 @@
-1.0:
+1.1:
 ----
+- ./configure on macOS does not pass CFLAGS etc.. to Makefile.config
 - support platforms without shared libraries so they can be built by just typing `./configure;make` (e.g. minix < 3.2.1)
   * also make sure minix with shared library support builds and works in general (>= 3.2.1) as well as ELF on Minix (>= 3.2.0) to begin with (as that's the base, and we only test on 3.1.8 so far)
 - dyncall supports calls to functions where prototype exists (with and without varargs); however not when no
   prototype exist (e.g. just calling some pointer), without any declaration... even possible in C, as one has
   to cast to the function type? need to support?
 
-- make sure all assembly files declare (or are built) by setting the noexecstack flag,
-  compared to translating code with gcc, it's manual for the assembler; this depends on arch
-  support (currently it's only done for x86/x64 ELF, but doesn't always work I think... e.g. openbsd 4.0, maybe too old?):
-
-    "When you compile source code normally, gcc takes care of adding the GNU_STACK
-    markings so that the final object code is not marked with an executable stack
-    unless it actually needs it. However, if you compile assembly code, gcc will
-    not automatically add GNU_STACK markings."
 
 - dyncallback's "stack_cleanup" can be removed from non x86 impls... test if they still work
 - target a minimum c version, for use with -pedantic, etc.? Right now we use e.g. extensions
@@ -31,7 +24,6 @@
 - autovar was never really pushed all the way through and still plays second
   fiddle to dyncall_macros.h, clean this all up, eventually (Tassilo: for now, I
   removed out of sync files to avoid confusion; but still probably duped code)
-- ppc32 callback fixes on bsd
 - add portable "make install"
   * make install should also install manpages
 - mailing list announcements (html email?)
@@ -53,7 +45,6 @@
 - quadmath support (long double)
 - add tests using alloca(), as this might depend on the frame pointer being correctly
   set; we don't check for this, currently, at all
-- test on OpenBSD 6.0 which comes with W^X by default
 
 portasm:
 --------
@@ -61,14 +52,17 @@ portasm:
 
 dyncall:
 --------
+- merge arm32_thumb_{gas/apple} and include thumb support for portasm
+- x64 verification: return values are passed via RAX and RDX, and XMM0 and XMM1.
 - find big endian arm box (also hardfloat), e.g. cubietruck: http://blog.netbsd.org/tnf/entry/working_arm_multiprocessor_support
 - test if armhf/thumb is actually working... pulls in arm mode code in dyncall_callvm.c
 - dyncall_call_mips_n32.h and dyncall_call_mips_n64.h are pretty much the same, share code
 - support for return values: aggregate return values
 - support for argument values: structures, half-precision, vector types, long double
+  * make sure that struct support for ellipsis calls are not forgotten (copy everything by value)
 - consider automatic type-promotion for arguments passed through DC_CALL_C_ELLIPSIS_VARARGS;
   this would make it easier to just pass arguments instead of having to know about the C
-  type promotions (this is partly done, see todo-item above under 1.0)
+  type promotions (this is partly done, see todo-item above under 1.1)
 - syscalls for x64
   * bsd
   * linux
@@ -86,6 +80,7 @@ dyncall:
 
 dynload:
 --------
+- RTLD_LAZY in darwin, why not in unix?
 - dlGetLibraryPath: dl_iterate_phdr() used on OpenBSD, but not available on version < 3.7
 - bug: test/nm crashes on qemu mips linux o32 debian etch
 - test/resolve_self crashes/asserts on windows and bsds
@@ -95,11 +90,25 @@ dynload:
   for implementation of dlSymsNameFromValue(..)
 - check if PSP can support dynload (missing elf.h, dlfcn.h, etc.); fixup readme if successful
 - some functionality like java's System.mapLibraryName('name') might be helpful?
+- Failed On Open Solaris 11:
+    In file included from dynload_syms.c:28:
+    dynload_syms_elf.c:56: error: syntax error before "Elf_Dyn"
+    dynload_syms_elf.c:56: warning: data definition has no type or storage class
+    dynload_syms_elf.c: In function `dlSymsInit':
+    dynload_syms_elf.c:155: error: `pDyn' undeclared (first use in this function)
+    dynload_syms_elf.c:155: error: (Each undeclared identifier is reported only once
+    dynload_syms_elf.c:155: error: for each function it appears in.)
+    dynload_syms_elf.c:155: error: syntax error before ')' token
+    dynload_syms_elf.c:160: error: `DT_NULL' undeclared (first use in this function)
+    dynload_syms_elf.c:163: error: `DT_STRTAB' undeclared (first use in this function)
+    dynload_syms_elf.c:164: error: `DT_SYMTAB' undeclared (first use in this function)
+    dynload_syms_elf.c:165: error: `DT_HASH' undeclared (first use in this function)
+    make: *** [dynload_syms.o] Error 1
 
 dyncallback:
 ------------
 - callback_plain's return value not correct anymore on NDS (maybe just broken testcode?),
-  see above under 1.0 items
+  see above under 1.1 items
   * check other platforms also, if asm stub initializes retval space, correctly
 - finish PPC32 callbacks (see bugs section, below, BSD not working)
 - MIPS32 softfloat support (-msoft-float)
