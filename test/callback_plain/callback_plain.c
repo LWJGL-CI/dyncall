@@ -23,7 +23,6 @@
 
 */
 
-#include "../../dyncallback/dyncall_thunk.h"
 #include "../../dyncallback/dyncall_callback.h"
 #include "../common/platformInit.h"
 #include "../common/platformInit.c" /* Impl. for functions only used in this translation unit */

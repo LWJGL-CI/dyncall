@@ -47,12 +47,13 @@ struct DCRegData_ppc32_
 */
 
 /* Darwin ABI */
-
 void     dcCall_ppc32_darwin (DCpointer target, struct DCRegData_ppc32_* ppc32data, DCsize stksize, DCpointer stkdata);
 
-/* System V (Linux) ABI */
-
+/* System V ABI */
 void     dcCall_ppc32_sysv (DCpointer target, struct DCRegData_ppc32_* ppc32data, DCsize stksize, DCpointer stkdata);
+
+/* syscall @@@ Bus Error on Darwin */
+void     dcCall_ppc32_syscall (DCpointer target, struct DCRegData_ppc32_* ppc32data, DCsize stksize, DCpointer stkdata);
 
 #ifdef __cplusplus
 }

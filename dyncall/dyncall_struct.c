@@ -54,7 +54,7 @@ void dcStructField(DCstruct* s, DCint type, DCint alignment, DCsize arrayLength)
 		return;
 	}
 	assert(s && s->pCurrentStruct);
-	assert(s->pCurrentStruct->nextField <= (DCint)s->pCurrentStruct->fieldCount - 1);
+	assert(s->pCurrentStruct->nextField < (DCint)s->pCurrentStruct->fieldCount);
 	f = s->pCurrentStruct->pFields + (s->pCurrentStruct->nextField++);
 	f->type = type;
 	f->alignment = alignment;
@@ -107,6 +107,8 @@ static void dcComputeStructSize(DCstruct* s)
 {
 	DCsize i;
 	assert(s);
+
+	/* compute field sizes and alignments, recurse if needed */
 	for (i = 0; i < s->fieldCount; i++) {
 		DCfield *f = s->pFields + i;
 		DCsize fieldAlignment;
@@ -114,19 +116,23 @@ static void dcComputeStructSize(DCstruct* s)
 			dcComputeStructSize(f->pSubStruct);
 			f->size = f->pSubStruct->size;
 			fieldAlignment = f->pSubStruct->alignment;
-		} else {
+		} else
 			fieldAlignment = f->size;
-		}
+
 		if (!f->alignment)
 			f->alignment = fieldAlignment;
-		
+
+		/* if field alignment > struct alignment, choose former */
 		if (f->alignment > s->alignment)
 			s->alignment = f->alignment;
-		
+
+		/* if array, it's x times the size */
 		f->size *= f->arrayLength;
-		
+
 		/*printf("FIELD %d, size = %d, alignment = %d\n", (int)i, (int)f->size, (int)f->alignment);@@@*/
 	}
+
+	/* compute overall struct size */
 	for (i = 0; i < s->fieldCount; i++) {
 		DCfield *f = s->pFields + i;
 		dcAlign(&s->size, f->alignment);

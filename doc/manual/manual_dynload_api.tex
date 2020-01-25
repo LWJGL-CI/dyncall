@@ -58,7 +58,7 @@ This function can be used to get a copy of the path to the library loaded with h
 \lstinline{pLib}. The parameter \lstinline{sOut} is a pointer to a buffer of size
 \lstinline{bufSize} (in bytes), to hold the output string. The return value is the size
 of the buffer (in bytes) needed to hold the null-terminated string, or 0 if it can't be
-looked up. If \lstinline{bufSize} >= return value > 1, a null-terminted string with the
+looked up. If \lstinline{bufSize} \textgreater= return value \textgreater 1, a null-terminted string with the
 path to the library should be in \lstinline{sOut}.  If it returns 0, the library name wasn't
 able to be found. Please note that this might happen in some rare cases, so make sure to always check.
 

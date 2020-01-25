@@ -26,7 +26,7 @@ Implement assembler sources in *.S files which use C preprocessor.
 #include portasm-<ARCH>.S at front
 
 In order to generate MASM files for X86 and X64, run 
-  'gen-masm.sh <name>' script which reads <name>.S and outputs <name>.masm file.
+  'gen-masm.sh <name> [<outsuffix>]' script which reads <name>.S and outputs <name><outsuffix>.masm file.
 
 
 Common Macros:

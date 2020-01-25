@@ -6,7 +6,7 @@
  Description: 
  License:
 
-   Copyright (c) 2007-2018 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2007-2020 Daniel Adler <dadler@uni-goettingen.de>, 
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -54,6 +54,7 @@ extern "C" {
 
 void dcCall_x64_sysv(DCsize stacksize, DCpointer stackdata, DCpointer regdata_i, DCpointer regdata_f, DCpointer target);
 void dcCall_x64_win64(DCsize stacksize, DCpointer stackdata, DCpointer regdata, DCpointer target);
+void dcCall_x64_syscall_sysv(DCpointer argdata, DCpointer target);
 
 #ifdef __cplusplus
 }

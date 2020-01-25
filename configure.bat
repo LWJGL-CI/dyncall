@@ -56,7 +56,7 @@ IF [%1]==[] (
 	ECHO.  /prefix-bd PATH   set build directory prefix ^(GNU make only^)
 	ECHO.                    ^(only for use with gmake^)
 	ECHO.
-	ECHO.  /target-x86       build for x86 architecture ^(default^)
+	ECHO.  /target-x86       build for x86 architecture
 	ECHO.  /target-x64       build for x64 architecture
 	ECHO.  /target-psp       build for PlayStation Portable ^(homebrew SDK^)
 	ECHO.  /target-nds-arm   build for Nintendo DS ^(devkitPro, ARM mode^)

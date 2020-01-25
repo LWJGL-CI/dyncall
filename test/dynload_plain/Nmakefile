@@ -1,6 +1,6 @@
-#//////////////////////////////////////////////////////////////////////////////
+﻿#//////////////////////////////////////////////////////////////////////////////
 #
-# Copyright (c) 2017 Tassilo Philipp <tphilipp@potion-studios.com>
+# Copyright (c) 2017-2020 Tassilo Philipp <tphilipp@potion-studios.com>
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -31,12 +31,20 @@ TOP = ..\..
 
 !IF "$(BUILD_OS)" == "windows"
 
-TARGETS = dynload_plain.exe
+TEST_U8_SO = dynload_plain_ß_test # this non-ASCII character seems to work in Nmakefiles *iff* the utf-8/BOM mark is present
+TARGETS = dynload_plain.exe $(TEST_U8_SO)
 OBJS = dynload_plain.obj
 
-$(TARGETS): $(OBJS)
+dynload_plain.exe: $(OBJS)
 	echo Linking $@ ...
 	$(LD) /OUT:"$@" $(LDFLAGS) $(OBJS) $(TOP)\dynload\libdynload_s.lib $(TOP)\dyncall\libdyncall_s.lib
+
+$(TEST_U8_SO):
+	echo Building helper lib with UTF-8 path $(TEST_U8_SO) ...
+	echo.int dynload_plain_testfunc^(^) { return 5; } > x.c
+	type x.c
+	$(CC) x.c /link /DLL /OUT:$(TEST_U8_SO)
+	del x.c x.obj
 
 
 !ELSE IF "$(BUILD_OS)" == "nds"

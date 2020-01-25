@@ -58,7 +58,9 @@ static void dc_callvm_reset_mips_n64(DCCallVM* in_self)
   DCCallVM_mips_n64* self = (DCCallVM_mips_n64*)in_self;
   dcVecReset(&self->mVecHead);
   self->mRegCount = 0;
+#if defined(DC__ABI_HARDFLOAT)
   self->mRegData.mUseDouble = 0LL;
+#endif /* DC__ABI_HARDFLOAT */
 }
 
 
@@ -75,24 +77,24 @@ static void dc_callvm_free_mips_n64(DCCallVM* in_self)
 
 /* arg int -- fillup 64-bit integer register file OR push on stack */
 
-static void dc_callvm_argLongLong_mips_n64(DCCallVM* in_self, DClonglong Lv)
+static void dc_callvm_argLongLong_mips_n64(DCCallVM* in_self, DClonglong x)
 {
   DCCallVM_mips_n64* self = (DCCallVM_mips_n64*)in_self;
   /* fillup integer register file */
   if (self->mRegCount < 8)
-    self->mRegData.mIntData[self->mRegCount++] = Lv;
+    self->mRegData.mIntData[self->mRegCount++] = x;
   else
-    dcVecAppend(&self->mVecHead, &Lv, sizeof(DClonglong));
+    dcVecAppend(&self->mVecHead, &x, sizeof(DClonglong));
 }
 
-static void dc_callvm_argInt_mips_n64(DCCallVM* in_self, DCint i)
+static void dc_callvm_argInt_mips_n64(DCCallVM* in_self, DCint x)
 {
-  dc_callvm_argLongLong_mips_n64(in_self, (DClonglong) i );
+  dc_callvm_argLongLong_mips_n64(in_self, (DClonglong)x);
 }
 
 static void dc_callvm_argPointer_mips_n64(DCCallVM* in_self, DCpointer x)
 {
-  dc_callvm_argLongLong_mips_n64(in_self, * (DClonglong*) &x );
+  dc_callvm_argLongLong_mips_n64(in_self, *(DClonglong*)&x);
 }
 
 static void dc_callvm_argBool_mips_n64(DCCallVM* in_self, DCbool x)
@@ -117,25 +119,41 @@ static void dc_callvm_argLong_mips_n64(DCCallVM* in_self, DClong x)
 
 static void dc_callvm_argDouble_mips_n64(DCCallVM* in_self, DCdouble x)
 {
+#if defined(DC__ABI_HARDFLOAT)
   DCCallVM_mips_n64* self = (DCCallVM_mips_n64*)in_self;
   if (self->mRegCount < 8) {
     self->mRegData.mUseDouble |= 1<<( self->mRegCount );
     self->mRegData.mFloatData[self->mRegCount++].d = x;
   } else {
-    dcVecAppend(&self->mVecHead, &x, sizeof(DCdouble) );
+    dcVecAppend(&self->mVecHead, &x, sizeof(DCdouble));
   }
+#else
+  dc_callvm_argLongLong_mips_n64(in_self, *(DClonglong*)&x);
+#endif /* DC__ABI_HARDFLOAT */
 }
 
 static void dc_callvm_argFloat_mips_n64(DCCallVM* in_self, DCfloat x)
 {
+#if defined(DC__ABI_HARDFLOAT)
   DCCallVM_mips_n64* self = (DCCallVM_mips_n64*)in_self;
   if (self->mRegCount < 8) {
     /*self->mRegData.mFloatData[self->mRegCount++].d = (DCdouble) x;*/
     self->mRegData.mFloatData[self->mRegCount++].f = x;
   } else {
-    dcVecAppend(&self->mVecHead, &x, sizeof(DCfloat) );
-    dcVecSkip(&self->mVecHead, sizeof(DCfloat) );
+    dcVecAppend(&self->mVecHead, &x, sizeof(DCfloat));
+    dcVecSkip(&self->mVecHead, sizeof(DCfloat));
   }
+#else
+  DCfloat f[] = {x,0.f};
+# if defined(DC__Endian_BIG)
+  // floats in regs always right justified
+  if (((DCCallVM_mips_n64*)in_self)->mRegCount < 8) {
+    f[1] = f[0];
+    f[0] = 0.f;
+  }
+# endif /* DC__Endian_BIG */
+  dc_callvm_argLongLong_mips_n64(in_self, *(DClonglong*)&f);
+#endif /* DC__ABI_HARDFLOAT */
 }
 
 

@@ -3,10 +3,11 @@
  Package: dyncall
  Library: test
  File: test/plain/test_structs.c
- Description: 
+ Description:
  License:
 
    Copyright (c) 2010-2015 Olivier Chafik <olivier.chafik@gmail.com>
+                      2019 Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
    purpose with or without fee is hereby granted, provided that the above
@@ -25,38 +26,86 @@
 
 
 
-#include "../common/test_framework.h"
 #include "../../dyncall/dyncall.h"
 #include "../../dyncall/dyncall_signature.h"
 #include "../../dyncall/dyncall_struct.h"
 #include "../common/platformInit.h"
 
-#define DC_TEST_INT_EQUAL(expected, computed) { \
-	if (expected != computed) \
-		printf("expected = %d, computed = %d\n\n", (int)expected, (int)computed); \
-	DC_TEST(expected == computed); \
-}
-#define DC_TEST_STRUCT_SIZE(type, s) { \
+#define DC_TEST_STRUCT_SIZE(sig, type, s) { \
 	DCsize expected = sizeof(type), computed = dcStructSize(s);\
-	DC_TEST_INT_EQUAL(expected, computed); \
+	printf("struct_%s size: expected = %d, computed = %d: %d\n", sig, (int)expected, (int)computed, (expected == computed)); \
+	ret = (expected == computed) && ret; \
 }
 
-DC_DEFINE_TEST_FUNC_BEGIN(testStructSizes)
+/* @@@ incomplete and should be makde generally available in dyncall once struct support will make it in */
+#if defined(DC__OS_Plan9)
+#  define DEFAULT_STRUCT_ALIGNMENT 4
+#else
+#  define DEFAULT_STRUCT_ALIGNMENT DEFAULT_ALIGNMENT
+#endif
 
+int testStructSizes()
+{
+	int ret = 1;
+
+	{
+		typedef struct {
+			char a, b;
+		} S;
+
+		size_t size;
+		DCstruct* s = dcNewStruct(2, DEFAULT_STRUCT_ALIGNMENT);
+		dcStructField(s, DC_SIGCHAR_CHAR, DEFAULT_ALIGNMENT, 1);
+		dcStructField(s, DC_SIGCHAR_CHAR, DEFAULT_ALIGNMENT, 1);
+		dcCloseStruct(s);
+
+		DC_TEST_STRUCT_SIZE("cc", S, s);
+		dcFreeStruct(s);
+	}
+	{
+		typedef struct {
+			char a, b, c;
+		} S;
+
+		size_t size;
+		DCstruct* s = dcNewStruct(3, DEFAULT_STRUCT_ALIGNMENT);
+		dcStructField(s, DC_SIGCHAR_CHAR, DEFAULT_ALIGNMENT, 1);
+		dcStructField(s, DC_SIGCHAR_CHAR, DEFAULT_ALIGNMENT, 1);
+		dcStructField(s, DC_SIGCHAR_CHAR, DEFAULT_ALIGNMENT, 1);
+		dcCloseStruct(s);
+
+		DC_TEST_STRUCT_SIZE("ccc", S, s);
+		dcFreeStruct(s);
+	}
+	{
+		typedef struct {
+			char a;
+			short b;
+		} S;
+
+		size_t size;
+		DCstruct* s = dcNewStruct(2, DEFAULT_STRUCT_ALIGNMENT);
+		dcStructField(s, DC_SIGCHAR_CHAR, DEFAULT_ALIGNMENT, 1);
+		dcStructField(s, DC_SIGCHAR_SHORT, DEFAULT_ALIGNMENT, 1);
+		dcCloseStruct(s);
+
+		DC_TEST_STRUCT_SIZE("cs", S, s);
+		dcFreeStruct(s);
+	}
 	{
 		typedef struct {
 			double a, b, c, d;
 		} S;
 
 		size_t size;
-		DCstruct* s = dcNewStruct(4, DEFAULT_ALIGNMENT);
+		DCstruct* s = dcNewStruct(4, DEFAULT_STRUCT_ALIGNMENT);
 		dcStructField(s, DC_SIGCHAR_DOUBLE, DEFAULT_ALIGNMENT, 1);
 		dcStructField(s, DC_SIGCHAR_DOUBLE, DEFAULT_ALIGNMENT, 1);
 		dcStructField(s, DC_SIGCHAR_DOUBLE, DEFAULT_ALIGNMENT, 1);
 		dcStructField(s, DC_SIGCHAR_DOUBLE, DEFAULT_ALIGNMENT, 1);
 		dcCloseStruct(s);
 
-		DC_TEST_STRUCT_SIZE(S, s);
+		DC_TEST_STRUCT_SIZE("dddd", S, s);
 		dcFreeStruct(s);
 	}
 	{
@@ -66,13 +115,13 @@ DC_DEFINE_TEST_FUNC_BEGIN(testStructSizes)
 		} S;
 
 		size_t size;
-		DCstruct* s = dcNewStruct(3, DEFAULT_ALIGNMENT);
+		DCstruct* s = dcNewStruct(3, DEFAULT_STRUCT_ALIGNMENT);
 		dcStructField(s, DC_SIGCHAR_CHAR, DEFAULT_ALIGNMENT, 1);
 		dcStructField(s, DC_SIGCHAR_CHAR, DEFAULT_ALIGNMENT, 1);
 		dcStructField(s, DC_SIGCHAR_POINTER, DEFAULT_ALIGNMENT, 3);
 		dcCloseStruct(s);
 
-		DC_TEST_STRUCT_SIZE(S, s);
+		DC_TEST_STRUCT_SIZE("cc[ppp]", S, s);
 		dcFreeStruct(s);
 	}
 	{
@@ -86,9 +135,9 @@ DC_DEFINE_TEST_FUNC_BEGIN(testStructSizes)
 		} S;
 	 	
 		size_t size;
-		DCstruct* s = dcNewStruct(3, DEFAULT_ALIGNMENT);
+		DCstruct* s = dcNewStruct(3, DEFAULT_STRUCT_ALIGNMENT);
 		dcStructField(s, DC_SIGCHAR_SHORT, DEFAULT_ALIGNMENT, 1);
-		dcSubStruct(s, 3, DEFAULT_ALIGNMENT, 1);
+		dcSubStruct(s, 3, DEFAULT_STRUCT_ALIGNMENT, 1);
 		dcStructField(s, DC_SIGCHAR_CHAR, DEFAULT_ALIGNMENT, 1);
 		dcStructField(s, DC_SIGCHAR_CHAR, DEFAULT_ALIGNMENT, 1);
 		dcStructField(s, DC_SIGCHAR_POINTER, DEFAULT_ALIGNMENT, 3);
@@ -96,39 +145,40 @@ DC_DEFINE_TEST_FUNC_BEGIN(testStructSizes)
 		dcStructField(s, DC_SIGCHAR_SHORT, DEFAULT_ALIGNMENT, 1);
 		dcCloseStruct(s);
 
-		DC_TEST_STRUCT_SIZE(S, s);
+		DC_TEST_STRUCT_SIZE("s{cc[ppp]}s", S, s);
 		dcFreeStruct(s);
 	}
 
-#define TEST_MONO_STRUCT(type, sig) \
+#define TEST_MONO_STRUCT(sig, type, sigchar) \
 	{ \
 		typedef struct { \
 			type v; \
 		} S; \
 		 \
-		DCstruct* s = dcNewStruct(1, DEFAULT_ALIGNMENT); \
-		dcStructField(s, sig, DEFAULT_ALIGNMENT, 1); \
+		DCstruct* s = dcNewStruct(1, DEFAULT_STRUCT_ALIGNMENT); \
+		dcStructField(s, sigchar, DEFAULT_ALIGNMENT, 1); \
 		dcCloseStruct(s); \
 		 \
-		DC_TEST_STRUCT_SIZE(S, s); \
+		DC_TEST_STRUCT_SIZE(sig, S, s); \
 		dcFreeStruct(s); \
 	}
 
-	TEST_MONO_STRUCT(char,               DC_SIGCHAR_CHAR);
-	TEST_MONO_STRUCT(unsigned char,      DC_SIGCHAR_UCHAR);
-	TEST_MONO_STRUCT(short,              DC_SIGCHAR_SHORT);
-	TEST_MONO_STRUCT(unsigned short,     DC_SIGCHAR_USHORT);
-	TEST_MONO_STRUCT(int,                DC_SIGCHAR_INT);
-	TEST_MONO_STRUCT(unsigned int,       DC_SIGCHAR_UINT);
-	TEST_MONO_STRUCT(long,               DC_SIGCHAR_LONG);
-	TEST_MONO_STRUCT(unsigned long,      DC_SIGCHAR_ULONG);
-	TEST_MONO_STRUCT(long long,          DC_SIGCHAR_LONGLONG);
-	TEST_MONO_STRUCT(unsigned long long, DC_SIGCHAR_ULONGLONG);
-	TEST_MONO_STRUCT(void*,              DC_SIGCHAR_POINTER);
-	TEST_MONO_STRUCT(float,              DC_SIGCHAR_FLOAT);
-	TEST_MONO_STRUCT(double,             DC_SIGCHAR_DOUBLE);
+	TEST_MONO_STRUCT("c", char,               DC_SIGCHAR_CHAR);      // 4 on plan 9 |
+	TEST_MONO_STRUCT("C", unsigned char,      DC_SIGCHAR_UCHAR);     // 4 on plan 9 |
+	TEST_MONO_STRUCT("s", short,              DC_SIGCHAR_SHORT);     // 4 on plan 9 |  minimal size of a struct, period?
+	TEST_MONO_STRUCT("S", unsigned short,     DC_SIGCHAR_USHORT);    // 4 on plan 9 |
+	TEST_MONO_STRUCT("i", int,                DC_SIGCHAR_INT);
+	TEST_MONO_STRUCT("I", unsigned int,       DC_SIGCHAR_UINT);
+	TEST_MONO_STRUCT("j", long,               DC_SIGCHAR_LONG);
+	TEST_MONO_STRUCT("J", unsigned long,      DC_SIGCHAR_ULONG);
+	TEST_MONO_STRUCT("l", long long,          DC_SIGCHAR_LONGLONG);
+	TEST_MONO_STRUCT("L", unsigned long long, DC_SIGCHAR_ULONGLONG);
+	TEST_MONO_STRUCT("p", void*,              DC_SIGCHAR_POINTER);
+	TEST_MONO_STRUCT("f", float,              DC_SIGCHAR_FLOAT);
+	TEST_MONO_STRUCT("d", double,             DC_SIGCHAR_DOUBLE);
 
-DC_DEFINE_TEST_FUNC_END
+	return ret;
+}
 
 
 
@@ -156,19 +206,21 @@ double sum_SomeValues(SomeValues values)
 }
 
 
-DC_DEFINE_TEST_FUNC_BEGIN(testCallStructs)
+/*int testCallStructs()
+{
+	int ret = 1;
 
 	DCCallVM* pc = dcNewCallVM(4096);
 	{
 		FewValues values;
 		double calledSum, expectedSum;
-		DCstruct* s = dcNewStruct(3, DEFAULT_ALIGNMENT);
+		DCstruct* s = dcNewStruct(3, DEFAULT_STRUCT_ALIGNMENT);
 		dcStructField(s, DC_SIGCHAR_CHAR, DEFAULT_ALIGNMENT, 1);
 		dcStructField(s, DC_SIGCHAR_CHAR, DEFAULT_ALIGNMENT, 1);
 		dcStructField(s, DC_SIGCHAR_CHAR, DEFAULT_ALIGNMENT, 1);
 		dcCloseStruct(s);
 
-		DC_TEST_STRUCT_SIZE(FewValues, s);
+		DC_TEST_STRUCT_SIZE("ccc", FewValues, s);
 
 		values.a = 1;
 		values.b = 2;
@@ -188,13 +240,13 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallStructs)
 	{
 		SomeValues values;
 		double calledSum, expectedSum;
-		DCstruct* s = dcNewStruct(3, DEFAULT_ALIGNMENT);
+		DCstruct* s = dcNewStruct(3, DEFAULT_STRUCT_ALIGNMENT);
 		dcStructField(s, DC_SIGCHAR_CHAR, DEFAULT_ALIGNMENT, 1);
 		dcStructField(s, DC_SIGCHAR_CHAR, DEFAULT_ALIGNMENT, 1);
 		dcStructField(s, DC_SIGCHAR_DOUBLE, DEFAULT_ALIGNMENT, 10);
 		dcCloseStruct(s);
 
-		DC_TEST_STRUCT_SIZE(SomeValues, s);
+		DC_TEST_STRUCT_SIZE("ccd", SomeValues, s);
 
 		values.a = 1;
 		values.b = 2;
@@ -214,5 +266,6 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallStructs)
 
 	dcFree(pc);
 
-DC_DEFINE_TEST_FUNC_END
+	return ret;
+}*/
 

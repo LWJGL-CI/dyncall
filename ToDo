@@ -1,5 +1,6 @@
 1.1:
 ----
+- test code: add sparc tests for when out of register windows, meaning multiple layers deep in the call stack
 - ./configure on macOS does not pass CFLAGS etc.. to Makefile.config
 - support platforms without shared libraries so they can be built by just typing `./configure;make` (e.g. minix < 3.2.1)
   * also make sure minix with shared library support builds and works in general (>= 3.2.1) as well as ELF on Minix (>= 3.2.0) to begin with (as that's the base, and we only test on 3.1.8 so far)
@@ -10,7 +11,7 @@
 
 - dyncallback's "stack_cleanup" can be removed from non x86 impls... test if they still work
 - target a minimum c version, for use with -pedantic, etc.? Right now we use e.g. extensions
-  for anon structs, etc.
+  for anon structs, etc. -> we do now target c99
 - the CallVM-free functions are per VTable, however the latter can be changed out
   at runtime... which basically changes potentially the deallocator...
   same goes for functions setting the mode. think about how to make this safer - currently
@@ -43,8 +44,8 @@
   be used to test dycnall bindings
 - pkg-config support?
 - quadmath support (long double)
-- add tests using alloca(), as this might depend on the frame pointer being correctly
-  set; we don't check for this, currently, at all
+- add tests using alloca(), as this might depend on the frame pointer being correctly set (we don't
+  check for this, currently, at all - but might not affect dyncall's stubs, anyways) - verify
 
 portasm:
 --------
@@ -63,14 +64,11 @@ dyncall:
 - consider automatic type-promotion for arguments passed through DC_CALL_C_ELLIPSIS_VARARGS;
   this would make it easier to just pass arguments instead of having to know about the C
   type promotions (this is partly done, see todo-item above under 1.1)
-- syscalls for x64
-  * bsd
-  * linux
 - other syscalls
-- MIPS32 softfloat support (-msoft-float)
 - test MIPS32 eabi big endian (current port works on psp, which is little endian)
 - implement MIPS64 N32 (gcc -mabi=n32); both, little and big-endian (looks like NetNBSD on and
   EdgeRouter lite uses this: https://blog.netbsd.org/tnf/entry/hands_on_experience_with_edgerouter)
+- MIPS64 n32 softfloat support (-msoft-float)
 - implement MIPS64 EABI (gcc -mabi=eabi); both, little and big-endian
 - support for Minix/arm
 - improve ellipsis test:
@@ -80,10 +78,8 @@ dyncall:
 
 dynload:
 --------
-- RTLD_LAZY in darwin, why not in unix?
 - dlGetLibraryPath: dl_iterate_phdr() used on OpenBSD, but not available on version < 3.7
 - bug: test/nm crashes on qemu mips linux o32 debian etch
-- test/resolve_self crashes/asserts on windows and bsds
 - rename SymsInit to InitSyms and similar for cleanup function to reflect naming
   in dyncall
 - get rid of Dl_info and friends (_GNU_SOURCE) in dynload/dynload_syms_elf.c
@@ -110,11 +106,10 @@ dyncallback:
 - callback_plain's return value not correct anymore on NDS (maybe just broken testcode?),
   see above under 1.1 items
   * check other platforms also, if asm stub initializes retval space, correctly
-- finish PPC32 callbacks (see bugs section, below, BSD not working)
-- MIPS32 softfloat support (-msoft-float)
 - test MIPS32 eabi big endian (current port works on psp, which is little endian)
 - implement MIPS64 N32 (gcc -mabi=n32); both, little and big-endian (looks like NetNBSD on and
   EdgeRouter lite uses this: https://blog.netbsd.org/tnf/entry/hands_on_experience_with_edgerouter)
+- MIPS64 n32 softfloat support (-msoft-float)
 - implement MIPS64 EABI (gcc -mabi=eabi); both, little and big-endian
 - support for Minix/arm
 
@@ -135,11 +130,9 @@ bindings:
 manual:
 -------
 - introduce doc overview tables and common vocab for calling convention specifics, following example of table on page 13 of https://www.linux-mips.org/pub/linux/mips/doc/ABI/MIPS-N32-ABI-Handbook.pdf; also as inspiration, e.g. user 'preserved' instead of 'permanent', etc. https://developer.apple.com/library/content/documentation/Xcode/Conceptual/iPhoneOSABIReference/Articles/ARMv6FunctionCallingConventions.html#//apple_ref/doc/uid/TP40009021-SW4
+  * also, get inspiration for naming for GCC predefs as talked about in https://stffrdhrn.github.io/software/embedded/openrisc/2018/06/08/gcc_stack_frames.html
 - make stack layout diagrams better, e.g. add grow direction (example: https://developer.apple.com/library/content/documentation/Xcode/Conceptual/iPhoneOSABIReference/art/arm_stack.jpg on https://developer.apple.com/library/content/documentation/Xcode/Conceptual/iPhoneOSABIReference/Articles/ARMv6FunctionCallingConventions.html#//apple_ref/doc/uid/TP40009021-SW1)
-- callconv diagrams:
-  * good idea to review it all, anyways, if the calling conventions are actually
-    represented correctly (and if they are in sync with the .pdf, we used to have
-    problems with multirow.4ht)
+  * another example, chapter 3 of: ftp://www.sourceware.org/pub/binutils/ppc-docs/ppc-poweropen/
 - provide more examples on how to use dyncall, dynload and dyncallback
   * e.g. enhance manual with a couple of examples (e.g. calling MessageBoxA on windows, etc.)
 - manuals for bindings (as stated in bindings-section, above)
@@ -152,7 +145,6 @@ regressions:
   on default installations (one has to install the system headers)
   * add to doc
 - Solaris/gmake build doesn't build dynload and tests anymore (maybe not even dyncallback)
-- test arm32/ATPCS/THUMB (and then change Status in doc Appendix)
 - look over code and fix TODO or @@@ marks
 - add ppc-support to doc (both, 32 and 64, as well as little and big endian remarks)
 
@@ -162,7 +154,12 @@ nice to have:
 - consistency: on x64 platforms: make both ABIs available ('win64','sysv') for all x64 OS ports
 - microsoft build enhancement: autodetect assembly via C preprocessor (like with .S gcc files)
 - test/thunk: some platforms do not allow for allocation of executable code on heap and stack -- 
-  currently this test will crash, maybe we should collect information which platforms allow and which not.
+  currently this test will segfault (handled), maybe we should collect information which platforms allow and which not.
+- PSP
+	- automate ppsspp stuff, seems to print to stdout for callback_suite? but not for call_suite.. (?)
+	- fix link with dummy versions of the following for test-bins:
+		void __stack_chk_fail(){}
+		void __stack_chk_guard(){}
 
 bugs:
 -----

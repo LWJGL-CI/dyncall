@@ -2,7 +2,7 @@
 
  Package: dyncall
  Library: dyncallback
- File: dyncallback/dyncall_callback_mips_o32_gas.s
+ File: dyncallback/dyncall_callback_mips_o32.S
  Description: Callback Thunk - Implementation mips32 o32
  License:
 
@@ -60,18 +60,22 @@ dcCallbackThunkEntry:
 	/* For $4-$7 ($a0-$a3), use dedicated spill area (caller doesn't spill, but */
 	/* provides it at end of _caller's_ frame, so $fp points right to it).      */
 	/* For $f12 and $f14 use our space (in local data), which is adjacent.      */
-	s.d $f12, 40($sp) /* -16($fp) */
-	s.d $f14, 48($sp) /*  -8($fp) */
-	sw $4,    56($sp) /*   0($fp) */
-	sw $5,    60($sp) /*   4($fp) */
-	sw $6,    64($sp) /*   8($fp) */
-	sw $7,    68($sp) /*  12($fp) */
+#if defined(DC__ABI_HARDFLOAT)
+	s.d $f12, 40($sp)   /* -16($fp) */
+	s.d $f14, 48($sp)   /*  -8($fp) */
+#endif /* DC__ABI_HARDFLOAT */
+	sw $4,    56($sp)   /*   0($fp) */
+	sw $5,    60($sp)   /*   4($fp) */
+	sw $6,    64($sp)   /*   8($fp) */
+	sw $7,    68($sp)   /*  12($fp) */
 
 	/* Init DCArg, which contains reg_count and stackptr* to the args. Point  */
 	/* stackptr to the area where the non-float args start (which is at $fp). */
-	addiu $4, $sp, 56 /* non-$fp replacement for: */
-	sw    $4, 28($sp) /*   sw $fp, 28($sp) */
-	sw $zero, 24($sp)
+	addiu $4, $sp, 56   /* <- non-$fp replacement for: */
+	sw    $4, 28($sp)   /* <-   sw $fp, 28($sp)        */
+#if defined(DC__ABI_HARDFLOAT)
+	sw $zero, 24($sp)   /* init num float-regs (unused for soft-float) */
+#endif /* DC__ABI_HARDFLOAT */
 
 	/* Prepare callback handler call. */
 	move  $4, $12       /* Param 0 = DCCallback*, $12 ($t4) holds pointer to thunk */
@@ -83,10 +87,22 @@ dcCallbackThunkEntry:
 	jalr  $25           /* jump */
 	nop                 /* branch delay nop */
 
-	/* Copy result in corresponding registers $2-$3 ($v0-$v1) and $f0 */
-	lw     $2, 32($sp)
-	lw     $3, 36($sp)
+	/* Copy result to corresponding registers */
+	/* Handle single precision soft-float retvals differently on big-endian */
+	/* targets as they are right-justified in their 8b stack lots           */
+#if !defined(DC__ABI_HARDFLOAT) && defined(DC__Endian_BIG)
+	xori  $4, $2, 'f'   /* $4 = 0 if cb-handler returned 'f' in $2 */
+#endif
+	lw    $2, 32($sp)
+	lw    $3, 36($sp)
+#if defined(DC__ABI_HARDFLOAT)
 	l.d   $f0, 32($sp)
+#elif defined(DC__Endian_BIG)
+	bgtz  $4, .nonf32r  /* if no 'f' returned, $2 and $3 are good */
+	nop                 /* branch delay nop */
+	move  $2, $3
+.nonf32r:
+#endif /* DC__ABI_HARDFLOAT */
 
 	/* Epilog. Tear down frame and return. */
 	lw    $ra, 20($sp)  /* restore return address */

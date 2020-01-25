@@ -47,6 +47,9 @@ struct DCRegData_ppc64_
 
 void     dcCall_ppc64(DCpointer target, struct DCRegData_ppc64_* ppc64data, DCsize stksize, DCpointer stkdata);
 
+/* syscall */
+void     dcCall_ppc64_syscall(DCpointer target, struct DCRegData_ppc64_* ppc64data, DCsize stksize, DCpointer stkdata);
+
 #ifdef __cplusplus
 }
 #endif

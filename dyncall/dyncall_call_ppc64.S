@@ -197,7 +197,7 @@ ENTRY_C(dcCall_ppc64_syscall)
 	ld  r5 ,16(r11)
 	ld  r6 ,24(r11)
 	ld  r7 ,32(r11)
-	
+	/* @@@ missing r8,r9,10 on some platforms? */
 	sc                    /* system call */
 
 	/* epilog */

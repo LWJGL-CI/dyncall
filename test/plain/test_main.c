@@ -3,10 +3,10 @@
  Package: dyncall
  Library: test
  File: test/plain/test_main.c
- Description: 
+ Description:
  License:
 
-   Copyright (c) 2007-2018 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2007-2019 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -26,18 +26,17 @@
 
 
 
-#include "../common/test_framework.h"
 #include "../../dyncall/dyncall.h"
 #include "../common/platformInit.h"
 #include "../common/platformInit.c" /* Impl. for functions only used in this translation unit */
 
 
-/* ------------------------------------------------------------------------- 
- * test: identity function calls 
+/* -------------------------------------------------------------------------
+ * test: identity function calls
  * ------------------------------------------------------------------------- */
 
 #define DEF_FUNCS(API,NAME) \
-void       API fun_##NAME##_v()             {           } \
+void       API fun_##NAME##_v()             { g_void_testval = 1; } \
 DCbool     API fun_##NAME##_b(DCbool x)     { return x; } \
 DCint      API fun_##NAME##_i(DCint x)      { return x; } \
 DClong     API fun_##NAME##_j(DClong x)     { return x; } \
@@ -49,32 +48,38 @@ DCpointer  API fun_##NAME##_p(DCpointer  x) { return x; }
 /* __cdecl */
 
 #if !defined(DC__OS_Win32)
-#  define __declspec(X)
 #  define __cdecl
 #endif
 
+int g_void_testval;
 DEF_FUNCS(__cdecl,c)
 
-DC_DEFINE_TEST_FUNC_BEGIN(testCallC)
+int testCallC()
+{
+  int ret = 1;
 
   DCCallVM* pc = dcNewCallVM(4096);
   dcMode(pc,DC_CALL_C_DEFAULT);
   /* void */
   dcReset(pc);
+  g_void_testval = 0;
   dcCallVoid(pc, (DCpointer) &fun_c_v);
+  ret = g_void_testval && ret;
   /* bool */
   {
-    DCbool r, val=DC_TRUE; 
+    DCbool r, val=DC_TRUE;
     dcReset(pc);
     dcArgBool(pc, val);
     r = dcCallBool(pc, (DCpointer) &fun_c_b);
-    DC_TEST(r == val);
+    printf("bt (cdecl): %d\n", (r == val));
+	ret = (r == val) && ret;
 
     val=DC_FALSE;
     dcReset(pc);
     dcArgBool(pc, val);
     r = dcCallBool(pc, (DCpointer) &fun_c_b);
-    DC_TEST(r == val);
+    printf("bf (cdecl): %d\n", (r == val));
+	ret = (r == val) && ret;
   }
   /* int */
   {
@@ -82,7 +87,8 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallC)
     dcReset(pc);
     dcArgInt(pc, val);
     r = dcCallInt(pc, (DCpointer) &fun_c_i);
-    DC_TEST(r == val);
+    printf("i  (cdecl): %d\n", (r == val));
+	ret = (r == val) && ret;
   }
   /* long */
   {
@@ -90,7 +96,8 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallC)
     dcReset(pc);
     dcArgLong(pc, val);
     r = dcCallLong(pc, (DCpointer) &fun_c_j);
-    DC_TEST(r == val);
+    printf("l  (cdecl): %d\n", (r == val));
+	ret = (r == val) && ret;
   }
   /* long long */
   {
@@ -98,7 +105,8 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallC)
     dcReset(pc);
     dcArgLongLong(pc, val);
     r = dcCallLongLong(pc, (DCpointer) &fun_c_l);
-    DC_TEST(r == (DClonglong)val);
+    printf("ll (cdecl): %d\n", (r == (DClonglong)val));
+	ret = (r == (DClonglong)val) && ret;
   }
   /* float */
   {
@@ -106,7 +114,8 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallC)
     dcReset(pc);
     dcArgFloat(pc, val);
     r = dcCallFloat(pc, (DCpointer) &fun_c_f);
-    DC_TEST(r == val);
+    printf("f  (cdecl): %d\n", (r == val));
+	ret = (r == val) && ret;
   }
   /* double */
   {
@@ -114,7 +123,8 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallC)
     dcReset(pc);
     dcArgDouble(pc, val);
     r = dcCallDouble(pc, (DCpointer) &fun_c_d);
-    DC_TEST(r == val);
+    printf("d  (cdecl): %d\n", (r == val));
+	ret = (r == val) && ret;
   }
   /* ptr */
   {
@@ -122,38 +132,46 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallC)
     dcReset(pc);
     dcArgPointer(pc, (DCpointer) &fun_c_b);
     r = dcCallPointer(pc, (DCpointer) &fun_c_p);
-    DC_TEST(r == (DCpointer) &fun_c_b);
+    printf("p  (cdecl): %d\n", (r == (DCpointer) &fun_c_b));
+	ret = (r == (DCpointer) &fun_c_b) && ret;
   }
   dcFree(pc);
 
-DC_DEFINE_TEST_FUNC_END
+  return ret;
+}
 
 
-#ifdef DC__OS_Win32
+#if defined(DC__OS_Win32)
 /* win32 __stdcall */
 
 DEF_FUNCS(__stdcall,std)
 
-DC_DEFINE_TEST_FUNC_BEGIN(testCallStd)
+int testCallStd()
+{
+  int ret = 1;
 
   DCCallVM* pc = dcNewCallVM(4096);
   dcMode(pc,DC_CALL_C_X86_WIN32_STD);
   /* void */
   dcReset(pc);
+  g_void_testval = 0;
   dcCallVoid(pc, (DCpointer) &fun_std_v);
+  ret = g_void_testval && ret;
   /* bool */
   {
     DCbool r, val=DC_TRUE;
     dcReset(pc);
     dcArgBool(pc, val);
     r = dcCallBool(pc, (DCpointer) &fun_std_b);
-    DC_TEST(r == val);
+    printf("bt (stdcall): %d\n", (r == val));
+	ret = (r == val) && ret;
 
     val=DC_FALSE;
     dcReset(pc);
     dcArgBool(pc, val);
     r = dcCallBool(pc, (DCpointer) &fun_std_b);
-    DC_TEST(r == val);
+    printf("bf (stdcall): %d\n", (r == val));
+	ret = (r == val) && ret;
   }
   /* int */
   {
@@ -161,7 +179,8 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallStd)
     dcReset(pc);
     dcArgInt(pc, val);
     r = dcCallInt(pc, (DCpointer) &fun_std_i);
-    DC_TEST(r == val);
+    printf("i  (stdcall): %d\n", (r == val));
+	ret = (r == val) && ret;
   }
   /* long */
   {
@@ -169,7 +188,8 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallStd)
     dcReset(pc);
     dcArgLong(pc, val);
     r = dcCallLong(pc, (DCpointer) &fun_std_j);
-    DC_TEST(r == val);
+    printf("l  (stdcall): %d\n", (r == val));
+	ret = (r == val) && ret;
   }
   /* long long */
   {
@@ -177,7 +197,8 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallStd)
     dcReset(pc);
     dcArgLongLong(pc, val);
     r = dcCallLongLong(pc, (DCpointer) &fun_std_l);
-    DC_TEST(r == val);
+    printf("ll (stdcall): %d\n", (r == val));
+	ret = (r == val) && ret;
   }
   /* float */
   {
@@ -185,7 +206,8 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallStd)
     dcReset(pc);
     dcArgFloat(pc, val);
     r = dcCallFloat(pc, (DCpointer) &fun_std_f);
-    DC_TEST(r == val);
+    printf("f  (stdcall): %d\n", (r == val));
+	ret = (r == val) && ret;
   }
   /* double */
   {
@@ -193,7 +215,8 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallStd)
     dcReset(pc);
     dcArgDouble(pc, val);
     r = dcCallDouble(pc, (DCpointer) &fun_std_d);
-    DC_TEST(r == val);
+    printf("d  (stdcall): %d\n", (r == val));
+	ret = (r == val) && ret;
   }
   /* ptr */
   {
@@ -201,44 +224,54 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallStd)
     dcReset(pc);
     dcArgPointer(pc, (DCpointer) &fun_c_b);
     r = dcCallPointer(pc, (DCpointer) &fun_std_p);
-    DC_TEST(r == &fun_c_b);
+    printf("p  (stdcall): %d\n", (r == &fun_c_b));
+	ret = (r == &fun_c_b) && ret;
   }
   dcFree(pc);
 
-DC_DEFINE_TEST_FUNC_END
+  return ret;
+}
 
 #endif
 
 
-#ifdef DC__OS_Win32
+#if defined(DC__OS_Win32)
 /* win32 __fastcall */
 
 DEF_FUNCS(__fastcall,fast)
 
-DC_DEFINE_TEST_FUNC_BEGIN(testCallFast)
+int testCallFast()
+{
+  int ret = 1;
 
   DCCallVM* pc = dcNewCallVM(4096);
 #ifdef DC__C_GNU
+# define FT "GNU"
   dcMode(pc,DC_CALL_C_X86_WIN32_FAST_GNU);
 #else
+# define FT "MS"
   dcMode(pc,DC_CALL_C_X86_WIN32_FAST_MS);
 #endif
   /* void */
   dcReset(pc);
+  g_void_testval = 0;
   dcCallVoid(pc, (DCpointer) &fun_fast_v);
+  ret = g_void_testval && ret;
   /* bool */
   {
     DCbool r, val=DC_TRUE;
     dcReset(pc);
     dcArgBool(pc, val);
     r = dcCallBool(pc, (DCpointer) &fun_fast_b);
-    DC_TEST(r == val);
+    printf("bt ("FT"fastcall): %d\n", (r == val));
+	ret = (r == val) && ret;
 
     val=DC_FALSE;
     dcReset(pc);
     dcArgBool(pc, val);
     r = dcCallBool(pc, (DCpointer) &fun_fast_b);
-    DC_TEST(r == val);
+    printf("bf ("FT"fastcall): %d\n", (r == val));
+	ret = (r == val) && ret;
   }
   /* int */
   {
@@ -246,7 +279,8 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallFast)
     dcReset(pc);
     dcArgInt(pc, val);
     r = dcCallInt(pc, (DCpointer) &fun_fast_i);
-    DC_TEST(r == val);
+    printf("i  ("FT"fastcall): %d\n", (r == val));
+	ret = (r == val) && ret;
   }
   /* long */
   {
@@ -254,7 +288,8 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallFast)
     dcReset(pc);
     dcArgLong(pc, val);
     r = dcCallLong(pc, (DCpointer) &fun_fast_j);
-    DC_TEST(r == val);
+    printf("l  ("FT"fastcall): %d\n", (r == val));
+	ret = (r == val) && ret;
   }
   /* long long */
   {
@@ -262,7 +297,8 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallFast)
     dcReset(pc);
     dcArgLongLong(pc, val);
     r = dcCallLongLong(pc, (DCpointer) &fun_fast_l);
-    DC_TEST(r == val);
+    printf("ll ("FT"fastcall): %d\n", (r == val));
+	ret = (r == val) && ret;
   }
   /* float */
   {
@@ -270,7 +306,8 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallFast)
     dcReset(pc);
     dcArgFloat(pc, val);
     r = dcCallFloat(pc, (DCpointer) &fun_fast_f);
-    DC_TEST(r == val);
+    printf("f  ("FT"fastcall): %d\n", (r == val));
+	ret = (r == val) && ret;
   }
   /* double */
   {
@@ -278,7 +315,8 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallFast)
     dcReset(pc);
     dcArgDouble(pc, val);
     r = dcCallDouble(pc, (DCpointer) &fun_fast_d);
-    DC_TEST(r == val);
+    printf("d  ("FT"fastcall): %d\n", (r == val));
+	ret = (r == val) && ret;
   }
   /* ptr */
   {
@@ -286,47 +324,37 @@ DC_DEFINE_TEST_FUNC_BEGIN(testCallFast)
     dcReset(pc);
     dcArgPointer(pc, (DCpointer) &fun_c_b);
     r = dcCallPointer(pc, (DCpointer) &fun_fast_p);
-    DC_TEST(r == &fun_c_b);
+    printf("p  ("FT"fastcall): %d\n", (r == &fun_c_b));
+	ret = (r == &fun_c_b) && ret;
   }
   dcFree(pc);
 
-DC_DEFINE_TEST_FUNC_END
+  return ret;
+}
+
 #endif
+
 
 int testCallStructs();
 int testStructSizes();
+
 int main(int argc, char* argv[])
 {
-  int b = TRUE;
+  int r = 1;
   dcTest_initPlatform();
-  
-  b = b && testCallC();
-  printf("C:%d\n",b);
 
-  b = b && testStructSizes();
-  printf("Struct Sizes:%d\n",b);
-
-  /*b = b && testCallStructs();
-  printf("Call Structs:%d\n",b);*/
-
+  r = testCallC() && r;
+  r = testStructSizes() && r;
+  /*r = testCallStructs() && r;*/
 #if defined(DC__OS_Win32)
-  
-  b = b && testCallStd();
-  printf("Std:%d\n",b);
-
-  b = b && testCallFast();
-#ifdef DC__C_GNU
-  printf("FastGNU:%d\n",b);
-#else
-  printf("FastMS:%d\n",b);
+  r = testCallStd() && r;
+  r = testCallFast() && r;
 #endif
 
-#endif
-
-  printf("result: plain: %d\n", b);
+  printf("result: plain: %d\n", r);
 
   dcTest_deInitPlatform();
 
-  return !b;
+  return !r;
 }
 

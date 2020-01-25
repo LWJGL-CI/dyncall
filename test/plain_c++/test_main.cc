@@ -3,10 +3,10 @@
  Package: dyncall
  Library: test
  File: test/plain_c++/test_main.cc
- Description: 
+ Description:
  License:
 
-   Copyright (c) 2007-2018 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2007-2019 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -26,14 +26,25 @@
 
 
 
-#include "../common/test_framework.h"
 #include "../../dyncall/dyncall.h"
 #include "../common/platformInit.h"
 #include "../common/platformInit.c" /* Impl. for functions only used in this translation unit */
 
 
-/* ------------------------------------------------------------------------- 
- * test: identity function calls 
+#include <signal.h>
+#include <setjmp.h>
+
+jmp_buf jbuf;
+
+
+void segv_handler(int sig)
+{
+  longjmp(jbuf, 1);
+}
+
+
+/* -------------------------------------------------------------------------
+ * test: identity function calls
  * ------------------------------------------------------------------------- */
 
 #define DEF_FUNCS(API,NAME) \
@@ -49,13 +60,12 @@ DCpointer  API fun_##NAME##_p(DCpointer  x) { return x; }
 /* __cdecl */
 
 #if !defined(DC__OS_Win32)
-#  define __declspec(X)
 #  define __cdecl
 #endif
 
 
-/* ------------------------------------------------------------------------- 
- * test: identity this calls 
+/* -------------------------------------------------------------------------
+ * test: identity this calls
  * ------------------------------------------------------------------------- */
 
 union ValueUnion
@@ -75,7 +85,7 @@ union ValueUnion
 
 /*
  * the layout of the VTable is non-standard and it is not clear what is the initial real first method index.
- * so for it turns out that: 
+ * so far it turns out that:
  * on vc/x86  : 1
  * on GCC/x86 : 2
  */
@@ -150,8 +160,9 @@ private:
 };
 
 template<typename T>
-void testCallValue(DCCallVM* pc)
+bool testCallValue(DCCallVM* pc, const char* name)
 {
+  bool r = true, b;
   T o;
   T* pThis = &o;
   DCpointer* vtbl =  *( (DCpointer**) pThis ); /* vtbl is located at beginning of class */
@@ -164,7 +175,10 @@ void testCallValue(DCCallVM* pc)
   dcCallVoid(pc, vtbl[VTBI_SET_BOOL] );
   dcReset(pc);
   dcArgPointer(pc, pThis);
-  DC_TEST( dcCallBool(pc, vtbl[VTBI_GET_BOOL] ) == DC_TRUE );
+  b = ( dcCallBool(pc, vtbl[VTBI_GET_BOOL] ) == DC_TRUE );
+  printf("bt (%s): %d\n", name, b);
+  r = r && b;
+
   /* set/get bool (FALSE) */
 
   dcReset(pc);
@@ -173,7 +187,9 @@ void testCallValue(DCCallVM* pc)
   dcCallVoid(pc, vtbl[VTBI_SET_BOOL] );
   dcReset(pc);
   dcArgPointer(pc, pThis);
-  DC_TEST( dcCallBool(pc, vtbl[VTBI_GET_BOOL] ) == DC_FALSE );
+  b = ( dcCallBool(pc, vtbl[VTBI_GET_BOOL] ) == DC_FALSE );
+  printf("bf (%s): %d\n", name, b);
+  r = r && b;
 
   /* set/get int */
 
@@ -183,7 +199,9 @@ void testCallValue(DCCallVM* pc)
   dcCallVoid(pc, vtbl[VTBI_SET_INT] );
   dcReset(pc);
   dcArgPointer(pc, pThis);
-  DC_TEST( dcCallInt(pc, vtbl[VTBI_GET_INT] ) == 1234 );
+  b = ( dcCallInt(pc, vtbl[VTBI_GET_INT] ) == 1234 );
+  printf("i  (%s): %d\n", name, b);
+  r = r && b;
 
   /* set/get long */
 
@@ -193,7 +211,9 @@ void testCallValue(DCCallVM* pc)
   dcCallVoid(pc, vtbl[VTBI_SET_LONG] );
   dcReset(pc);
   dcArgPointer(pc, pThis);
-  DC_TEST( dcCallLong(pc, vtbl[VTBI_GET_LONG] ) == (DClong)0xCAFEBABEUL );
+  b = ( dcCallLong(pc, vtbl[VTBI_GET_LONG] ) == (DClong)0xCAFEBABEUL );
+  printf("l  (%s): %d\n", name, b);
+  r = r && b;
 
   /* set/get long long */
 
@@ -203,7 +223,9 @@ void testCallValue(DCCallVM* pc)
   dcCallVoid(pc, vtbl[VTBI_SET_LONG_LONG] );
   dcReset(pc);
   dcArgPointer(pc, pThis);
-  DC_TEST( dcCallLongLong(pc, vtbl[VTBI_GET_LONG_LONG] ) == (DClonglong)0xCAFEBABEDEADC0DELL );
+  b = ( dcCallLongLong(pc, vtbl[VTBI_GET_LONG_LONG] ) == (DClonglong)0xCAFEBABEDEADC0DELL );
+  printf("ll (%s): %d\n", name, b);
+  r = r && b;
 
   /* set/get float */
 
@@ -213,7 +235,9 @@ void testCallValue(DCCallVM* pc)
   dcCallVoid(pc, vtbl[VTBI_SET_FLOAT] );
   dcReset(pc);
   dcArgPointer(pc, pThis);
-  DC_TEST( dcCallFloat(pc, vtbl[VTBI_GET_FLOAT] ) == 1.2345f );
+  b = ( dcCallFloat(pc, vtbl[VTBI_GET_FLOAT] ) == 1.2345f );
+  printf("f  (%s): %d\n", name, b);
+  r = r && b;
 
   /* set/get double */
 
@@ -223,7 +247,9 @@ void testCallValue(DCCallVM* pc)
   dcCallVoid(pc, vtbl[VTBI_SET_DOUBLE] );
   dcReset(pc);
   dcArgPointer(pc, pThis);
-  DC_TEST( dcCallDouble(pc, vtbl[VTBI_GET_DOUBLE] ) == 1.23456789 );
+  b = ( dcCallDouble(pc, vtbl[VTBI_GET_DOUBLE] ) == 1.23456789 );
+  printf("d  (%s): %d\n", name, b);
+  r = r && b;
 
   /* set/get pointer */
 
@@ -233,33 +259,45 @@ void testCallValue(DCCallVM* pc)
   dcCallVoid(pc, vtbl[VTBI_SET_POINTER] );
   dcReset(pc);
   dcArgPointer(pc, pThis);
-  DC_TEST( dcCallPointer(pc, vtbl[VTBI_GET_POINTER] ) == ( (DCpointer) 0xCAFEBABE ) );
+  b = ( dcCallPointer(pc, vtbl[VTBI_GET_POINTER] ) == ( (DCpointer) 0xCAFEBABE ) );
+  printf("p  (%s): %d\n", name, b);
+  r = r && b;
+
+  return r;
 }
 
 
-#ifdef DC__OS_Win32
+#if defined(DC__OS_Win32)
 
-DC_DEFINE_TEST_FUNC_BEGIN(testCallThisMS)
-
+int testCallThisMS()
+{
+  bool r = false;
   DCCallVM* pc = dcNewCallVM(4096);
-  dcMode(pc,DC_CALL_C_X86_WIN32_THIS_MS);
+  dcMode(pc, DC_CALL_C_X86_WIN32_THIS_MS);
   dcReset(pc);
-  testCallValue<ValueMS>(pc); 
+  if(setjmp(jbuf) != 0)
+    printf("sigsegv\n");
+  else
+    r = testCallValue<ValueMS>(pc, "MS");
   dcFree(pc);
-
-DC_DEFINE_TEST_FUNC_END
+  return r;
+}
 
 #endif
 
 
-DC_DEFINE_TEST_FUNC_BEGIN(testCallThisC)
-
+int testCallThisC()
+{
+  bool r = false;
   DCCallVM* pc = dcNewCallVM(4096);
   dcReset(pc);
-  testCallValue<Value>(pc); 
+  if(setjmp(jbuf) != 0)
+    printf("sigsegv\n");
+  else
+    r = testCallValue<Value>(pc, "c");
   dcFree(pc);
-
-DC_DEFINE_TEST_FUNC_END
+  return r;
+}
 
 
 extern "C" {
@@ -268,25 +306,20 @@ int main(int argc, char* argv[])
 {
   dcTest_initPlatform();
 
-  int b = TRUE;
-  
-#if defined(DC__OS_Win32)	// ThisCall temporarily only for win 32 @@@
-  
-  b = b && testCallThisC();
-  printf("ThisC:%d\n",b);
+  signal(SIGSEGV, segv_handler);
 
-#if defined(DC__C_MSVC)
-  b = b && testCallThisMS();
-  printf("ThisMS:%d\n",b);
+  bool r = true;
+
+  r = testCallThisC() && r;
+#if defined(DC__OS_Win32)
+  r = testCallThisMS() && r;
 #endif
 
-#endif
-
-  printf("result: plain_cpp: %d\n", b);
+  printf("result: plain_cpp: %d\n", r);
 
   dcTest_deInitPlatform();
 
-  return !b;
+  return !r;
 }
 
 }  // extern "C"

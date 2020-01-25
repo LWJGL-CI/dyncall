@@ -34,18 +34,19 @@ void dcVecAppend(DCVecHead* pHead, const void* pData, size_t size)
   size_t newSize = pHead->mSize + size;
   if(newSize <= pHead->mTotal) 
   {
-  	void* dst = (DCchar*)dcVecData(pHead) + pHead->mSize;
-  	switch (size) {
-  	  case 1: *(DCchar    *)dst = *(const DCchar    *)pData; break;
-  	  case 2: *(DCshort   *)dst = *(const DCshort   *)pData; break;
-  	  case 4: *(DCint     *)dst = *(const DCint     *)pData; break;
-  	  case 8: *(DCint     *)( ( (char*)dst )+4) = *(const DCint     *)( ( (char*)pData )+4); 
-  	          *(DCint     *)dst = *(const DCint     *)pData; break;
- 	  /* On sparc 32-bit, this one crashes if ptrs are not aligned.
-          case 8: *(DClonglong*)dst = *(const DClonglong*)pData; break;
-  	  */
-          default: memcpy(dst, pData, size); /* for all the rest. */
-  	}
+    void* dst = (DCchar*)dcVecData(pHead) + pHead->mSize;
+    switch (size) {
+      case 1: *(DCchar    *)dst = *(const DCchar    *)pData; break;
+      case 2: *(DCshort   *)dst = *(const DCshort   *)pData; break;
+      case 4: *(DCint     *)dst = *(const DCint     *)pData; break;
+      case 8: *(DCint     *)( ( (char*)dst )+4) = *(const DCint     *)( ( (char*)pData )+4); 
+              *(DCint     *)dst = *(const DCint     *)pData; break;
+      /* On sparc 32-bit, this one crashes if ptrs are not aligned, so use above.
+      case 8: *(DClonglong*)dst = *(const DClonglong*)pData; break;
+      */
+
+      default: memcpy(dst, pData, size); /* for all the rest. */
+    }
     pHead->mSize = newSize;
   }
   /*else @@@ warning? error?*/

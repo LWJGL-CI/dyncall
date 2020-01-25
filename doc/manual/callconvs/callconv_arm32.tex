@@ -1,5 +1,6 @@
+%//////////////////////////////////////////////////////////////////////////////
 %
-% Copyright (c) 2007,2010 Daniel Adler <dadler@uni-goettingen.de>,
+% Copyright (c) 2007-2019 Daniel Adler <dadler@uni-goettingen.de>,
 %                         Tassilo Philipp <tphilipp@potion-studios.com>
 %
 % Permission to use, copy, modify, and distribute this software for any
@@ -14,11 +15,12 @@
 % ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 % OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 %
+%//////////////////////////////////////////////////////////////////////////////
 
 % ==================================================
 % ARM32
 % ==================================================
-\subsection{ARM32 Calling Convention}
+\subsection{ARM32 Calling Conventions}
 
 \paragraph{Overview}
 
@@ -35,13 +37,23 @@ Mode          & Description\\
 \end{tabular*}
 \\
 \\
-For more details, take a look at the ARM-THUMB Procedure Call Standard (ATPCS) \cite{ATPCS}, the Procedure Call Standard for the ARM Architecture (AAPCS) \cite{AAPCS}, as well as the Debian ARM EABI port wiki \cite{armeabi}.\\
-\\
+For more details, take a look at the ARM-THUMB Procedure Call Standard (ATPCS)
+\cite{ATPCS}, the Procedure Call Standard for the ARM Architecture (AAPCS)
+\cite{AAPCS}, as well as Debian's ARM EABI port \cite{armeabi} and hard-float
+\cite{armhf} wiki pages.\\ \\
+
 \paragraph{\product{dyncall} support}
 
-Currently, the \product{dyncall} library supports the ARM and THUMB mode of the ARM32 family (ATPCS \cite{ATPCS} and EABI \cite{armeabi}), excluding manually triggered ARM-THUMB interworking calls. Although it's quite possible that the current implementation runs on other ARM processor families as well, please note that only the ARMv4t family has been thoroughly tested at the time of writing. Please report if the code runs on other ARM families, too.\\
-It is important to note, that dyncall supports the ARM architecture calling convention variant {\bf with floating point hardware disabled} (meaning that the FPA and the VFP (scalar mode) procedure call standards are not supported).
-This processor family features some instruction sets accelerating DSP and multimedia application like the ARM Jazelle Technology (direct Java bytecode execution, providing acceleration for some bytecodes while calling software code for others), etc. that are not supported by the dyncall library.\\
+Currently, the \product{dyncall} library supports the ARM and THUMB mode of the
+ARM32 family (ATPCS \cite{ATPCS}, EABI \cite{armeabi}, the ARM hard-float
+(armhf) \cite{armeabi} varian, as well as Apple's calling convention based on
+the ATPCS), excluding manually triggered ARM-THUMB interworking calls.\\
+Also supported is armhf, a calling convention with register support to pass
+floating point numbers. FPA and the VFP (scalar mode) procedure call standards,
+as well as some instruction sets accelerating DSP and multimedia application
+like the ARM Jazelle Technology (direct Java bytecode execution, providing
+acceleration for some bytecodes while calling software code for others), etc.,
+are not supported by the dyncall library.\\
 
 
 \subsubsection{ATPCS ARM mode}
@@ -52,18 +64,19 @@ This processor family features some instruction sets accelerating DSP and multim
 In ARM mode, the ARM32 processor has sixteen 32 bit general purpose registers, namely r0-r15:\\
 \\
 \begin{table}[h]
-\begin{tabular*}{0.95\textwidth}{3 B}
-Name         & Brief description\\
+\begin{tabular*}{0.95\textwidth}{lll}
+Name        & Alias       & Brief description\\
 \hline
-{\bf r0}     & parameter 0, scratch, return value\\
-{\bf r1}     & parameter 1, scratch, return value\\
-{\bf r2-r3}  & parameters 2 and 3, scratch\\
-{\bf r4-r10} & permanent\\
-{\bf r11}    & frame pointer, permanent\\
-{\bf r12}    & scratch\\
-{\bf r13}    & stack pointer, permanent\\
-{\bf r14}    & link register, permanent\\
-{\bf r15}    & program counter (note: due to pipeline, r15 points to 2 instructions ahead)\\
+{\bf r0}    & {\bf a1}    & parameter 0, scratch, return value\\
+{\bf r1}    & {\bf a2}    & parameter 1, scratch, return value\\
+{\bf r2,r3} & {\bf a3,a4} & parameters 2 and 3, scratch\\
+{\bf r4-r9} & {\bf v1-v6} & permanent\\
+{\bf r10}   & {\bf sl}    & permanent\\
+{\bf r11}   & {\bf fp}    & frame pointer, permanent\\
+{\bf r12}   & {\bf ip}    & scratch\\
+{\bf r13}   & {\bf sp}    & stack pointer, permanent\\
+{\bf r14}   & {\bf lr}    & link register, permanent\\
+{\bf r15}   & {\bf pc}    & program counter (note: due to pipeline, r15 points to 2 instructions ahead)\\
 \end{tabular*}
 \caption{Register usage on arm32}
 \end{table}
@@ -77,7 +90,7 @@ Name         & Brief description\\
 \item subsequent parameters are pushed onto the stack (in right to left order, such that the stack pointer points to the first of the remaining parameters)
 \item if the callee takes the address of one of the parameters and uses it to address other parameters (e.g. varargs) it has to copy - in its prolog - the first four words to a reserved stack area adjacent to the other parameters on the stack
 \item parameters \textless=\ 32 bits are passed as 32 bit words
-\item 64 bit parameters are passed as two 32 bit parts (even partly via the register and partly via the stack, although this doesn't seem to be specified in the ATPCS), with the loword coming first
+\item 64 bit parameters are passed as two 32 bit parts (even partly via the register and partly via the stack, although this doesn't seem to be specified in the ATPCS)
 \item structures and unions are passed by value, with the first four words of the parameters in r0-r3
 \item if return value is a structure, a pointer pointing to the return value's space is passed in r0, the first parameter in r1, etc... (see {\bf return values})
 \item keeping the stack eight-byte aligned can improve memory access performance and is required by LDRD and STRD on ARMv5TE processors which are part of the ARM32 family, so, in order to avoid problems one should always align the stack (tests have shown, that GCC does care about the alignment when using the ellipsis)
@@ -92,38 +105,38 @@ Name         & Brief description\\
 
 \paragraph{Stack layout}
 
+% verified/amended: TP nov 2019 (see also doc/disas_examples/arm.atpcs_arm.disas)
 Stack directly after function prolog:\\
 
 \begin{figure}[h]
 \begin{tabular}{5|3|1 1}
-\hhline{~-~~}
-                                         & \vdots       &                                      &                              \\
+                                         & \vdots               &                                      &                              \\
 \hhline{~=~~}
-register save area                       & \hspace{4cm} &                                      & \mrrbrace{5}{caller's frame} \\
+register save area                       & \hspace{4cm}         &                                      & \mrrbrace{5}{caller's frame} \\
 \hhline{~-~~}
-local data                               &              &                                      &                              \\
+local data                               &                      &                                      &                              \\
 \hhline{~-~~}
-\mrlbrace{7}{parameter area}             & \ldots       & \mrrbrace{3}{stack parameters}       &                              \\
-                                         & \ldots       &                                      &                              \\
-                                         & \ldots       &                                      &                              \\
+\mrlbrace{7}{parameter area}             & last arg             & \mrrbrace{3}{stack parameters}       &                              \\
+                                         & \ldots               &                                      &                              \\
+                                         & 5th word of arg data &                                      &                              \\
 \hhline{~=~~}
-                                         & r3           & \mrrbrace{4}{spill area (if needed)} & \mrrbrace{7}{current frame}  \\
-                                         & r2           &                                      &                              \\
-                                         & r1           &                                      &                              \\
-                                         & r0           &                                      &                              \\
+                                         & r3                   & \mrrbrace{4}{spill area (if needed)} & \mrrbrace{7}{current frame}  \\
+                                         & r2                   &                                      &                              \\
+                                         & r1                   &                                      &                              \\
+                                         & r0                   &                                      &                              \\
 \hhline{~-~~}
-register save area (with return address) &              &                                      &                              \\
+register save area (with return address) &                      &                                      &                              \\ %fp points here to 1st word of this area: $\leftarrow$ fp
 \hhline{~-~~}
-local data                               &              &                                      &                              \\
+local data                               &                      &                                      &                              \\
 \hhline{~-~~}
-parameter area                           & \vdots       &                                      &                              \\
-\hhline{~-~~}
+parameter area                           & \vdots               &                                      &                              \\
 \end{tabular}
 \caption{Stack layout on arm32}
 \end{figure}
 
 
 \newpage
+
 
 \subsubsection{ATPCS THUMB mode}
 
@@ -141,19 +154,19 @@ parameter area                           & \vdots       &                       
 In THUMB mode, the ARM32 processor family supports eight 32 bit general purpose registers r0-r7 and access to high order registers r8-r15:\\
 \\
 \begin{table}[h]
-\begin{tabular*}{0.95\textwidth}{3 B}
-Name         & Brief description\\
+\begin{tabular*}{0.95\textwidth}{lll}
+Name         & Alias       & Brief description\\
 \hline
-{\bf r0}     & parameter 0, scratch, return value\\
-{\bf r1}     & parameter 1, scratch, return value\\
-{\bf r2,r3}  & parameters 2 and 3, scratch\\
-{\bf r4-r6}  & permanent\\
-{\bf r7}     & frame pointer, permanent\\
-{\bf r8-r11} & permanent\\
-{\bf r12}    & scratch\\
-{\bf r13}    & stack pointer, permanent\\
-{\bf r14}    & link register, permanent\\
-{\bf r15}    & program counter (note: due to pipeline, r15 points to 2 instructions ahead)\\
+{\bf r0}     & {\bf a1}    & parameter 0, scratch, return value\\
+{\bf r1}     & {\bf a2}    & parameter 1, scratch, return value\\
+{\bf r2,r3}  & {\bf a3,a4} & parameters 2 and 3, scratch\\
+{\bf r4-r6}  & {\bf v1-v3} & permanent\\
+{\bf r7}     & {\bf v4}    & frame pointer, permanent\\
+{\bf r8-r11} & {\bf v5-v8} & permanent\\
+{\bf r12}    & {\bf ip}    & scratch\\
+{\bf r13}    & {\bf sp}    & stack pointer, permanent\\
+{\bf r14}    & {\bf lr}    & link register, permanent\\
+{\bf r15}    & {\bf pc}    & program counter (note: due to pipeline, r15 points to 2 instructions ahead)\\
 \end{tabular*}
 \caption{Register usage on arm32 thumb mode}
 \end{table}
@@ -167,7 +180,7 @@ Name         & Brief description\\
 \item subsequent parameters are pushed onto the stack (in right to left order, such that the stack pointer points to the first of the remaining parameters)
 \item if the callee takes the address of one of the parameters and uses it to address other parameters (e.g. varargs) it has to copy - in its prolog - the first four words to a reserved stack area adjacent to the other parameters on the stack
 \item parameters \textless=\ 32 bits are passed as 32 bit words
-\item 64 bit parameters are passed as two 32 bit parts (even partly via the register and partly via the stack), although this doesn't seem to be specified in the ATPCS), with the loword coming first
+\item 64 bit parameters are passed as two 32 bit parts (even partly via the register and partly via the stack), although this doesn't seem to be specified in the ATPCS)
 \item structures and unions are passed by value, with the first four words of the parameters in r0-r3
 \item if return value is a structure, a pointer pointing to the return value's space is passed in r0, the first parameter in r1, etc. (see {\bf return values})
 \item keeping the stack eight-byte aligned can improve memory access performance and is required by LDRD and STRD on ARMv5TE processors which are part of the ARM32 family, so, in order to avoid problems one should always align the stack (tests have shown, that GCC does care about the alignment when using the ellipsis)
@@ -186,35 +199,33 @@ Stack directly after function prolog:\\
 
 \begin{figure}[h]
 \begin{tabular}{5|3|1 1}
-\hhline{~-~~}
-                                         & \vdots       &                                      &                              \\
-\hhline{~=~~}
-register save area                       & \hspace{4cm} &                                      & \mrrbrace{5}{caller's frame} \\
-\hhline{~-~~}
-local data                               &              &                                      &                              \\
-\hhline{~-~~}
-\mrlbrace{7}{parameter area}             & \ldots       & \mrrbrace{3}{stack parameters}       &                              \\
-                                         & \ldots       &                                      &                              \\
-                                         & \ldots       &                                      &                              \\
-\hhline{~=~~}
-                                         & r3           & \mrrbrace{4}{spill area (if needed)} & \mrrbrace{7}{current frame}  \\
-                                         & r2           &                                      &                              \\
-                                         & r1           &                                      &                              \\
-                                         & r0           &                                      &                              \\
-\hhline{~-~~}
-register save area (with return address) &              &                                      &                              \\
-\hhline{~-~~}
-local data                               &              &                                      &                              \\
-\hhline{~-~~}
-parameter area                           & \vdots       &                                      &                              \\
-\hhline{~-~~}
+                                         & \vdots               &                                      &                              \\
+\hhline{~=~~}                                                  
+register save area                       & \hspace{4cm}         &                                      & \mrrbrace{5}{caller's frame} \\
+\hhline{~-~~}                                                  
+local data                               &                      &                                      &                              \\
+\hhline{~-~~}                                                  
+\mrlbrace{7}{parameter area}             & last arg             & \mrrbrace{3}{stack parameters}       &                              \\
+                                         & \ldots               &                                      &                              \\
+                                         & 5th word of arg data &                                      &                              \\
+\hhline{~=~~}                                                  
+                                         & r3                   & \mrrbrace{4}{spill area (if needed)} & \mrrbrace{7}{current frame}  \\
+                                         & r2                   &                                      &                              \\
+                                         & r1                   &                                      &                              \\
+                                         & r0                   &                                      &                              \\
+\hhline{~-~~}                                                  
+register save area (with return address) &                      &                                      &                              \\ %fp points here to 1st word of this area: $\leftarrow$ fp
+\hhline{~-~~}                                                  
+local data                               &                      &                                      &                              \\
+\hhline{~-~~}                                                  
+parameter area                           & \vdots               &                                      &                              \\
 \end{tabular}
 \caption{Stack layout on arm32 thumb mode}
 \end{figure}
 
 
-
 \newpage
+
 
 \subsubsection{EABI (ARM and THUMB mode)}
 
@@ -236,47 +247,86 @@ for more information \cite{armeabi}.\\
 \item C++ this calls do not work.
 \end{itemize}
 
+
 \newpage
 
-\subsubsection{ARM on Apple's iOS (Darwin) Platform}
+
+\subsubsection{ARM on Apple's iOS (Darwin) Platform (ARM and THUMB mode)}
 
 
-The iOS runs on ARMv6 (iOS 2.0) and ARMv7 (iOS 3.0) architectures.
-Typically code is compiled in Thumb mode.\\
+The iOS runs on ARMv6 (iOS 2.0) and ARMv7 (iOS 3.0) architectures. Both, ARM and THUMB are available,
+code is usually compiled in THUMB mode.\\
 \\
 \paragraph{Register usage}
 
 \begin{table}[h]
-\begin{tabular*}{0.95\textwidth}{3 B}
-Name         & Brief description\\
+\begin{tabular*}{0.95\textwidth}{lll}
+Name         & Alias    & Brief description\\
 \hline
-{\bf R0}     & parameter 0, scratch, return value\\
-{\bf R1}     & parameter 1, scratch, return value\\
-{\bf R2,R3}  & parameters 2 and 3, scratch\\
-{\bf R4-R6}  & permanent\\
-{\bf R7}     & frame pointer, permanent\\
-{\bf R8}     & permanent\\
-{\bf R9}     & permanent(iOS 2.0) and scratch (since iOS 3.0)\\
-{\bf R10-R11}& permanent\\
-{\bf R12}    & scratch, intra-procedure scratch register (IP) used by dynamic linker\\
-{\bf R13}    & stack pointer, permanent\\
-{\bf R14}    & link register, permanent\\
-{\bf R15}    & program counter (note: due to pipeline, r15 points to 2 instructions ahead)\\
-{\bf CPSR}   & Program status register\\
-{\bf D0-D7}  & scratch. aliases S0-S15, on ARMv7 also as Q0-Q3. Not accessible from Thumb mode on ARMv6.\\
-{\bf D8-D15} & permanent, aliases S16-S31, on ARMv7 also as Q4-A7. Not accesible from Thumb mode on ARMv6.\\
-{\bf D16-D31}& Only available in ARMv7, aliases Q8-Q15.\\
-{\bf FPSCR}  & VFP status register.\\
+{\bf r0}     &          & parameter 0, scratch, return value\\
+{\bf r1}     &          & parameter 1, scratch, return value\\
+{\bf r2,r3}  &          & parameters 2 and 3, scratch\\
+{\bf r4-r6}  &          & permanent\\
+{\bf r7}     &          & frame pointer, permanent\\
+{\bf r8}     &          & permanent\\
+{\bf r9}     &          & permanent (iOS 2.0) / scratch (since iOS 3.0)\\
+{\bf r10-r11}&          & permanent\\
+{\bf r12}    &          & scratch, intra-procedure scratch register (IP) used by dynamic linker\\
+{\bf r13}    & {\bf sp} & stack pointer, permanent\\
+{\bf r14}    & {\bf lr} & link register, permanent\\
+{\bf r15}    & {\bf pc} & program counter (note: due to pipeline, r15 points to 2 instructions ahead)\\
+{\bf cpsr}   &          & program status register\\
+{\bf d0-d7}  &          & scratch, aliases s0-s15, on ARMv7 also as q0-q3; not accessible from Thumb mode on ARMv6\\
+{\bf d8-d15} &          & permanent, aliases s16-s31, on ARMv7 also as q4-q7; not accesible from Thumb mode on ARMv6\\
+{\bf d16-d31}&          & only available in ARMv7, aliases q8-q15\\
+{\bf fpscr}  &          & VFP status register\\
 \end{tabular*}
 \caption{Register usage on ARM Apple iOS}
 \end{table}
 
-The ABI is based on the AAPCS but with some important differences listed below:
+\paragraph{Parameter passing and Return values}
+
+The ABI is based on the AAPCS but with the following important differences:
 
 \begin{itemize}
-\item R7 instead of R11 is used as frame pointer
-\item R9 is scratch since iOS 3.0, was preserved before.
+\item in ARM mode, r7 is used as frame pointer instead of r11 (so both, ARM and THUMB mode use the same convention)
+\item r9 does not need to be preserved on iOS 3.0 and greater
 \end{itemize}
+
+
+\paragraph{Stack layout}
+
+% verified/amended: TP nov 2019 (see also doc/disas_examples/arm.darwin_{arm,thumb}.disas)
+Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+                                         & \vdots               &                                      &                              \\
+\hhline{~=~~}                                                  
+register save area                       & \hspace{4cm}         &                                      & \mrrbrace{5}{caller's frame} \\
+\hhline{~-~~}                                                  
+local data                               &                      &                                      &                              \\
+\hhline{~-~~}                                                  
+\mrlbrace{7}{parameter area}             & last arg             & \mrrbrace{3}{stack parameters}       &                              \\
+                                         & \ldots               &                                      &                              \\
+                                         & 5th word of arg data @@@verify &                                      &                              \\
+\hhline{~=~~}                                                  
+                                         & r3                   & \mrrbrace{4}{spill area (if needed)} & \mrrbrace{7}{current frame}  \\
+                                         & r2                   &                                      &                              \\
+                                         & r1                   &                                      &                              \\
+                                         & r0                   &                                      &                              \\
+\hhline{~-~~}                                                  
+register save area (with return address) &                      &                                      &                              \\ %fp points here to 1st word of this area: $\leftarrow$ fp
+\hhline{~-~~}                                                  
+local data                               &                      &                                      &                              \\
+\hhline{~-~~}                                                  
+parameter area                           & \vdots               &                                      &                              \\
+\end{tabular}
+\caption{Stack layout on arm32}
+\end{figure}
+
+
+\newpage
 
 
 \subsubsection{ARM hard float (armhf)}
@@ -284,35 +334,32 @@ The ABI is based on the AAPCS but with some important differences listed below:
 
 Most debian-based Linux systems on ARMv7 (or ARMv6 with FPU) platforms use a calling convention referred to
 as armhf, using 16 32-bit floating point registers of the FPU of the VFPv3-D16 extension to the ARM architecture.
-The instruction set used for armhf is Thumb-2. Refer to the debian wiki for more information \cite{armhf}.
+Refer to the debian wiki for more information \cite{armhf}. % The following is for ARM mode, find platform that uses thumb+hard-float @@@
 
 Code is little-endian, rest is similar to EABI with an 8-byte aligned stack, etc..\\
 \\
 \paragraph{Register usage}
 
 \begin{table}[h]
-\begin{tabular*}{0.95\textwidth}{3 B}
-Name         & Brief description\\
-\hline
-{\bf R0}     & parameter 0, scratch, non floating point return value\\
-{\bf R1}     & parameter 1, scratch, non floating point return value\\
-{\bf R2,R3}  & parameters 2 and 3, scratch\\
-{\bf R4,R5}  & permanent\\
-{\bf R6}     & scratch\\
-{\bf R7}     & frame pointer, permanent\\
-{\bf R8}     & permanent\\
-{\bf R9,R10} & scratch\\
-{\bf R11}    & permanent\\
-{\bf R12}    & scratch, intra-procedure scratch register (IP) used by dynamic linker\\
-{\bf R13}    & stack pointer, permanent\\
-{\bf R14}    & link register, permanent\\
-{\bf R15}    & program counter (note: due to pipeline, r15 points to 2 instructions ahead)\\
-{\bf CPSR}   & Program status register\\
-{\bf S0}     & floating point argument, floating point return value, single precision\\
-{\bf D0}     & floating point argument, floating point return value, double precision, aliases S0-S1, \\
-{\bf S1-S15} & floating point arguments, single precision\\
-{\bf D1-D7}  & aliases S2-S15, floating point arguments, double precision\\
-{\bf FPSCR}  & VFP status register.\\
+\begin{tabular*}{0.95\textwidth}{lll}
+Name         & Alias       &  Brief description\\
+\hline          
+{\bf r0}     & {\bf a1}    &  parameter 0, scratch, non floating point return value\\
+{\bf r1}     & {\bf a2}    &  parameter 1, scratch, non floating point return value\\
+{\bf r2,r3}  & {\bf a3,a4} &  parameters 2 and 3, scratch\\
+{\bf r4-r9}  & {\bf v1-v6} &  permanent\\
+{\bf r10}    & {\bf sl}    &  permanent\\
+{\bf r11}    & {\bf fp}    &  frame pointer, permanent\\
+{\bf r12}    & {\bf ip}    &  scratch, intra-procedure scratch register (IP) used by dynamic linker\\
+{\bf r13}    & {\bf sp}    &  stack pointer, permanent\\
+{\bf r14}    & {\bf lr}    &  link register, permanent\\
+{\bf r15}    & {\bf pc}    &  program counter (note: due to pipeline, r15 points to 2 instructions ahead)\\
+{\bf cpsr}   &             &  program status register\\
+{\bf s0}     &             &  floating point argument, floating point return value, single precision\\
+{\bf d0}     &             &  floating point argument, floating point return value, double precision, aliases s0-s1\\
+{\bf s1-s15} &             &  floating point arguments, single precision\\
+{\bf d1-d7}  &             &  aliases s2-s15, floating point arguments, double precision\\
+{\bf fpscr}  &             &  VFP status register\\
 \end{tabular*}
 \caption{Register usage on armhf}
 \end{table}
@@ -330,7 +377,7 @@ Name         & Brief description\\
 \item float and double vararg function parameters (no matter if in ellipsis part of function, or not) are passed like int or long long parameters, vfp registers aren't used
 \item if the callee takes the address of one of the parameters and uses it to address other parameters (e.g. varargs) it has to copy - in its prolog - the first four words (for first 4 integer arguments) to a reserved stack area adjacent to the other parameters on the stack
 \item parameters \textless=\ 32 bits are passed as 32 bit words
-\item structures and unions are passed by value, with the first four words of the parameters in r0-r3 @@@?check doc
+\item structures and unions are passed by value, with the first four words of the parameters in r0-r3
 \item if return value is a structure, a pointer pointing to the return value's space is passed in r0, the first parameter in r1, etc. (see {\bf return values})
 \item callee spills, caller reserves spill area space, though
 \end{itemize}
@@ -346,29 +393,31 @@ Name         & Brief description\\
 
 \paragraph{Stack layout}
 
+% verified/amended: TP nov 2019 (see also doc/disas_examples/arm.armhf.disas)
 Stack directly after function prolog:\\
 
 \begin{figure}[h]
 \begin{tabular}{5|3|1 1}
-\hhline{~-~~}
-                                         & \vdots       &                                      &                              \\
+                                         & \vdots                     &                                      &                              \\
 \hhline{~=~~}
-register save area                       & \hspace{4cm} &                                      & \mrrbrace{6}{caller's frame} \\
+register save area                       & \hspace{4cm}               &                                      & \mrrbrace{5}{caller's frame} \\
 \hhline{~-~~}
-local data                               &              &                                      &                              \\
+local data                               &                            &                                      &                              \\
 \hhline{~-~~}
-\mrlbrace{4}{parameter area}             & r0-r3        & \mrrbrace{1}{spill area (if needed)} &                              \\
-\hhline{~-~~}
-                                         & \ldots       & \mrrbrace{3}{stack parameters}       &                              \\
-                                         & \ldots       &                                      &                              \\
-                                         & \ldots       &                                      &                              \\
+\mrlbrace{7}{parameter area}             & last arg                   & \mrrbrace{3}{stack parameters}       &                              \\
+                                         & \ldots                     &                                      &                              \\
+                                         & first arg passed via stack &                                      &                              \\
 \hhline{~=~~}
-register save area (with return address) &              &                                      & \mrrbrace{3}{current frame}  \\
+                                         & r3                         & \mrrbrace{4}{spill area (if needed)} & \mrrbrace{7}{current frame}  \\
+                                         & r2                         &                                      &                              \\
+                                         & r1                         &                                      &                              \\
+                                         & r0                         &                                      &                              \\
 \hhline{~-~~}
-local data                               &              &                                      &                              \\
+register save area (with return address) &                            &                                      &                              \\ %fp points here to 1st word of this area: $\leftarrow$ fp
 \hhline{~-~~}
-parameter area                           & \vdots       &                                      &                              \\
+local data                               &                            &                                      &                              \\
 \hhline{~-~~}
+parameter area                           & \vdots                     &                                      &                              \\
 \end{tabular}
 \caption{Stack layout on arm32 armhf}
 \end{figure}
@@ -394,15 +443,16 @@ architecture standards, from a calling convention perspective.
 \begin{tabular*}{0.95\textwidth}{lll}
 Arch   & Platforms & Details \\
 \hline
-ARMv4  & & \\
-ARMv4T & ARM 7, ARM 9, Neo FreeRunner (OpenMoko) & \\
-ARMv5  & ARM 9E & BLX instruction available \\
-ARMv6  & & No vector registers available in thumb \\
-ARMv7  & iPod touch, iPhone 3GS/4, Raspberry Pi 2 & VFP throughout available, armhf calling convention on some platforms \\
-ARMv8  & iPhone 6 and higher & 64bit support \\
+ARMv4  &                                          & \\
+ARMv4T & ARM 7, ARM 9, Neo FreeRunner (OpenMoko)  & \\
+ARMv5  & ARM 9E                                   & BLX instruction available \\
+ARMv6  &                                          & No vector registers available in thumb \\
+ARMv7  & iPod touch, iPhone 3GS/4, Raspberry Pi 2 & VFP, armhf convention on some platforms \\
+ARMv8  & iPhone 6 and higher                      & 64bit support \\
 \end{tabular*}
 \caption{Overview of ARM Architecture, Platforms and Details}
 \end{table}
+
 
 \newpage
 

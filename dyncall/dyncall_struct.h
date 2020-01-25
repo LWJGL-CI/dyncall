@@ -53,7 +53,7 @@ struct DCstruct_ {
 	DCsize size, alignment, fieldCount;
 	
 	/* struct building uses a state machine. */
-	DCint nextField;       /* == -1 if struct is closed */
+	DCint nextField;                        /* == -1 if struct is closed */
 	DCstruct *pCurrentStruct, *pLastStruct; /* == this, unless we're in a sub struct */
 };
 

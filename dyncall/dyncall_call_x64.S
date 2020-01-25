@@ -6,7 +6,7 @@
  Description: All x64 abi call kernel implementation
  License:
 
-   Copyright (c) 2007-2018 Daniel Adler <dadler@uni-goettingen.de>,
+   Copyright (c) 2007-2020 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -60,7 +60,7 @@ BEGIN_PROC(dcCall_x64_sysv)
 
 	ADD(LIT(31),RDI)		/* Align stack to 32-byte. */
 	AND(LIT(-32),RDI)
-	ADD(LIT(8),RDI)		/* Adjust by 8-byte for the return-address. */
+	ADD(LIT(8),RDI)			/* Adjust by 8-byte for the return-address. */
 	SUB(RDI,RSP)			/* Setup stack frame by subtracting the size of arguments. */
 
 	MOV(RDI,RCX)			/* Store number of bytes to copy to stack in RCX (for rep movsb). */
@@ -142,6 +142,31 @@ BEGIN_PROC(dcCall_x64_win64)
 	RET()
 
 END_PROC(dcCall_x64_win64)
+
+/*---------------------------------------------------------------------------
+
+  Call Kernel for x64 System V syscalls
+
+  Input:
+    RDI : pointer to arguments
+    RSI : syscall id
+
+*/
+	
+GLOBAL(dcCall_x64_syscall_sysv)
+BEGIN_PROC(dcCall_x64_syscall_sysv)
+
+	MOV(RSI,RAX)			/* load system call id. */
+	MOV(QWORD(RDI,40),R9)		/* copy first six int/pointer arguments to RDI, RSI, RDX, R10, R8, R9. */
+	MOV(QWORD(RDI,32),R8)
+	MOV(QWORD(RDI,24),R10)
+	MOV(QWORD(RDI,16),RDX)
+	MOV(QWORD(RDI,8),RSI)
+	MOV(QWORD(RDI,0),RDI)		/* Set RDI last to not overwrite it to soon. */
+	SYSCALL
+	RET()
+
+END_PROC(dcCall_x64_syscall_sysv)
 
 END_ASM
 

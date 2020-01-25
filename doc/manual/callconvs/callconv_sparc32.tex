@@ -1,6 +1,6 @@
 %//////////////////////////////////////////////////////////////////////////////
 %
-% Copyright (c) 2012-2017 Daniel Adler <dadler@uni-goettingen.de>,
+% Copyright (c) 2012-2019 Daniel Adler <dadler@uni-goettingen.de>,
 %                         Tassilo Philipp <tphilipp@potion-studios.com>
 %
 % Permission to use, copy, modify, and distribute this software for any
@@ -17,13 +17,14 @@
 %
 %//////////////////////////////////////////////////////////////////////////////
 
-\subsection{SPARC Calling Convention}
+\subsection{SPARC Calling Conventions}
 
 \paragraph{Overview}
 
-The SPARC family of processors is based on the SPARC instruction set architecture, which comes in basically tree revisions,
+The SPARC family of processors is based on the SPARC instruction set architecture, which comes in basically three revisions,
 V7, V8\cite{SPARCV8}\cite{SPARCSysV} and V9\cite{SPARCV9}\cite{SPARCV9SysV}. The former two are 32-bit whereas the latter refers to the 64-bit SPARC architecture (see next chapter).
 SPARC uses big endian byte order.\\
+The word size is defined to be 32 bits.
 
 \paragraph{\product{dyncall} support}
 
@@ -65,29 +66,36 @@ Name                          & Alias                          & Brief descripti
 \item first 6 integers and floats are passed independently in registers using \%o0-\%o5
 \item for every other argument the stack is used
 \item all arguments \textless=\ 32 bit are passed as 32 bit values
-\item 64 bit arguments are passed like two consecutive \textless=\ 32 bit values
+\item 64 bit arguments are passed like two consecutive \textless=\ 32 bit values (which allows for an argument to be split between the stack and \%i5)
 \item minimum stack size is 64 bytes, b/c stack pointer must always point at enough space to store all \%i* and \%l* registers, used when running out of register windows
 \item if needed, register spill area is adjacent to parameters
-\item results are expected by caller to be returned in \%o0/\%o1 (after reg window restore, meaning callee writes to \%i0/\%i1) for integers, \%f0/\%f1 for floats, and for structs/unions a pointer to them is used as a hidden stack parameter (see below)
+\end{itemize}
+
+\paragraph{Return values}
+
+\begin{itemize}
+\item results are expected by caller to be returned in \%o0/\%o1 (after reg window restore, meaning callee writes to \%i0/\%i1) for integers
+\item \%f0/\%f1 are used for floating point values
+\item structs/unions are returned in a space allocated by the caller, with a pointer to it passed as a {\bf additional}, hidden stack parameter (see below)
 \end{itemize}
 
 \paragraph{Stack layout}
 
+% verified/amended: TP nov 2019 (see also doc/disas_examples/sparc.sparc.disas)
 Stack directly after function prolog:\\
 
 \begin{figure}[h]
 \begin{tabular}{5|3|1 1}
-\hhline{~-~~}
                                    & \vdots                      &                                &                               \\
 \hhline{~=~~}
 local data (and padding)           & \hspace{4cm}                &                                & \mrrbrace{9}{caller's frame}  \\
 \hhline{~-~~}
-\mrlbrace{7}{parameter area}       & argument x                  & \mrrbrace{3}{stack parameters} &                               \\
+\mrlbrace{7}{parameter area}       & arg n-1                     & \mrrbrace{3}{stack parameters} &                               \\
                                    & \ldots                      &                                &                               \\
-                                   & argument 6                  &                                &                               \\
-                                   & input argument 5 spill      & \mrrbrace{3}{spill area}       &                               \\
+                                   & 7th word of arg data        &                                &                               \\
+                                   & \%o5                        & \mrrbrace{3}{spill area}       &                               \\
                                    & \ldots                      &                                &                               \\
-                                   & input argument 0 spill      &                                &                               \\
+                                   & \%o0                        &                                &                               \\
                                    & struct/union return pointer &                                &                               \\
 \hhline{~-~~}
 register save area (\%i* and \%l*) &                             &                                &                               \\
@@ -97,11 +105,7 @@ local data (and padding)           &                             &              
 parameter area                     &                             &                                &                               \\
 \hhline{~-~~}
                                    & \vdots                      &                                &                               \\
-\hhline{~-~~}
 \end{tabular}
-\\
-\\
-\\
 \caption{Stack layout on sparc32 calling convention}
 \end{figure}
 

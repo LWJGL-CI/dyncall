@@ -53,8 +53,10 @@ extern "C" {
 struct DCRegData_mips_n64
 {
   DClonglong                       mIntData[8];
+#if defined(DC__ABI_HARDFLOAT)
   union { DCfloat f; DCdouble d; } mFloatData[8];
   DClonglong                       mUseDouble; /* bitmask: lower 8 bits specify to use float or double from union array. */
+#endif /* DC__ABI_HARDFLOAT */
 };
 
 void dcCall_mips_n64(DCpointer target, struct DCRegData_mips_n64* regdata, DCsize stksize, DCpointer stkdata);

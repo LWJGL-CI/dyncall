@@ -189,7 +189,7 @@
 # define DC__Arch_MIPS
 #elif defined(__arm__)
 # define DC__Arch_ARM
-#elif defined(__aarch64__)
+#elif defined(__aarch64__) || defined(__arm64) || defined(__arm64__)
 # define DC__Arch_ARM64
 #elif defined(__sh__)
 # define DC__Arch_SuperH
@@ -238,16 +238,21 @@
 #endif /* ARM */
 
 #if defined(DC__Arch_MIPS) || defined(DC__Arch_MIPS64)
-# if defined(_ABIO32) || defined(_MIPS_ARCH_MIPS1) || defined(_MIPS_ARCH_MIPS2)
+# if defined(_ABIO32) || defined(__mips_o32) || defined(_MIPS_ARCH_MIPS1) || defined(_MIPS_ARCH_MIPS2)
 #  define DC__ABI_MIPS_O32
-# elif defined(_ABI64) || defined(_mips_n64)
+# elif defined(_ABI64) || defined(__mips_n64)
 #  define DC__ABI_MIPS_N64
 # elif defined(_ABIN32)
 #  define DC__ABI_MIPS_N32
 # else
 #  define DC__ABI_MIPS_EABI
 # endif
-/*@@@implement/support: __mips_hard_float*/
+/* Set extra flag to know if FP hardware ABI, default to yes, if unsure */
+# if (defined(__mips_hard_float) && (__mips_hard_float == 1)) || !defined(__mips_soft_float) || (__mips_soft_float != 1)
+#  define DC__ABI_HARDFLOAT /* @@@ make this general for all archs? */
+# else
+#  define DC__ABI_SOFTFLOAT
+# endif
 #endif /* MIPS */
 
 #if defined(DC__Arch_PPC64)
@@ -266,16 +271,14 @@
 # define DC__Endian_BIG
 #else                                                      /* all others are bi-endian */
 /* @@@check flags used on following bi-endianness archs:
-DC__Arch_ARM
-DC__Arch_ARM64
 DC__Arch_Itanium
 DC__Arch_PPC32
 DC__Arch_PPC64
 DC__Arch_SuperH
 */
-# if (defined(DC__Arch_PPC64) && (DC__ABI_PPC64_ELF_V == 1)) || defined(_BIG_ENDIAN) || defined(MIPSEB) || defined(_MIPSEB) || defined(__MIPSEB) || defined(__MIPSEB__)
+# if (defined(DC__Arch_PPC64) && (DC__ABI_PPC64_ELF_V == 1)) || defined(_BIG_ENDIAN) || defined(__BIG_ENDIAN__) || defined(MIPSEB) || defined(_MIPSEB) || defined(__MIPSEB) || defined(__MIPSEB__) || defined(__ARMEB__) || defined(__AARCH64EB__)
 #  define DC__Endian_BIG
-# elif (defined(DC__Arch_PPC64) && (DC__ABI_PPC64_ELF_V == 2)) || defined(_LITTLE_ENDIAN) || defined(MIPSEL) || defined(_MIPSEL) || defined(__MIPSEL) || defined(__MIPSEL__)
+# elif (defined(DC__Arch_PPC64) && (DC__ABI_PPC64_ELF_V == 2)) || defined(_LITTLE_ENDIAN) || defined(__LITTLE_ENDIAN__) || defined(MIPSEL) || defined(_MIPSEL) || defined(__MIPSEL) || defined(__MIPSEL__) || defined(__ARMEL__) || defined(__AARCH64EL__)
 #  define DC__Endian_LITTLE
 # elif defined(DC__Arch_Sparc64) && !defined(__BYTE_ORDER__) /* Sparc64 default is big-endian, except if explicitly defined */
 #    define DC__Endian_BIG

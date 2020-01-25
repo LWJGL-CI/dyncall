@@ -30,7 +30,7 @@
 DClonglong dcbArgLongLong(DCArgs* p)
 {
   DClonglong value;
-  if(p->reg_count < DCARGS_MIPS_NUM_IREGS)
+  if(p->reg_count < DCARGS_MIPS_NUM_REGS)
     value = p->ireg_data[p->reg_count++];
   else {
     value = *((DClonglong*)p->stackptr);
@@ -54,7 +54,7 @@ DCpointer   dcbArgPointer(DCArgs* p) { return (DCpointer)dcbArgLongLong(p); }
 DCdouble dcbArgDouble(DCArgs* p)
 {
   DCdouble result;
-  if(p->reg_count < DCARGS_MIPS_NUM_FREGS)
+  if(p->reg_count < DCARGS_MIPS_NUM_REGS)
     result = p->freg_data[p->reg_count++];
   else {
     result = *((DCdouble*)p->stackptr);
@@ -65,7 +65,7 @@ DCdouble dcbArgDouble(DCArgs* p)
 DCfloat dcbArgFloat(DCArgs* p)
 {
   DCfloat result;
-  if(p->reg_count < DCARGS_MIPS_NUM_FREGS) {
+  if(p->reg_count < DCARGS_MIPS_NUM_REGS) {
     result = ((DCfloat*)&p->freg_data[p->reg_count++])
 #if defined(DC__Endian_LITTLE)
       [0];

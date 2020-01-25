@@ -182,8 +182,8 @@ END_PROC(dcCall_x86_win32_fast)
 
 */
 
-GLOBAL(dcCall_x86_sys_int80h_linux)
-BEGIN_PROC(dcCall_x86_sys_int80h_linux)
+GLOBAL(dcCall_x86_syscall_int80h_linux)
+BEGIN_PROC(dcCall_x86_syscall_int80h_linux)
 	PUSH(EBP)        		/* prolog. */
 	MOVL(ESP,EBP)
 	PUSH(EBX)			/* save preserved. */
@@ -203,7 +203,7 @@ BEGIN_PROC(dcCall_x86_sys_int80h_linux)
 	MOVL(EBP,ESP)			/* epilog. */
 	POP(EBP)
 	RET()
-END_PROC(dcCall_x86_sys_int80h_linux)
+END_PROC(dcCall_x86_syscall_int80h_linux)
 
 /*--- syscall int80 bsd -----------------------------------------------------
 
@@ -212,8 +212,8 @@ END_PROC(dcCall_x86_sys_int80h_linux)
 
 */
 	
-GLOBAL(dcCall_x86_sys_int80h_bsd)
-BEGIN_PROC(dcCall_x86_sys_int80h_bsd)
+GLOBAL(dcCall_x86_syscall_int80h_bsd)
+BEGIN_PROC(dcCall_x86_syscall_int80h_bsd)
 	PUSH(EBP)			/* prolog. */
 	MOVL(ESP,EBP)
 	PUSH(ESI)			/* save preserved. */
@@ -233,7 +233,7 @@ BEGIN_PROC(dcCall_x86_sys_int80h_bsd)
 _do_int:
 	INT(LIT(HEX(80)))
 	RET()
-END_PROC(dcCall_x86_sys_int80h_bsd)
+END_PROC(dcCall_x86_syscall_int80h_bsd)
 
 END_ASM
 

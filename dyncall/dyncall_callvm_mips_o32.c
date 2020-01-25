@@ -77,7 +77,7 @@ static void dc_callvm_argInt_mips_o32(DCCallVM* in_self, DCint i)
 
 static void dc_callvm_argPointer_mips_o32(DCCallVM* in_self, DCpointer x)
 {
-  dc_callvm_argInt_mips_o32(in_self, * (DCint*) &x );
+  dc_callvm_argInt_mips_o32(in_self, *(DCint*)&x);
 }
 
 static void dc_callvm_argBool_mips_o32(DCCallVM* in_self, DCbool x)
@@ -100,51 +100,56 @@ static void dc_callvm_argLong_mips_o32(DCCallVM* in_self, DClong x)
   dc_callvm_argInt_mips_o32(in_self, (DCint)x);
 }
 
-static void dc_callvm_argLongLong_mips_o32(DCCallVM* in_self, DClonglong Lv)
+static void dc_callvm_argLongLong_mips_o32(DCCallVM* in_self, DClonglong x)
 {
   DCCallVM_mips_o32* self = (DCCallVM_mips_o32*)in_self;
-    
+
   /* 64-bit values need to be aligned on 8 byte boundaries */
   dcVecSkip(&self->mVecHead, dcVecSize(&self->mVecHead) & 4);
-  dcVecAppend(&self->mVecHead, &Lv, sizeof(DClonglong));
-  self->mArgCount += 1;
+  dcVecAppend(&self->mVecHead, &x, sizeof(DClonglong));
+  self->mArgCount++;
 }
 
 static void dc_callvm_argFloat_mips_o32(DCCallVM* in_self, DCfloat x)
 {
   DCCallVM_mips_o32* self = (DCCallVM_mips_o32*)in_self;
 
-  dcVecAppend(&self->mVecHead, &x, sizeof(DCfloat) );
+  dcVecAppend(&self->mVecHead, &x, sizeof(DCfloat));
+
+#if defined(DC__ABI_HARDFLOAT)
   if (self->mArgCount < 2) {
-#if defined(DC__Endian_LITTLE)
+    /* @@@ unsure if we should zero init, here; seems to work as-is */
+# if defined(DC__Endian_LITTLE)
     self->mRegData.u[self->mArgCount].f[0] = x;
-#else
-    self->mRegData.u[self->mArgCount].f[1] = x;
-#endif
-#if 0
+# else
+    self->mRegData.u[self->mArgCount].f[1] = x; // floats in regs always right justified
+# endif
+# if 0
     self->mRegData.u[self->mArgCount].f[1] = x;
    call kernel
         
-        mips:
-        lwc1	$f12, 4($5)       <--- byte offset 4
-	lwc1	$f13, 0($5)
-	lwc1	$f14, 12($5)      <--- byte offset 12 
-	lwc1	$f15, 8($5)
-        mipsel:
-        lwc1	$f12, 0($5)       <--- byte offset 4
-	lwc1	$f13, 4($5)
-	lwc1	$f14, 8($5)      <--- byte offset 12 
-	lwc1	$f15, 12($5)
+	mips:
+	lwc1  $f12,  4($5)    <--- byte offset 4
+	lwc1  $f13,  0($5)
+	lwc1  $f14, 12($5)    <--- byte offset 12 
+	lwc1  $f15,  8($5)
+	mipsel:
+	lwc1  $f12,  0($5)    <--- byte offset 4
+	lwc1  $f13,  4($5)
+	lwc1  $f14,  8($5)    <--- byte offset 12 
+	lwc1  $f15, 12($5)
 
-#if defined(DC__Endian_LITTLE)
+#  if defined(DC__Endian_LITTLE)
     /* index 0 and 2 */
     self->mRegData.floats[self->mArgCount*2] = x;
-#else
+#  else
     /* index 1 and 3 */
     self->mRegData.floats[self->mArgCount*2+1] = x;
-#endif
-#endif
+#  endif
+# endif
   }
+#endif /* DC__ABI_HARDFLOAT */
+
   self->mArgCount++;
 }
 
@@ -153,9 +158,13 @@ static void dc_callvm_argDouble_mips_o32(DCCallVM* in_self, DCdouble x)
   DCCallVM_mips_o32* self = (DCCallVM_mips_o32*)in_self;
   /* 64-bit values need to be aligned on 8 byte boundaries */
   dcVecSkip(&self->mVecHead, dcVecSize(&self->mVecHead) & 4);
-  dcVecAppend(&self->mVecHead, &x, sizeof(DCdouble) );
+  dcVecAppend(&self->mVecHead, &x, sizeof(DCdouble));
+
+#if defined(DC__ABI_HARDFLOAT)
   if (self->mArgCount < 2)
     self->mRegData.u[self->mArgCount].d = x;
+#endif /* DC__ABI_HARDFLOAT */
+
   self->mArgCount++;
 }
 
@@ -163,11 +172,9 @@ static void dc_callvm_argDouble_mips_o32(DCCallVM* in_self, DCdouble x)
 void dc_callvm_call_mips_o32(DCCallVM* in_self, DCpointer target)
 {
   DCCallVM_mips_o32* self = (DCCallVM_mips_o32*)in_self;
-  /* at minimum provide 16-bytes
-     which hold the first four integer register as spill area 
-     and are automatically loaded to $4-$7
-   */
 
+  /* provide multiple of 8 (reflecting stack area alignment requirement), and
+     minimum of 16-bytes (to hold first 4 int regis as spill area ($4-$7)) */
   size_t size = DC_MAX(16, ( ( (unsigned) dcVecSize(&self->mVecHead) ) +7UL ) & (-8UL) );
 
   dcCall_mips_o32(target, &self->mRegData, size, dcVecData(&self->mVecHead));

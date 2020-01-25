@@ -6,7 +6,7 @@
  Description: Call VM for x86 architecture implementation
  License:
 
-   Copyright (c) 2007-2018 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2007-2020 Daniel Adler <dadler@uni-goettingen.de>, 
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -499,19 +499,19 @@ DCCallVM_vt gVT_x86_win32_this_ms =
 
 /* call syscall */
 
-void dc_callvm_call_x86_sys_int80h_linux(DCCallVM* in_self, DCpointer target)
+void dc_callvm_call_x86_syscall_int80h_linux(DCCallVM* in_self, DCpointer target)
 {
   DCCallVM_x86* self = (DCCallVM_x86*) in_self;
-  dcCall_x86_sys_int80h_linux( target, dcVecData(&self->mVecHead), dcVecSize(&self->mVecHead) );
+  dcCall_x86_syscall_int80h_linux( target, dcVecData(&self->mVecHead), dcVecSize(&self->mVecHead) );
 }
 
-void dc_callvm_call_x86_sys_int80h_bsd(DCCallVM* in_self, DCpointer target)
+void dc_callvm_call_x86_syscall_int80h_bsd(DCCallVM* in_self, DCpointer target)
 {
   DCCallVM_x86* self = (DCCallVM_x86*) in_self;
-  dcCall_x86_sys_int80h_bsd( target, dcVecData(&self->mVecHead), dcVecSize(&self->mVecHead) );
+  dcCall_x86_syscall_int80h_bsd( target, dcVecData(&self->mVecHead), dcVecSize(&self->mVecHead) );
 }
 
-DCCallVM_vt gVT_x86_sys_int80h_linux =
+DCCallVM_vt gVT_x86_syscall_int80h_linux =
 {
   &dc_callvm_free_x86
 , &dc_callvm_reset_x86
@@ -526,20 +526,20 @@ DCCallVM_vt gVT_x86_sys_int80h_linux =
 , &dc_callvm_argDouble_x86
 , &dc_callvm_argPointer_x86
 , NULL /* argStruct */
-, (DCvoidvmfunc*)       &dc_callvm_call_x86_sys_int80h_linux
-, (DCboolvmfunc*)       &dc_callvm_call_x86_sys_int80h_linux
-, (DCcharvmfunc*)       &dc_callvm_call_x86_sys_int80h_linux
-, (DCshortvmfunc*)      &dc_callvm_call_x86_sys_int80h_linux
-, (DCintvmfunc*)        &dc_callvm_call_x86_sys_int80h_linux
-, (DClongvmfunc*)       &dc_callvm_call_x86_sys_int80h_linux
-, (DClonglongvmfunc*)   &dc_callvm_call_x86_sys_int80h_linux
-, (DCfloatvmfunc*)      &dc_callvm_call_x86_sys_int80h_linux
-, (DCdoublevmfunc*)     &dc_callvm_call_x86_sys_int80h_linux
-, (DCpointervmfunc*)    &dc_callvm_call_x86_sys_int80h_linux
+, (DCvoidvmfunc*)       &dc_callvm_call_x86_syscall_int80h_linux
+, (DCboolvmfunc*)       &dc_callvm_call_x86_syscall_int80h_linux
+, (DCcharvmfunc*)       &dc_callvm_call_x86_syscall_int80h_linux
+, (DCshortvmfunc*)      &dc_callvm_call_x86_syscall_int80h_linux
+, (DCintvmfunc*)        &dc_callvm_call_x86_syscall_int80h_linux
+, (DClongvmfunc*)       &dc_callvm_call_x86_syscall_int80h_linux
+, (DClonglongvmfunc*)   &dc_callvm_call_x86_syscall_int80h_linux
+, (DCfloatvmfunc*)      &dc_callvm_call_x86_syscall_int80h_linux
+, (DCdoublevmfunc*)     &dc_callvm_call_x86_syscall_int80h_linux
+, (DCpointervmfunc*)    &dc_callvm_call_x86_syscall_int80h_linux
 , NULL /* callStruct */
 };
 
-DCCallVM_vt gVT_x86_sys_int80h_bsd =
+DCCallVM_vt gVT_x86_syscall_int80h_bsd =
 {
   &dc_callvm_free_x86
 , &dc_callvm_reset_x86
@@ -554,16 +554,16 @@ DCCallVM_vt gVT_x86_sys_int80h_bsd =
 , &dc_callvm_argDouble_x86
 , &dc_callvm_argPointer_x86
 , NULL /* argStruct */
-, (DCvoidvmfunc*)       &dc_callvm_call_x86_sys_int80h_bsd
-, (DCboolvmfunc*)       &dc_callvm_call_x86_sys_int80h_bsd
-, (DCcharvmfunc*)       &dc_callvm_call_x86_sys_int80h_bsd
-, (DCshortvmfunc*)      &dc_callvm_call_x86_sys_int80h_bsd
-, (DCintvmfunc*)        &dc_callvm_call_x86_sys_int80h_bsd
-, (DClongvmfunc*)       &dc_callvm_call_x86_sys_int80h_bsd
-, (DClonglongvmfunc*)   &dc_callvm_call_x86_sys_int80h_bsd
-, (DCfloatvmfunc*)      &dc_callvm_call_x86_sys_int80h_bsd
-, (DCdoublevmfunc*)     &dc_callvm_call_x86_sys_int80h_bsd
-, (DCpointervmfunc*)    &dc_callvm_call_x86_sys_int80h_bsd
+, (DCvoidvmfunc*)       &dc_callvm_call_x86_syscall_int80h_bsd
+, (DCboolvmfunc*)       &dc_callvm_call_x86_syscall_int80h_bsd
+, (DCcharvmfunc*)       &dc_callvm_call_x86_syscall_int80h_bsd
+, (DCshortvmfunc*)      &dc_callvm_call_x86_syscall_int80h_bsd
+, (DCintvmfunc*)        &dc_callvm_call_x86_syscall_int80h_bsd
+, (DClongvmfunc*)       &dc_callvm_call_x86_syscall_int80h_bsd
+, (DClonglongvmfunc*)   &dc_callvm_call_x86_syscall_int80h_bsd
+, (DCfloatvmfunc*)      &dc_callvm_call_x86_syscall_int80h_bsd
+, (DCdoublevmfunc*)     &dc_callvm_call_x86_syscall_int80h_bsd
+, (DCpointervmfunc*)    &dc_callvm_call_x86_syscall_int80h_bsd
 , NULL /* callStruct */
 };
 
@@ -592,18 +592,18 @@ void dc_callvm_mode_x86(DCCallVM* in_self, DCint mode)
     case DC_CALL_C_X86_WIN32_THIS_MS:  vt = &gVT_x86_win32_this_ms;  break;
     case DC_CALL_C_X86_WIN32_FAST_GNU: vt = &gVT_x86_win32_fast_gnu; break;
     case DC_CALL_C_X86_WIN32_THIS_GNU: vt = &gVT_x86_cdecl;          break;
-    case DC_CALL_SYS_DEFAULT:         
+    case DC_CALL_SYS_DEFAULT:
 # if defined DC_UNIX
 #   if defined DC__OS_Linux
-      vt = &gVT_x86_sys_int80h_linux; break;
+      vt = &gVT_x86_syscall_int80h_linux; break;
 #   else
-      vt = &gVT_x86_sys_int80h_bsd;   break;
+      vt = &gVT_x86_syscall_int80h_bsd;   break;
 #   endif
 # else
       self->mInterface.mError = DC_ERROR_UNSUPPORTED_MODE; return;
 # endif
-    case DC_CALL_SYS_X86_INT80H_LINUX: vt = &gVT_x86_sys_int80h_linux; break;
-    case DC_CALL_SYS_X86_INT80H_BSD:   vt = &gVT_x86_sys_int80h_bsd;   break;
+    case DC_CALL_SYS_X86_INT80H_LINUX: vt = &gVT_x86_syscall_int80h_linux; break;
+    case DC_CALL_SYS_X86_INT80H_BSD:   vt = &gVT_x86_syscall_int80h_bsd;   break;
 #endif
     default: 
       self->mInterface.mError = DC_ERROR_UNSUPPORTED_MODE;

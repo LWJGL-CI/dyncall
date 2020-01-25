@@ -40,12 +40,10 @@ Supported Architectures and ABIs:
 
  - x86     32/64-bit  (cdecl, fastcall, stdcall, C++ this calls, syscalls, plan9)
  - ARM     AArch32/64 (32: ARM/Thumb mode, v4t-v7, oabi/eabi, soft/hardfloat ABIs; 64: AAPCS64)
- - MIPS    32/64-bit  (o32, n64, eabi)
+ - MIPS    32/64-bit  (o32, n64, eabi, with o32 and n64 for soft- and hardfloat)
  - PowerPC 32/64-bit  (32: Mac OS X, System V; 64: System V little and big endian ELF ABI)
  - Sparc   32/64-bit  (v7/8 and v9)
 
-NOTE: Callback support is currently available on
-      x86-32/64, arm32 softfloat ABIs, arm64, PPC64 and PPC32 Linux/OS X.
 
 Supported Operating Systems:
 ----------------------------
@@ -117,6 +115,6 @@ Make sure pdflatex is installed and run
 $ make docs
 
 
-Please refer to http://www.dyncall.org, dyncall(3), dyncallback(3), the dyncall
-manual and platform-specific READMEs under doc/ for more information.
+Please refer to http://www.dyncall.org, dyncall(3), dyncallback(3), dynload(3),
+the dyncall manual and platform-specific READMEs under doc/ for more information.
 

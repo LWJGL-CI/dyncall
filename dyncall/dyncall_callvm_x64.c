@@ -6,7 +6,7 @@
  Description: 
  License:
 
-   Copyright (c) 2007-2018 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2007-2020 Daniel Adler <dadler@uni-goettingen.de>, 
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -167,7 +167,7 @@ DCCallVM_vt gVT_x64 =
 , &dc_callvm_mode_x64
 , &dc_callvm_argBool_x64
 , &dc_callvm_argChar_x64
-, &dc_callvm_argShort_x64 
+, &dc_callvm_argShort_x64
 , &dc_callvm_argInt_x64
 , &dc_callvm_argLong_x64
 , &dc_callvm_argLongLong_x64
@@ -188,7 +188,54 @@ DCCallVM_vt gVT_x64 =
 , NULL /* callStruct */
 };
 
-/* mode: only a single mode available currently. */
+
+/* --- syscall ------------------------------------------------------------- */
+
+#include <assert.h>
+void dc_callvm_call_x64_syscall_sysv(DCCallVM* in_self, DCpointer target)
+{
+  DCCallVM_x64* self;
+
+  /* syscalls can have up to 6 args, required to be "Only values of class INTEGER or class MEMORY" (from */
+  /* SysV manual), so we can use self->mRegData.i directly; verify this has space for at least 6 values, though. */
+  assert(numIntRegs >= 6);
+
+  self = (DCCallVM_x64*)in_self;
+  dcCall_x64_syscall_sysv(self->mRegData.i, target);
+}
+
+DCCallVM_vt gVT_x64_syscall_sysv =
+{
+  &dc_callvm_free_x64
+, &dc_callvm_reset_x64
+, &dc_callvm_mode_x64
+, &dc_callvm_argBool_x64
+, &dc_callvm_argChar_x64
+, &dc_callvm_argShort_x64
+, &dc_callvm_argInt_x64
+, &dc_callvm_argLong_x64
+, &dc_callvm_argLongLong_x64
+, &dc_callvm_argFloat_x64
+, &dc_callvm_argDouble_x64
+, &dc_callvm_argPointer_x64
+, NULL /* argStruct */
+, (DCvoidvmfunc*)       &dc_callvm_call_x64_syscall_sysv
+, (DCboolvmfunc*)       &dc_callvm_call_x64_syscall_sysv
+, (DCcharvmfunc*)       &dc_callvm_call_x64_syscall_sysv
+, (DCshortvmfunc*)      &dc_callvm_call_x64_syscall_sysv
+, (DCintvmfunc*)        &dc_callvm_call_x64_syscall_sysv
+, (DClongvmfunc*)       &dc_callvm_call_x64_syscall_sysv
+, (DClonglongvmfunc*)   &dc_callvm_call_x64_syscall_sysv
+, (DCfloatvmfunc*)      &dc_callvm_call_x64_syscall_sysv
+, (DCdoublevmfunc*)     &dc_callvm_call_x64_syscall_sysv
+, (DCpointervmfunc*)    &dc_callvm_call_x64_syscall_sysv
+, NULL /* callStruct */
+};
+
+
+
+/* mode */
+
 static void dc_callvm_mode_x64(DCCallVM* in_self, DCint mode)
 {
   DCCallVM_x64* self = (DCCallVM_x64*)in_self;
@@ -205,6 +252,13 @@ static void dc_callvm_mode_x64(DCCallVM* in_self, DCint mode)
     case DC_CALL_C_ELLIPSIS_VARARGS:
       vt = &gVT_x64;
       break;
+    case DC_CALL_SYS_DEFAULT:
+# if defined DC_UNIX
+    case DC_CALL_SYS_X64_SYSCALL_SYSV:
+      vt = &gVT_x64_syscall_sysv; break;
+# else
+      self->mInterface.mError = DC_ERROR_UNSUPPORTED_MODE; return;
+# endif
     default:
       self->mInterface.mError = DC_ERROR_UNSUPPORTED_MODE; 
       return;

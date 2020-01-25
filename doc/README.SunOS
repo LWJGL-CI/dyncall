@@ -6,8 +6,8 @@ Current Status of Solaris Architectures:
 
 i386      : ok.
 AMD64     : ok.
-SPARC     : no dyncallback support.
-SPARC64   : bugs in dyncall (see BUGS), no dyncallback support.
+SPARC     : ok.
+SPARC64   : bugs in dyncall (see BUGS).
 
 Supported Compilers: SunPro C/C++ compiler and GCC.
 Supported Build-Systems: configure/make, Makefile.embedded and CMake.

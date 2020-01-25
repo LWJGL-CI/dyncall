@@ -53,14 +53,14 @@ extern "C" {
 */
 
 #if defined(DC__OS_Plan9) /* No support for other cconvs on Plan9 and vice-versa. */
-void dcCall_x86_plan9        (DCpointer target, DCpointer stackdata, DCsize size);
+void dcCall_x86_plan9               (DCpointer target, DCpointer stackdata, DCsize size);
 #else
-void dcCall_x86_cdecl        (DCpointer target, DCpointer stackdata, DCsize size);
-void dcCall_x86_win32_std    (DCpointer target, DCpointer stackdata, DCsize size);
-void dcCall_x86_win32_fast   (DCpointer target, DCpointer stackdata, DCsize size);
-void dcCall_x86_win32_msthis (DCpointer target, DCpointer stackdata, DCsize size);
-void dcCall_x86_sys_int80h_linux (DCpointer target, DCpointer stackdata, DCsize size);
-void dcCall_x86_sys_int80h_bsd   (DCpointer target, DCpointer stackdata, DCsize size);
+void dcCall_x86_cdecl               (DCpointer target, DCpointer stackdata, DCsize size);
+void dcCall_x86_win32_std           (DCpointer target, DCpointer stackdata, DCsize size);
+void dcCall_x86_win32_fast          (DCpointer target, DCpointer stackdata, DCsize size);
+void dcCall_x86_win32_msthis        (DCpointer target, DCpointer stackdata, DCsize size);
+void dcCall_x86_syscall_int80h_linux(DCpointer target, DCpointer stackdata, DCsize size);
+void dcCall_x86_syscall_int80h_bsd  (DCpointer target, DCpointer stackdata, DCsize size);
 #endif
 
 #ifdef __cplusplus

@@ -1,5 +1,35 @@
 This file lists bigger/noteworthy changes, only...
 
+Version 1.1 (2020/01/11)
+dyncall:
+  o support for soft-float MIPS o32 & n64 (big- and little-endian, each)
+  o x64 System V syscall support
+dyncallback:
+  o support for soft-float MIPS o32 & n64 (big- and little-endian, each)
+dynload:
+  o added UTF-8 support for pathnames on windows
+  o reliability/stability fix for dlGetLibraryPath() on glibc based platforms (avoiding
+    internal use of glibc's bad impl of dlinfo() which doesn't do any error checking at all)
+  o Darwin/macos fix for dlGetLibraryPath() to correctly fail on bogus handles (did return
+    paths to random libraries under some circumstances, instead of returning an error)
+  o support for dlGetLibraryPath() on glibc platforms with glibc vesions <= 2.3.3
+  o dlGetLibraryPath() now accepts NULL as argument to return path to executable
+  o dlLoadLibrary() on windows: no more auto-suffixing of the .dll file ext anymore, to be
+    more in line with other platforms (not affecting OS specific library search behaviour)
+doc:
+  o more detail in support matrix for bi-endian platforms
+  o improvements/corrections to calling convention appendix
+  o PPC64 calling convention description
+  o MIPS64/N32 calling convention description
+  o man page additions for clarity
+tests:
+  o dynload_plain test extended to test UTF-8 library paths
+  o better output for plain test
+  o better output and *nix fix for plain_c++ test
+buildsys:
+  o default ./configure: FreeBSD/mips*hf needed -mhard-float compiler flag set explicitly
+  o better MacOS Mojave support in ./configure (Mojave dropped i386 builds)
+
 Version 1.0 (2018/04/23)
 dyncall:
   o PPC64 single-precision float fixes for more than 13 float args (thanks Masanori Mitsugi!)

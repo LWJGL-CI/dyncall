@@ -2,7 +2,6 @@
 .386
 .MODEL FLAT
 .CODE
-
 _dcCall_x86_cdecl PROC
 OPTION PROLOGUE:NONE, EPILOGUE:NONE
  push EBP
@@ -89,10 +88,10 @@ OPTION PROLOGUE:NONE, EPILOGUE:NONE
  pop EBP
  ret
 _dcCall_x86_win32_fast ENDP
-_dcCall_x86_sys_int80h_linux PROC
+_dcCall_x86_syscall_int80h_linux PROC
 OPTION PROLOGUE:NONE, EPILOGUE:NONE
  push EBP
-  mov EBP,ESP
+ mov EBP,ESP
  push EBX
  push ESI
  push EDI
@@ -110,11 +109,11 @@ OPTION PROLOGUE:NONE, EPILOGUE:NONE
  mov ESP,EBP
  pop EBP
  ret
-_dcCall_x86_sys_int80h_linux ENDP
-_dcCall_x86_sys_int80h_bsd PROC
+_dcCall_x86_syscall_int80h_linux ENDP
+_dcCall_x86_syscall_int80h_bsd PROC
 OPTION PROLOGUE:NONE, EPILOGUE:NONE
  push EBP
-  mov EBP,ESP
+ mov EBP,ESP
  push ESI
  push EDI
  mov ESI,dword ptr [EBP+12]
@@ -132,5 +131,5 @@ OPTION PROLOGUE:NONE, EPILOGUE:NONE
 _do_int:
  int 80h
  ret
-_dcCall_x86_sys_int80h_bsd ENDP
+_dcCall_x86_syscall_int80h_bsd ENDP
 END

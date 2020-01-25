@@ -1,6 +1,6 @@
 %//////////////////////////////////////////////////////////////////////////////
 %
-% Copyright (c) 2007,2009 Daniel Adler <dadler@uni-goettingen.de>, 
+% Copyright (c) 2007-2019 Daniel Adler <dadler@uni-goettingen.de>, 
 %                         Tassilo Philipp <tphilipp@potion-studios.com>
 %
 % Permission to use, copy, modify, and distribute this software for any
@@ -20,7 +20,7 @@
 % ==================================================
 % x64
 % ==================================================
-\subsection{x64 Calling Convention}
+\subsection{x64 Calling Conventions}
 
 
 \paragraph{Overview}
@@ -46,10 +46,9 @@ registers r8-r15.\\
 
 \paragraph{\product{dyncall} support}
 
-\product{dyncall} supports the MS Windows and System V calling convention.\\
-\\
-
-
+Currently, the MS Windows and System V calling conventions are supported.\\
+\product{Dyncall} can also be used to issue syscalls on System V platforms by
+using the syscall number as target parameter and selecting the correct mode.
 
 \subsubsection{MS Windows}
 
@@ -84,7 +83,7 @@ Name                & Brief description\\
 \item stack parameter order: right-to-left
 \item caller cleans up the stack
 \item first 4 integer/pointer parameters are passed via rcx, rdx, r8, r9 (from left to right), others are pushed on stack (there is a
-preserve area for the first 4)
+spill area for the first 4)
 \item float and double parameters are passed via xmm0l-xmm3l
 \item first 4 parameters are passed via the correct register depending on the parameter type - with mixed float and int parameters,
 some registers are left out (e.g. first parameter ends up in rcx or xmm0, second in rdx or xmm1, etc.)
@@ -97,8 +96,8 @@ floating point parameters, value must be stored in integer AND floating point re
 \item caller cleans up the stack, not the callee (like cdecl)
 \item stack is always 16byte aligned - since return address is 64 bits in size, stacks with an odd number of parameters are
 already aligned
-\item ellipsis calls take floating point values in int and float registers (single precision floats are promoted to double precision
-as defined for ellipsis calls)
+\item ellipsis calls take floating point values in int and float registers (single precision floats are promoted to double precision as
+required by ellipsis calls)
 \item if size of parameters \textgreater\ 1 page of memory (usually between 4k and 64k), chkstk must be called
 \end{itemize}
 
@@ -114,31 +113,35 @@ as defined for ellipsis calls)
 
 \paragraph{Stack layout}
 
-Stack frame is always 16-byte aligned. Stack directly after function prolog:\\
+Stack frame is always 16-byte aligned.
+% verified/amended: TP nov 2019 (@@@ no doc/disas_examples/x64.win.disas, yet...@@@)
+Stack directly after function prolog:\\
 
 \begin{figure}[h]
 \begin{tabular}{5|3|1 1}
-\hhline{~-~~}
-                                  & \vdots         &                                &                              \\
+                                  & \vdots         &                                &                               \\
 \hhline{~=~~}
-local data                        & \hspace{4cm}   &                                & \mrrbrace{9}{caller's frame} \\
+register save area                & \hspace{4cm}   &                                & \mrrbrace{10}{caller's frame} \\
 \hhline{~-~~}
-\mrlbrace{7}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
-                                  & \ldots         &                                &                              \\
-                                  & \ldots         &                                &                              \\
-                                  & r9 or xmm3     & \mrrbrace{4}{spill area}       &                              \\
-                                  & r8 or xmm2     &                                &                              \\
-                                  & rdx or xmm1    &                                &                              \\
-                                  & rcx or xmm0    &                                &                              \\
+local data                        &                &                                &                               \\
+\hhline{~-~~}                            
+\mrlbrace{7}{parameter area}      & arg n-1        & \mrrbrace{3}{stack parameters} &                               \\
+                                  & \ldots         &                                &                               \\
+                                  & arg 4          &                                &                               \\
+                                  & r9 or xmm3     & \mrrbrace{4}{spill area}       &                               \\
+                                  & r8 or xmm2     &                                &                               \\
+                                  & rdx or xmm1    &                                &                               \\
+                                  & rcx or xmm0    &                                &                               \\
 \hhline{~-~~}
-                                  & return address &                                &                              \\
+                                  & return address &                                &                               \\
 \hhline{~=~~}
-local data                        &                &                                & \mrrbrace{3}{current frame}  \\
+register save area                &                &                                & \mrrbrace{4}{current frame}   \\
 \hhline{~-~~}
-parameter area                    &                &                                &                              \\
+local data                        &                &                                &                               \\
 \hhline{~-~~}
-                                  & \vdots         &                                &                              \\
+parameter area                    &                &                                &                               \\
 \hhline{~-~~}
+                                  & \vdots         &                                &                               \\
 \end{tabular}
 \caption{Stack layout on x64 Microsoft platform}
 \end{figure}
@@ -191,6 +194,7 @@ passed as a qword)
 exact but an upper bound on the number of used xmm registers)
 \item stack is always 16byte aligned - since return address is 64 bits in size, stacks with an odd number of parameters are
 already aligned
+\item no spill area is used on stack, iterating over varargs requires a specific va\_list implementation
 \end{itemize}
 
 
@@ -207,29 +211,48 @@ will be returned in rax
 
 \paragraph{Stack layout}
 
-Stack frame is always 16-byte aligned. Note that there is no spill area.
+Stack frame is always 16-byte aligned.
+% verified/amended: TP nov 2019 (see also doc/disas_examples/x64.sysv.disas)
 Stack directly after function prolog:\\
 
 \begin{figure}[h]
 \begin{tabular}{5|3|1 1}
-\hhline{~-~~}
-                                  & \vdots         &                                &                              \\
+                             & \vdots         &                                &                              \\
 \hhline{~=~~}
-local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
+register save area           & \hspace{4cm}   &                                & \mrrbrace{6}{caller's frame} \\
 \hhline{~-~~}
-\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
-                                  & \ldots         &                                &                              \\
-                                  & \ldots         &                                &                              \\
+local data (with padding)    &                &                                &                              \\
 \hhline{~-~~}
-                                  & return address &                                &                              \\
+\mrlbrace{3}{parameter area} & arg n-1        & \mrrbrace{3}{stack parameters} &                              \\
+                             & \ldots         &                                &                              \\
+                             & arg 6          &                                &                              \\
+\hhline{~-~~}
+                             & return address &                                &                              \\
 \hhline{~=~~}
-local data                        &                &                                & \mrrbrace{3}{current frame}  \\
+register save area           &                &                                & \mrrbrace{4}{current frame}  \\
 \hhline{~-~~}
-parameter area                    &                &                                &                              \\
+local data                   &                &                                &                              \\
 \hhline{~-~~}
-                                  & \vdots         &                                &                              \\
+parameter area               &                &                                &                              \\
 \hhline{~-~~}
+                             & \vdots         &                                &                              \\
 \end{tabular}
 \caption{Stack layout on x64 System V (Linux/*BSD)}
 \end{figure}
+
+
+\newpage
+
+\subsubsection{System V syscalls}
+
+\paragraph{Parameter passing}
+
+\begin{itemize}
+\item syscall is issued via the {\em syscall} instruction
+\item kernel destroys registers rcx and r11
+\item syscall number is set in rax
+\item params are passed in the following registers in this order: rdi, rsi, rdx, rcx, r8, r9
+\item no stack in use, meaning syscalls are in theory limited to six arguments
+\item register rax holds the return value (values in between -4095 and -1 indicate errors)
+\end{itemize}
 

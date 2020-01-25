@@ -5,7 +5,7 @@ cat <<EOF
 usage: $0 --<option>=<value> <var>=<value> ..
 
   --prefix=<dir>
-  --target=<platform>       uname/special targets: MacOSX,iOS,iPhoneSimulator
+  --target=<platform>       uname/special targets: macos,iOS,iPhoneSimulator
                             use "?" to get a list of explicitly specifiable
                             targets
   --sdk=<version>           Mac OS X/iOS SDK version (e.g. '6.1' or '10.9.3')
@@ -91,12 +91,17 @@ case ${TARGET:=`uname`} in
     ;;
   FreeBSD)
     if [ -z "${CFLAGS}" ]; then
-      printf "CFLAGS=-fPIC\n" >>$C
+      if [ `uname -m` = "mips" ] && make -V MACHINE_ARCH | grep 'hf$' >/dev/null 2>&1; then
+        # FBSD12-CURRENT/mipshf needs to be told explicitly to use -mhard-float (at least as of may 2018)
+        printf "CFLAGS=-fPIC -mhard-float\n" >>$C
+      else
+        printf "CFLAGS=-fPIC\n" >>$C
+      fi
     fi
     printf "LDLIBS=-lm\n" >>$C
     printf "RM=rm -f\n" >>$C
     ;;
-  MacOSX|Darwin)
+  MacOSX|macos|Darwin)
     # if Apple's libtool (not to be confused with GNU's) is available, which is according to libtool(1) "with -static [...] intended
     # to replace ar(5) and ranlib", use it - if it is shadowed by some install of GNU's libtool assume that a foreign environment is
     # intentionally used, and fall back to using 'ar rs' (the equivalent to 'libtool -static'), for compatibility:
@@ -111,17 +116,20 @@ case ${TARGET:=`uname`} in
       printf "CC=gcc\n" >>$C
     elif [ -z ${SDK} ]; then
       case `sw_vers -productVersion` in
-        10.4.*)
+        10.4.*)                             # == tiger (10.4.*)
           ARCHS="-arch ppc -arch i386 -arch x86_64" 
           ;;
-        10.5.*)
+        10.5.*)                             # == leopard (10.5.*)
           ARCHS="-arch i386 -arch x86_64 -arch ppc"
           ;;
-        10.6.*)
-          ARCHS="-arch i386 -arch x86_64"
+        10.6.*)                             # == snow leopard (10.6.*)
+          ARCHS="-arch i386 -arch x86_64"   # no more ppc
           ;;
-        10.[789].*|10.1?.*|10.1?)
+        10.[789].*|10.1[0123].*|10.1[0123]) # >= lion (10.7.*), <= high sierra (10.13.*)
           ARCHS="-arch x86_64 -arch i386"
+          ;;
+        10.1?.*|10.1?)                      # >= mojave (10.14.*)
+          ARCHS="-arch x86_64"              # mojave is final os to run x86 code, but removed build support for it
           ;;
       esac
       printf "ASFLAGS=${ARCHS}\n" >>$C
@@ -147,7 +155,7 @@ case ${TARGET:=`uname`} in
         [67].*)
           ARCHS="-arch armv7"
           ;;
-        [89].*)
+        [89].*|1[0-9].*)
           ARCHS="-arch armv7 -arch arm64"
           ;;
       esac

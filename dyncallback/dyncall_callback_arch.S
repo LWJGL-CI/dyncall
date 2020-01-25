@@ -65,7 +65,17 @@
 #  elif defined(DC__Arch_PPC64)
 #    include "dyncall_callback_ppc64.S"
 #  elif defined(DC__Arch_MIPS) || defined(DC__Arch_MIPS64)
-#    include "dyncall_callback_mips_gas.S"
+#    if defined(DC__ABI_MIPS_O32)
+#      include "dyncall_callback_mips_o32.S"
+#    elif defined(DC__ABI_MIPS_N64)
+#      include "dyncall_callback_mips_n64.S"
+#    elif defined(DC__ABI_MIPS_N32)
+#      include "dyncall_callback_mips_n32.S"
+#    elif defined(DC__ABI_MIPS_EABI)
+#      include "dyncall_callback_mips_eabi_gas.s"
+#    else
+#      error Unknown MIPS ABI.
+#    endif
 #  elif defined(DC__Arch_ARM_ARM)
 #    include "dyncall_callback_arm32_arm_gas.S"
 #  elif defined(DC__Arch_ARM_THUMB)

@@ -268,6 +268,7 @@ ENTRY_C(dcCall_ppc32_sysv)
 
 	.align 2
 
+/* @@@ Bus Error on Darwin */
 GLOBAL_C(dcCall_ppc32_syscall)
 ENTRY_C(dcCall_ppc32_syscall)
 	mflr r0			/* r0 = return address */
@@ -282,10 +283,11 @@ ENTRY_C(dcCall_ppc32_syscall)
 	lwz  r5 , 8(r11)
 	lwz  r6 ,12(r11)
 	lwz  r7 ,16(r11)
+	/* @@@ missing r8,r9,10 on some platforms? */
 	sc
 
 	lwz  r1, 0(r1)		/* restore stack */
 	lwz  r0, 4(r1)		/* r0 = return address */
 	mtlr r0			/* setup link register */
 	blr
-	
+
