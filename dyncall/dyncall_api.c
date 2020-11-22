@@ -6,7 +6,7 @@
  Description: C interface to call vm
  License:
 
-   Copyright (c) 2007-2018 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2007-2020 Daniel Adler <dadler@uni-goettingen.de>, 
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -27,7 +27,6 @@
 
 #include "dyncall.h"
 #include "dyncall_callvm.h"
-#include "dyncall_alloc.h"
 
 void dcReset(DCCallVM* vm)
 { 
@@ -42,8 +41,6 @@ void dcFree(DCCallVM* vm)
 void dcMode(DCCallVM* vm,DCint mode) 
 { 
   vm->mVTpointer->mode(vm,mode);
-  /* dcReset(vm); -- in order to support ellipsis calls, we need to allow
-   * a dcMode(callvm, DC_CALL_C_ELLIPSIS_VARARGS) */
 }
 
 void dcArgBool(DCCallVM* vm,DCbool x) 
@@ -157,14 +154,23 @@ DCint dcGetError(DCCallVM *vm)
   return vm->mError;
 }
 
-/*@@@ not used, (re)introduce or cleanup
-const char* dcGetErrorString(int mode)
+DCint dcGetModeFromCCSigChar(DCsigchar sig_char)
 {
-  switch(mode) {
-    case DC_ERROR_NONE: return "none";
-    case DC_ERROR_UNSUPPORTED_MODE: return "unsupported mode";
-    default: return "(unknown mode id)";
+  switch(sig_char)
+  {
+    case DC_SIGCHAR_CC_DEFAULT:          return DC_CALL_C_DEFAULT;
+    case DC_SIGCHAR_CC_ELLIPSIS:         return DC_CALL_C_ELLIPSIS;
+    case DC_SIGCHAR_CC_ELLIPSIS_VARARGS: return DC_CALL_C_ELLIPSIS_VARARGS;
+    case DC_SIGCHAR_CC_CDECL:            return DC_CALL_C_X86_CDECL;
+    case DC_SIGCHAR_CC_STDCALL:          return DC_CALL_C_X86_WIN32_STD;
+    case DC_SIGCHAR_CC_FASTCALL_MS:      return DC_CALL_C_X86_WIN32_FAST_MS;
+    case DC_SIGCHAR_CC_FASTCALL_GNU:     return DC_CALL_C_X86_WIN32_FAST_GNU;
+    case DC_SIGCHAR_CC_THISCALL_MS:      return DC_CALL_C_X86_WIN32_THIS_MS;
+    case DC_SIGCHAR_CC_THISCALL_GNU:     return DC_CALL_C_X86_WIN32_THIS_GNU;
+    case DC_SIGCHAR_CC_ARM_ARM:          return DC_CALL_C_ARM_ARM;
+    case DC_SIGCHAR_CC_ARM_THUMB:        return DC_CALL_C_ARM_THUMB;
+    case DC_SIGCHAR_CC_SYSCALL:          return DC_CALL_SYS_DEFAULT;
   }
+  return DC_ERROR_UNSUPPORTED_MODE;
 }
-*/
 

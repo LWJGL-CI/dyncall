@@ -39,6 +39,7 @@
 #define DYNCALL_H
 
 #include "dyncall_types.h"
+#include "dyncall_signature.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -57,7 +58,7 @@ typedef struct DCstruct_    DCstruct;
 #define DC_CALL_C_X86_WIN32_FAST_MS     3
 #define DC_CALL_C_X86_WIN32_FAST_GNU    4
 #define DC_CALL_C_X86_WIN32_THIS_MS     5
-#define DC_CALL_C_X86_WIN32_THIS_GNU    6
+#define DC_CALL_C_X86_WIN32_THIS_GNU    DC_CALL_C_X86_CDECL /* alias - identical to cdecl (w/ this-ptr as 1st arg) */
 #define DC_CALL_C_X64_WIN64             7
 #define DC_CALL_C_X64_SYSV              8
 #define DC_CALL_C_PPC32_DARWIN          9
@@ -135,6 +136,12 @@ DC_API void       dcFreeStruct     (DCstruct* s);
 
 DC_API DCstruct*  dcDefineStruct  (const char* signature);
 
+
+/* helpers */
+
+/* returns respective mode for callconv sig char (w/o checking if mode exists */
+/* on current platform), or DC_ERROR_UNSUPPORTED_MODE if char isn't a sigchar */
+DC_API DCint      dcGetModeFromCCSigChar(DCsigchar sig_char);
 
 #ifdef __cplusplus
 }

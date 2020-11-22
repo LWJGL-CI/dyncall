@@ -162,7 +162,7 @@ Constant & Description\\
 \lstinline@DC_CALL_C_X86_WIN32_FAST_MS@  & C x86 Windows Microsoft fast call\\
 \lstinline@DC_CALL_C_X86_WIN32_FAST_GNU@ & C x86 Windows GCC fast call\\
 \lstinline@DC_CALL_C_X86_WIN32_THIS_MS@  & C x86 Windows Microsoft this call\\
-\lstinline@DC_CALL_C_X86_WIN32_THIS_GNU@ & C x86 Windows GCC this call\\
+\lstinline@DC_CALL_C_X86_WIN32_THIS_GNU@ & alias for DC\_CALL\_C\_X86\_CDECL (GNU thiscalls identical to cdecl)\\
 \lstinline@DC_CALL_C_X86_PLAN9@          & C x86 Plan9 call\\
 \lstinline@DC_CALL_C_X64_WIN64@          & C x64 Windows standard call\\
 \lstinline@DC_CALL_C_X64_SYSV@           & C x64 System V standard call\\
@@ -214,11 +214,12 @@ The X86 platform provides a rich family of different calling conventions.
 void dcReset(DCCallVM* vm);
 \end{lstlisting}
 
-
-Resets the internal stack of arguments and prepares it for a new call.
-This function should be called after setting the call mode (using dcMode), but
-prior to binding arguments to the CallVM. Use it also when reusing a CallVM, as
-arguments don't get flushed automatically after a function call invocation.\\
+Resets the internal stack of arguments and prepares it for a new call. This
+function should be called after setting the call mode (using dcMode), but prior
+to binding arguments to the CallVM (except for when setting mode
+DC\_SIGCHAR\_CC\_ELLIPSIS\_VARARGS, which is used prior to binding varargs of
+variadic functions). Use it also when reusing a CallVM, as arguments don't get
+flushed automatically after a function call invocation.\\
 Note: you should also call this function after initial creation of the a CallVM
 object, as dcNewCallVM doesn't do this, implicitly.\\
 
@@ -287,7 +288,7 @@ void dcVCallF(DCCallVM* vm, DCValue* result, DCpointer funcptr,
 
 These functions can be used to operate \product{dyncall} via a printf-style
 functional interface, using a signature string encoding the argument types and 
-return type.
+return type (and optionally also the calling convention used).
 \capi{dcArgF()} and \capi{dcVArgF()} just bind arguments to the \capi{DCCallVM}
 object, so any return value specified in the signature is ignored. \capi{dcCallF()}
 and \capi{dcVCallF()} also take a function pointer to call after binding the arguments.

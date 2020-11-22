@@ -6,7 +6,7 @@
  Description: 
  License:
 
-   Copyright (c) 2007-2018 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2007-2020 Daniel Adler <dadler@uni-goettingen.de>, 
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -41,17 +41,32 @@
 #ifndef DYNCALL_CALLVM_MIPS_EABI_H
 #define DYNCALL_CALLVM_MIPS_EABI_H
 
-#include "dyncall_call_mips_eabi.h"
 #include "dyncall_callvm.h"
 #include "dyncall_vector.h"
 
+
+/* Call-kernel register data: 
+
+   Details:
+   Two register content buffers for the corresponding register types 
+   integer and float are filled from CallVM code and then later at
+   call-kernel loaded into the registers.
+ */
+
 typedef struct
 {
-  DCCallVM  mInterface;
-  int mIntRegs;
-  int mSingleRegs;
-  struct DCRegData_mips_eabi mRegData;
-  DCVecHead mVecHead;
+  DCint   mIntData[8];
+  DCfloat mSingleData[8];
+} DCRegData_mips_eabi;
+
+
+typedef struct
+{
+  DCCallVM            mInterface;
+  int                 mIntRegs;
+  int                 mSingleRegs;
+  DCRegData_mips_eabi mRegData;
+  DCVecHead           mVecHead;
 } DCCallVM_mips_eabi;
 
 #endif /* DYNCALL_CALLVM_MIPS_EABI_H */

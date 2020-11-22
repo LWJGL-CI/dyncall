@@ -42,7 +42,6 @@
 #define DYNCALL_CALLVM_X64_H
 
 #include "dyncall_macros.h"
-#include "dyncall_call_x64.h"
 #include "dyncall_callvm.h"
 #include "dyncall_vector.h"
 

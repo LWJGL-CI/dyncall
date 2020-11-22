@@ -6,7 +6,7 @@
  Description: Call VM for sparc64 (v9) ABI.
  License:
 
-   Copyright (c) 2011-2018 Daniel Adler <dadler@uni-goettingen.de>
+   Copyright (c) 2011-2020 Daniel Adler <dadler@uni-goettingen.de>
 
    Permission to use, copy, modify, and distribute this software for any
    purpose with or without fee is hereby granted, provided that the above
@@ -25,8 +25,11 @@
 
 
 #include "dyncall_callvm_sparc64.h"
-#include "dyncall_call_sparc64.h"
 #include "dyncall_alloc.h"
+
+
+void dcCall_v9(DCCallVM* vm, DCpointer target);
+
 
 /* Reset argument buffer. */
 static void dc_callvm_reset_v9(DCCallVM* in_self)

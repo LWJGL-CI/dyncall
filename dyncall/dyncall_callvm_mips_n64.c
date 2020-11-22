@@ -6,7 +6,7 @@
  Description: mips "n64" ABI callvm implementation
  License:
 
-   Copyright (c) 2007-2018 Daniel Adler <dadler@uni-goettingen.de>,
+   Copyright (c) 2007-2020 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -52,6 +52,10 @@
 #include "dyncall_callvm_mips_n64.h"
 #include "dyncall_alloc.h"
 #include "dyncall_utils.h"
+
+
+void dcCall_mips_n64(DCpointer target, DCRegData_mips_n64* regdata, DCsize stksize, DCpointer stkdata);
+
 
 static void dc_callvm_reset_mips_n64(DCCallVM* in_self)
 {

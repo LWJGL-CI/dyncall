@@ -6,7 +6,7 @@
  Description: 
  License:
 
-   Copyright (c) 2007-2018 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2007-2020 Daniel Adler <dadler@uni-goettingen.de>, 
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -41,7 +41,6 @@
 #ifndef DYNCALL_CALLVM_ARM32_ARM_ARMHF_H
 #define DYNCALL_CALLVM_ARM32_ARM_ARMHF_H
 
-#include "dyncall_call_arm32_arm_armhf.h"
 #include "dyncall_callvm.h"
 #include "dyncall_vector.h"
 

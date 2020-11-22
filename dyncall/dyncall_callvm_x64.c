@@ -34,6 +34,18 @@
 #include "dyncall_struct.h"
 
 
+/* 
+** x64 SystemV calling convention 
+**
+** - hybrid return-type call (bool ... pointer)
+**
+*/
+
+void dcCall_x64_sysv(DCsize stacksize, DCpointer stackdata, DCpointer regdata_i, DCpointer regdata_f, DCpointer target);
+void dcCall_x64_win64(DCsize stacksize, DCpointer stackdata, DCpointer regdata, DCpointer target);
+void dcCall_x64_syscall_sysv(DCpointer argdata, DCpointer target);
+
+
 static void dc_callvm_free_x64(DCCallVM* in_self)
 {
   dcFreeMem(in_self);

@@ -6,7 +6,7 @@
  Description: ARM 32-bit "arm" ABI callvm implementation
  License:
 
-   Copyright (c) 2007-2018 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2007-2020 Daniel Adler <dadler@uni-goettingen.de>, 
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -40,6 +40,22 @@
 
 #include "dyncall_callvm_arm32_arm.h"
 #include "dyncall_alloc.h"
+
+
+/* 
+** arm32 arm mode calling convention calls 
+**
+** - hybrid return-type call (bool ... pointer)
+**
+** Note the return type of this declaration is intentially of double-word size (despite
+** the return value not being used in the code below).
+** On some platforms (FreeBSD/arm, Nintendo DS, ...) the compiler generates cleanup code
+** in the caller (dc_callvm_call_arm32_arm) that reuses - thus overwrites - r0 and r1.
+** With this "hint", we preserve those registers by letting the compiler assume both
+** registers are used for the return type.
+*/
+DClonglong dcCall_arm32_arm(DCpointer target, DCpointer stackdata, DCsize size);
+
 
 static void dc_callvm_free_arm32_arm(DCCallVM* in_self)
 {

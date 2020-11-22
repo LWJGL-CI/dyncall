@@ -59,9 +59,10 @@ environment):
 A signature is a character string that represents a function's arguments and
 return value types. It is used in the scripting language bindings invoke
 functions to perform automatic type-conversion of the languages' types to the
-low-level C/C++ data types. This is an essential part of mapping the more flexible
-and often abstract data types provided in scripting languages conveniently to the
-strict machine-level data types used by C-libraries.
+low-level C/C++ data types.
+This is an essential part of mapping the more flexible and often abstract data
+types provided in scripting languages to the strict machine-level data types
+used by C-libraries.
 The high-level C interface functions \capi{dcCallF()}, \capi{dcVCallF()},
 \capi{dcArgF()} and \capi{dcVArgF()} of the \product{dyncall} library also make
 use of this signature string format.\\
@@ -88,6 +89,7 @@ functions in C.
 \begin{tabular*}{0.75\textwidth}{cl}
 Signature character & C/C++ data type \\
 \hline
+\sigchar{v} & void \\
 \sigchar{B} & \_Bool, bool \\
 \sigchar{c} & char \\
 \sigchar{C} & unsigned char \\
@@ -103,7 +105,6 @@ Signature character & C/C++ data type \\
 \sigchar{d} & double \\
 \sigchar{p} & void* \\
 \sigchar{Z} & const char* (pointing to C string) \\
-\sigchar{v} & void \\
 \end{tabular*}
 \caption{Type signature encoding for function call data types}
 \label{sigchar}
@@ -114,6 +115,39 @@ Please note that using a \sigchar{(} at the beginning of a signature string is p
 although not required. The character doesn't have any meaning and will simply be
 ignored. However, using it prevents annoying syntax highlighting problems with some code
 editors.
+
+\pagebreak
+
+Calling convention modes can be switched using the signature string, as well. A
+'\_' in the signature string is followed by a character specifying what
+calling convention to use, as this affects how arguments are passed. This makes
+only sense if there are multiple co-existing calling conventions on a single platform.
+Usually, this is done at the beginning of the string, except in special cases, like
+specifying where the varargs part of a variadic function begins.
+The following signature characters exist:
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular*}{0.75\textwidth}{cl}
+Signature character & Calling Convention \\
+\hline
+\sigchar{:} & platform's default calling convention \\
+\sigchar{e} & vararg function \\
+\sigchar{.} & vararg function's variadic/ellipsis part (...), to be specified before first vararg \\
+\sigchar{c} & only on x86: cdecl \\
+\sigchar{s} & only on x86: stdcall \\
+\sigchar{F} & only on x86: fastcall (MS) \\
+\sigchar{f} & only on x86: fastcall (GNU) \\
+\sigchar{+} & only on x86: thiscall (MS) \\
+\sigchar{\#}& only on x86: thiscall (GNU) \\
+\sigchar{A} & only on ARM: ARM mode \\
+\sigchar{a} & only on ARM: THUMB mode \\
+\sigchar{\$}& syscall \\
+\end{tabular*}
+\caption{Calling convention signature encoding}
+\label{cconvsigchar}
+\end{center}
+\end{table}
 
 \pagebreak
 
@@ -129,6 +163,7 @@ int       & f2(int, int);                             & \sigstr{ii)i}\\
 long long & f3(void*);                                & \sigstr{p)L}\\
 void      & f3(int**);                                & \sigstr{p)v}\\
 double    & f4(int, bool, char, double, const char*); & \sigstr{iBcdZ)d}\\
+void      & f5(short a, long long b, ...)             & \sigstr{\_esl\_.di)v} (for (promoted) varargs: double, int)\\
 \end{tabular*}
 \caption{Type signature examples of C function prototypes}
 \label{sigex}
@@ -146,6 +181,7 @@ The OTP library application {\tt erldc} implements the Erlang language bindings.
 \begin{tabular*}{0.75\textwidth}{ll}
 Signature character & accepted Erlang data types\\
 \hline
+\sigchar{v}              & no return type\\
 \sigchar{B} & atoms 'true' and 'false' converted to bool\\
 \sigchar{c}, \sigchar{C} & integer cast to (unsigned) char\\
 \sigchar{s}, \sigchar{S} & integer cast to (unsigned) short\\
@@ -156,7 +192,6 @@ Signature character & accepted Erlang data types\\
 \sigchar{d}              & decimal cast to double\\
 \sigchar{p}              & binary (previously returned from call\_ptr or callf) cast to void*\\
 \sigchar{Z}              & string cast to void*\\
-\sigchar{v}              & no return type\\
 \end{tabular*}
 \caption{Type signature encoding for Erlang bindings}
 \label{Erlangsigchar}
@@ -174,6 +209,7 @@ A Go binding is provided through the {\tt godc} package. Since Go's type system 
 \begin{tabular*}{0.75\textwidth}{ll}
 Signature character & accepted Go data types\\
 \hline
+\sigchar{v}              & no return type\\
 \sigchar{B} & bool\\
 \sigchar{c}, \sigchar{C} & int8, uint8\\
 \sigchar{s}, \sigchar{S} & int16, uint16\\
@@ -183,7 +219,6 @@ Signature character & accepted Go data types\\
 \sigchar{f}              & float32\\
 \sigchar{d}              & float64\\
 \sigchar{p}, \sigchar{Z} & uintptr, unsafe.Pointer\\
-\sigchar{v}              & no return type\\
 \end{tabular*}
 \caption{Type signature encoding for Go bindings}
 \label{Gosigchar}
@@ -203,24 +238,27 @@ namely {\tt load}, {\tt find}, {\tt free}, {\tt call}.
 
 \begin{table}[h]
 \begin{center}
-\begin{tabular*}{0.75\textwidth}{ll}
-Signature character & accepted Python data types\\
+\begin{tabular*}{0.75\textwidth}{lll}
+Signature character & accepted Python 2 types & accepted Python 3 types \\
 \hline
-\sigchar{B} & bool \\
-\sigchar{c} & if string, take first item\\
-\sigchar{s} & int, check in range\\
-\sigchar{i} & int\\
-\sigchar{j} & int\\
-\sigchar{l} & long, casted to long long\\
-\sigchar{f} & float\\
-\sigchar{d} & double\\
-\sigchar{p} & string or long casted to void*\\
-\sigchar{v} & no return type\\
+\sigchar{v}              & no return type                 & no return type                    \\
+\sigchar{B}              & bool                           & bool                              \\
+\sigchar{c}, \sigchar{C} & int, string (with single char) & int, string (with single char)    \\
+\sigchar{s}, \sigchar{S} & int                            & int                               \\
+\sigchar{i}, \sigchar{I} & int                            & int                               \\
+\sigchar{j}, \sigchar{J} & int                            & int                               \\
+\sigchar{l}, \sigchar{L} & int, long                      & int                               \\
+\sigchar{f}              & float                          & float                             \\
+\sigchar{d}              & double                         & double                            \\
+\sigchar{p}              & bytearray, int, long           & bytearray (mutable in C), int     \\
+\sigchar{Z}              & string, unicode, bytearray     & string, bytearray (all immutable) \\
 \end{tabular*}
 \caption{Type signature encoding for Python bindings}
 \label{Pysigchar}
 \end{center}
 \end{table}
+
+For more details, refer to the README.txt file of the binding.
 
 \pagebreak
 
@@ -234,6 +272,7 @@ The R package {\tt rdyncall} implements the R langugae bindings providing the fu
 \begin{tabular*}{0.75\textwidth}{ll}
 Signature character & accepted R data types\\
 \hline
+\sigchar{v} & no return type\\
 \sigchar{B} & coerced to logical vector, first item\\
 \sigchar{c} & coerced to integer vector, first item truncated char\\
 \sigchar{C} & coerced to integer vector, first item truncated to unsigned char\\
@@ -249,7 +288,6 @@ Signature character & accepted R data types\\
 \sigchar{d} & coerced to numeric, first item\\
 \sigchar{p} & external pointer or coerced to string vector, first item\\
 \sigchar{Z} & coerced to string vector, first item\\
-\sigchar{v} & no return type\\
 \end{tabular*}
 \caption{Type signature encoding for R bindings}
 \label{Rsigchar}
@@ -274,6 +312,7 @@ The Ruby gem {\tt rbdc} implements the Ruby language bindings.
 \begin{tabular*}{0.75\textwidth}{ll}
 Signature character & accepted Ruby data types\\
 \hline
+\sigchar{v}              & no return type\\
 \sigchar{B} & TrueClass, FalseClass, NilClass, Fixnum casted to bool\\
 \sigchar{c}, \sigchar{C} & Fixnum cast to (unsigned) char\\
 \sigchar{s}, \sigchar{S} & Fixnum cast to (unsigned) short\\
@@ -283,9 +322,9 @@ Signature character & accepted Ruby data types\\
 \sigchar{f}              & Float cast to float\\
 \sigchar{d}              & Float cast to double\\
 \sigchar{p}, \sigchar{Z} & String cast to void*\\
-\sigchar{v}              & no return type\\
 \end{tabular*}
 \caption{Type signature encoding for Ruby bindings}
 \label{Rubysigchar}
 \end{center}
 \end{table}
+

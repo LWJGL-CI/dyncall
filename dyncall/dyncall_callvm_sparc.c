@@ -6,7 +6,7 @@
  Description: Call VM for sparc processor architecture.
  License:
 
-   Copyright (c) 2011-2018 Daniel Adler <dadler@uni-goettingen.de>
+   Copyright (c) 2011-2020 Daniel Adler <dadler@uni-goettingen.de>
 
    Permission to use, copy, modify, and distribute this software for any
    purpose with or without fee is hereby granted, provided that the above
@@ -25,10 +25,13 @@
 
 
 #include "dyncall_callvm_sparc.h"
-#include "dyncall_call_sparc.h"
 #include "dyncall_utils.h"
 #include "dyncall_alloc.h"
 #define DEFAULT_STACK_ALIGN	16
+
+
+void dcCall_sparc(DCpointer target, DCsize size, DCpointer data);
+
 
 /* Destructor. */
 static void dc_callvm_free_sparc(DCCallVM* in_self)

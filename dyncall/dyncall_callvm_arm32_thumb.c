@@ -41,6 +41,21 @@
 #include "dyncall_callvm_arm32_thumb.h"
 #include "dyncall_alloc.h"
 
+/* 
+** arm32 thumb mode calling convention calls 
+**
+** - hybrid return-type call (bool ... pointer)
+**
+** Note the return type of this declaration is intentially of double-word size (despite
+** the return value not being used in the code below).
+** On some platforms (FreeBSD/arm, Nintendo DS, ...) the compiler generates cleanup code
+** in the caller (dc_callvm_call_arm32_thumb) that reuses, thus overwrites r0 and r1.
+** With this "hint", we preserve those registers by letting the compiler assume both
+** registers are used for the return type.
+*/
+DClonglong dcCall_arm32_thumb(DCpointer target, DCpointer stackdata, DCsize size);
+
+
 static void dc_callvm_mode_arm32_thumb(DCCallVM* in_self,DCint mode);
 
 static void dc_callvm_free_arm32_thumb(DCCallVM* in_self)

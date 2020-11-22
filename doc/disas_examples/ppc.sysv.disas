@@ -599,7 +599,7 @@
  4b8:   39 00 00 07     li      r8,7            ; arg 7
  4bc:   39 20 00 08     li      r9,8            ; arg 8
  4c0:   fc 60 60 90     fmr     f3,f12          ; arg 9
- 4c4:   4c c6 32 42     crset   4*cr1+eq        ; set CR bit for ellipse call
+ 4c4:   4c c6 32 42     crset   4*cr1+eq        ; set CR bit for ellipsis call
  4c8:   48 00 00 01     bl      4c8 <main+0x58> ; call and put return address -> lr
  4cc:   38 00 00 00     li      r0,0            ; return value (pointlessly) via gpr0 ...
  4d0:   7c 03 03 78     mr      r3,r0           ; ... to gpr3

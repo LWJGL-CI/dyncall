@@ -6,7 +6,7 @@
  Description: mips64 "n32" ABI callvm C interface.
  License:
 
-   Copyright (c) 2007-2018 Daniel Adler <dadler@uni-goettingen.de>,
+   Copyright (c) 2007-2020 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -28,7 +28,6 @@
 #ifndef DYNCALL_CALLVM_MIPS_N32_H
 #define DYNCALL_CALLVM_MIPS_N32_H
 
-#include "dyncall_call_mips_n32.h"
 #include "dyncall_callvm.h"
 #include "dyncall_vector.h"
 
@@ -36,14 +35,39 @@
 extern "C" {
 #endif
 
+
+/*
+  two register-files for integer (promoted to 64-bit) and float (not promoted!)
+  are used.
+
+  arguments are transfered in a free slot on the corresponding register file.
+  the other register-file will be skipped by one.
+
+  float arguments are either loaded from single or double -
+  a auto-conversion into double and then loaded as double precision
+  turned out to fail for several tests.
+
+  therefore a union for storage of float or double is used instead.
+  a bitmask (mUseDouble) records which type is used and will be
+  interpreted in the call-kernel.
+*/
+
 typedef struct
 {
-  DCCallVM                  mInterface;
-  DCint                     mRegCount;
-  struct DCRegData_mips_n32 mRegData;
-  DCVecHead                 mVecHead;
+  DClonglong                       mIntData[8];
+  union { DCfloat f; DCdouble d; } mFloatData[8];
+  DClonglong                       mUseDouble; /* bitmask: lower 8 bits specify to use float or double from union array. */
+} DCRegData_mips_n32;
+
+
+typedef struct
+{
+  DCCallVM           mInterface;
+  DCint              mRegCount;
+  DCRegData_mips_n32 mRegData;
+  DCVecHead          mVecHead;
 } DCCallVM_mips_n32;
-/* @@@ this is the same as n64, combine code */
+
 
 #ifdef __cplusplus
 }

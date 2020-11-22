@@ -203,7 +203,7 @@ Name              & Brief description\\
 \item 64-bit integer data types are passed in general-purpose registers as a whole in two
  32-bit general purpose registers (an odd and an even e.g. r3 and r4), skipping an even integer register
  or passed on the stack; they are never splitted into a register and stack part
-\item Ellipse calls set CR bit 6 
+\item Ellipsis calls set CR bit 6 
 \item integer parameters \textless\ 32 bit are right-justified (meaning occupy high-order bytes) in their 4-byte area, requiring extra-care for big-endian targets
 \item no spill area is used on stack, iterating over varargs requires a specific va\_list implementation
 \end{itemize}

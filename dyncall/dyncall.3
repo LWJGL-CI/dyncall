@@ -1,4 +1,4 @@
-.\" Copyright (c) 2007-2013 Daniel Adler <dadler AT uni-goettingen DOT de>, 
+.\" Copyright (c) 2007-2020 Daniel Adler <dadler AT uni-goettingen DOT de>, 
 .\"                         Tassilo Philipp <tphilipp AT potion-studios DOT com>
 .\" 
 .\" Permission to use, copy, modify, and distribute this software for any
@@ -112,12 +112,14 @@ sense (e.g. using a PowerPC calling convention on a MIPS platform) and are
 silently ignored.
 .Pp
 .Fn dcReset
-resets the internal stack of arguments and prepares it for a new call.
-This function should be called after setting the call mode (using dcMode), but
-prior to binding arguments to the CallVM. Use it also when reusing a CallVM, as
-arguments don't get flushed automatically after a function call invocation.
-Note: you should also call this function after initial creation of the a CallVM
-object, as dcNewCallVM doesn't do this, implicitly.
+resets the internal stack of arguments and prepares it for a new call. This
+function should be called after setting the call mode (using dcMode), but prior
+to binding arguments to the CallVM (except for when setting mode
+DC_SIGCHAR_CC_ELLIPSIS_VARARGS, which is used prior to binding varargs of
+variadic functions). Use it also when reusing a CallVM, as arguments don't get
+flushed automatically after a function call invocation.  Note: you should also
+call this function after initial creation of the a CallVM object, as
+dcNewCallVM doesn't do this, implicitly.
 .Pp
 .Fn dcArgBool ,
 .Fn dcArgChar ,
@@ -166,6 +168,7 @@ object (and ignore return types specified in the
 signature), whereas the latter two issue a call to the given function pointer,
 afterwards. The return value will be stored in
 .Ar result .
+The signature string also features calling convention mode selection.
 For information about the signature format, refer to the
 .Nm
 manual in PDF format.

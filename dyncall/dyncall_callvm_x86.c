@@ -29,6 +29,25 @@
 #include "dyncall_alloc.h"
 
 
+/* 
+** x86 calling convention calls 
+**
+** - hybrid return-type call (bool ... pointer)
+**
+*/
+
+#if defined(DC__OS_Plan9) /* No support for other cconvs on Plan9 and vice-versa. */
+void dcCall_x86_plan9               (DCpointer target, DCpointer stackdata, DCsize size);
+#else
+void dcCall_x86_cdecl               (DCpointer target, DCpointer stackdata, DCsize size);
+void dcCall_x86_win32_std           (DCpointer target, DCpointer stackdata, DCsize size);
+void dcCall_x86_win32_fast          (DCpointer target, DCpointer stackdata, DCsize size);
+void dcCall_x86_win32_msthis        (DCpointer target, DCpointer stackdata, DCsize size);
+void dcCall_x86_syscall_int80h_linux(DCpointer target, DCpointer stackdata, DCsize size);
+void dcCall_x86_syscall_int80h_bsd  (DCpointer target, DCpointer stackdata, DCsize size);
+#endif
+
+
 void dc_callvm_mode_x86(DCCallVM* in_self, DCint mode);
 
 /* call vm destructor */
@@ -586,12 +605,11 @@ void dc_callvm_mode_x86(DCCallVM* in_self, DCint mode)
 #if defined(DC_PLAN9)
     case DC_CALL_C_X86_PLAN9:          vt = &gVT_x86_plan9;          break;
 #else
-    case DC_CALL_C_X86_CDECL:          vt = &gVT_x86_cdecl;          break;
+    case DC_CALL_C_X86_CDECL:          vt = &gVT_x86_cdecl;          break; // also handles DC_CALL_C_X86_WIN32_THIS_GNU
     case DC_CALL_C_X86_WIN32_STD:      vt = &gVT_x86_win32_std;      break;
     case DC_CALL_C_X86_WIN32_FAST_MS:  vt = &gVT_x86_win32_fast_ms;  break;
     case DC_CALL_C_X86_WIN32_THIS_MS:  vt = &gVT_x86_win32_this_ms;  break;
     case DC_CALL_C_X86_WIN32_FAST_GNU: vt = &gVT_x86_win32_fast_gnu; break;
-    case DC_CALL_C_X86_WIN32_THIS_GNU: vt = &gVT_x86_cdecl;          break;
     case DC_CALL_SYS_DEFAULT:
 # if defined DC_UNIX
 #   if defined DC__OS_Linux

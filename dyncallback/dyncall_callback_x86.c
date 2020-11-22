@@ -6,7 +6,7 @@
  Description: Callback - Implementation for x86
  License:
 
-   Copyright (c) 2007-2018 Daniel Adler <dadler@uni-goettingen.de>,
+   Copyright (c) 2007-2020 Daniel Adler <dadler@uni-goettingen.de>,
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -203,10 +203,13 @@ void dcbInitCallback(DCCallback* pcb, const char* signature, DCCallbackHandler* 
     ptr++;
     ch = *ptr++;
     switch(ch) {
+      case DC_SIGCHAR_CC_DEFAULT:      mode = DC_CALL_C_DEFAULT;            break;
+      case DC_SIGCHAR_CC_THISCALL_GNU: // == cdecl
+      case DC_SIGCHAR_CC_CDECL:        mode = DC_CALL_C_X86_CDECL;          break;
       case DC_SIGCHAR_CC_STDCALL:      mode = DC_CALL_C_X86_WIN32_STD;      break;
-      case DC_SIGCHAR_CC_THISCALL_MS:  mode = DC_CALL_C_X86_WIN32_THIS_MS;  break;
-      case DC_SIGCHAR_CC_FASTCALL_GNU: mode = DC_CALL_C_X86_WIN32_FAST_GNU; break;
       case DC_SIGCHAR_CC_FASTCALL_MS:  mode = DC_CALL_C_X86_WIN32_FAST_MS;  break;
+      case DC_SIGCHAR_CC_FASTCALL_GNU: mode = DC_CALL_C_X86_WIN32_FAST_GNU; break;
+      case DC_SIGCHAR_CC_THISCALL_MS:  mode = DC_CALL_C_X86_WIN32_THIS_MS;  break;
     }
   }
 
@@ -221,10 +224,6 @@ void dcbInitCallback(DCCallback* pcb, const char* signature, DCCallbackHandler* 
       pcb->args_vt = &dcArgsVT_default;
       pcb->stack_cleanup = dcbCleanupSize_x86_std(ptr);
       break;
-    case DC_CALL_C_X86_WIN32_THIS_MS:
-      pcb->args_vt = &dcArgsVT_this_ms;
-      pcb->stack_cleanup = dcbCleanupSize_x86_this_ms(ptr);
-      break;
     case DC_CALL_C_X86_WIN32_FAST_MS:
       pcb->args_vt = &dcArgsVT_fast_ms;
       pcb->stack_cleanup = dcbCleanupSize_x86_fast_ms(ptr);
@@ -232,6 +231,10 @@ void dcbInitCallback(DCCallback* pcb, const char* signature, DCCallbackHandler* 
     case DC_CALL_C_X86_WIN32_FAST_GNU:
       pcb->args_vt = &dcArgsVT_fast_gnu;
       pcb->stack_cleanup = dcbCleanupSize_x86_fast_gnu(ptr);
+      break;
+    case DC_CALL_C_X86_WIN32_THIS_MS:
+      pcb->args_vt = &dcArgsVT_this_ms;
+      pcb->stack_cleanup = dcbCleanupSize_x86_this_ms(ptr);
       break;
   }
 

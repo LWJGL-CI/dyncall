@@ -42,7 +42,6 @@
 */
 
 
-#include "dyncall_call_x86.h"
 #include "dyncall_callvm.h"
 #include "dyncall_vector.h"
 

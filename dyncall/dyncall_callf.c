@@ -35,6 +35,7 @@ static void dcArgF_impl(DCCallVM* vm, const DCsigchar** sigptr, va_list args)
   dcReset(vm);
   while((ch=*(*sigptr)++) != '\0' && ch != DC_SIGCHAR_ENDARG) {
     switch(ch) {
+      /* types */
       case DC_SIGCHAR_BOOL:      dcArgBool    (vm, (DCbool)           va_arg(args, DCint     )); break;
       case DC_SIGCHAR_CHAR:      dcArgChar    (vm, (DCchar)           va_arg(args, DCint     )); break;
       case DC_SIGCHAR_UCHAR:     dcArgChar    (vm, (DCchar)(DCuchar)  va_arg(args, DCint     )); break;
@@ -50,6 +51,14 @@ static void dcArgF_impl(DCCallVM* vm, const DCsigchar** sigptr, va_list args)
       case DC_SIGCHAR_DOUBLE:    dcArgDouble  (vm, (DCdouble)         va_arg(args, DCdouble  )); break;
       case DC_SIGCHAR_POINTER:   dcArgPointer (vm, (DCpointer)        va_arg(args, DCpointer )); break;
       case DC_SIGCHAR_STRING:    dcArgPointer (vm, (DCpointer)        va_arg(args, DCpointer )); break;
+      /* calling convention modes */
+      case DC_SIGCHAR_CC_PREFIX:
+        if(*((*sigptr)+1) != '\0') {
+          DCint mode = dcGetModeFromCCSigChar(*(*sigptr)++);
+          if(mode != DC_ERROR_UNSUPPORTED_MODE)
+            dcMode(vm, mode);
+        }
+        break;
     }
   }
 }

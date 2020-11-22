@@ -6,7 +6,7 @@
  Description: Implementation of Call VM for mips "eabi" abi.
  License:
 
-   Copyright (c) 2007-2018 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2007-2020 Daniel Adler <dadler@uni-goettingen.de>, 
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -27,6 +27,10 @@
 
 #include "dyncall_callvm_mips_eabi.h"
 #include "dyncall_alloc.h"
+
+
+void dcCall_mips_eabi(DCpointer target, DCRegData_mips_eabi*  regdata, DCsize stksize, DCpointer stkdata);
+
 
 static void dc_callvm_reset_mips_eabi(DCCallVM* in_self)
 {

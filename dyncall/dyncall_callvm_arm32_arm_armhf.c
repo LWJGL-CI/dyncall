@@ -6,7 +6,7 @@
  Description: ARM 'armhf' ABI implementation
  License:
 
-   Copyright (c) 2007-2018 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2007-2020 Daniel Adler <dadler@uni-goettingen.de>, 
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -26,6 +26,21 @@
 
 #include "dyncall_callvm_arm32_arm_armhf.h"
 #include "dyncall_alloc.h"
+
+
+/* 
+** arm32 armhf mode calling convention calls 
+**
+** - hybrid return-type call (bool ... pointer)
+**
+** Note the return type of this declaration is intentially of double-word size (despite
+** the return value not being used in the code below).
+** On some platforms the compiler generates cleanup code in the caller
+** (dyncall_callvm_arm32_arm_armhf.c's call()) that reuses- thus overwrites - r0 and r1.
+** With this "hint", we preserve those registers by letting the compiler assume both
+** registers are used for the return type.
+*/
+DClonglong dcCall_arm32_armhf(DCpointer target, DCpointer stackdata, DCsize size, DCfloat* p_s16);
 
 
 static void deinit(DCCallVM* in_self)

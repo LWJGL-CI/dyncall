@@ -23,7 +23,7 @@
 
 */
 
-.machine ppc
+/* .machine ppc /* clang's integrated as doesn't handle this on anything but Darwin (at least for clang <= 9) */
 .text
 .align 2
 
@@ -135,9 +135,9 @@ _dcCallbackThunkEntry:
 	mtctr   r12
 	bctrl
 	/* switch on base result type */
-	cmpi    cr0, r3, 0x66 /* 'f */
+	cmpi    cr0, 0, r3, 0x66 /* 'f */
 	beq .f32
-	cmpi    cr0, r3, 0x64 /* 'd */
+	cmpi    cr0, 0, r3, 0x64 /* 'd */
 	beq .f64
 .i64:
 	lwz     r3, RESULT_OFFSET     (r1)

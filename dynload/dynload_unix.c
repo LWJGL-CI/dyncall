@@ -40,13 +40,14 @@
 
 #if defined(__GLIBC__)
 /* @@@ version check glibc more precisely... dl_iterate_phdr(): glibc ver >= 2.2.4*/
-#if (__GLIBC__ >= 2) && (__GLIBC_MINOR__ >= 3)
-#  define DL_USE_GLIBC_ITER_PHDR
-#endif
+#  if (__GLIBC__ >= 2) && (__GLIBC_MINOR__ >= 3)
+#    define DL_USE_GLIBC_ITER_PHDR
+#  endif
 /* to access dl_iterate_phdr(), and related w/ glibc */
 #  define _GNU_SOURCE
 #  define __USE_GNU
 #endif
+
 #include <dlfcn.h>
 
 
@@ -97,9 +98,10 @@ static int dl_strlen_strcpy(char* dst, const char* src, int dstSize)
 /* if dlinfo() exists use it (except on glibc, where it exists since version
  * 2.3.3, but its implementation is dangerous, as no checks are done whether
  * the handle is valid, thus rendering the returned values useless) check for
- * RTLD_DI_LINKMAP which is a #define for dlinfo() on most supported targets,
- * or specifically check the OS (e.g. dlinfo() is originally from Solaris) */
-#if (defined(RTLD_DI_LINKMAP) || defined(OS_SunOS)) && !defined(DL_USE_GLIBC_ITER_PHDR)
+ * RTLD_DI_LINKMAP and RTLD_SELF, which are #defines used by dlinfo() on most
+ * supported targets, or specifically check the OS (e.g. dlinfo() is originally
+ * from Solaris) */
+#if ((defined(RTLD_DI_LINKMAP) && defined(RTLD_SELF)) || defined(OS_SunOS)) && !defined(DL_USE_GLIBC_ITER_PHDR)
 
 #include <link.h>
 
@@ -157,10 +159,11 @@ int dlGetLibraryPath(DLLib* pLib, char* sOut, int bufSize)
 }
 
 
-/* OpenBSD >= 3.7 has dl_iterate_phdr(), as well as glibc >= 2.2.4, however
- * skip and use on dladdr()-based guessing if if explicitly requested, e.g. by
- * ./configure */
-#elif !defined(DL_DLADDR_TO_LIBPATH) && (defined(OS_OpenBSD) || defined(DL_USE_GLIBC_ITER_PHDR))
+/* - OpenBSD >= 3.7 has dl_iterate_phdr(), as well as glibc >= 2.2.4
+   - also some libc impls (like musl) provide dlinfo(), but not RTLD_SELF (see above), however they might come
+     with dl_iterate_phdr (which comes from ELF program header iteration), so base it on that
+   - skip and use dladdr()-based guessing (see below) if explicitly requested, e.g. by ./configure */
+#elif !defined(DL_DLADDR_TO_LIBPATH) && (defined(OS_OpenBSD) || defined(DL_USE_GLIBC_ITER_PHDR) || (!defined(RTLD_SELF) && defined(__ELF__)))
 
 #include <sys/types.h>
 #include <link.h>
@@ -182,7 +185,7 @@ static int iter_phdr_cb(struct dl_phdr_info* info, size_t size, void* data)
     /* unable to relate info->dlpi_addr directly to our dlopen handle, let's
      * do what we do on macOS above, re-dlopen the already loaded lib (just
      * increases ref count) and compare handles */
-	/* @@@ might be b/c it's the reloc addr... see below */
+    /* @@@ might be b/c it's the reloc addr... see below */
     lib = dlopen(info->dlpi_name, RTLD_LIGHTEST);
     if(lib)
       dlclose(lib);

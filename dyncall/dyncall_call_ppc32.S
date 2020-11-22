@@ -33,7 +33,7 @@
 
 */
 
-	.machine ppc
+	/* .machine ppc /* clang's integrated as doesn't handle this on anything but Darwin (at least for clang <= 9) */
 	.text
 
 /* ============================================================================
@@ -100,7 +100,7 @@ ENTRY_C(dcCall_ppc32_darwin)
 
 	srwi r5,r5,2		/* r5 = size in words */
 
-	cmpi cr0,r5,0		/* if stacksize != 0 .. */
+	cmpi cr0,0,r5,0		/* if stacksize != 0 .. */
 	beq  cr0,.osx_done
 
 	mtctr r5		/* copy loop */
@@ -214,7 +214,7 @@ ENTRY_C(dcCall_ppc32_sysv)
 
 	srwi r5,r5,2		/* r5 = size in words */
 
-	cmpi cr0,r5,0		/* if stacksize != 0 .. */
+	cmpi cr0,0,r5,0		/* if stacksize != 0 .. */
 	beq  cr0,.sysv_done
 
 	mtctr r5		/* copy loop */

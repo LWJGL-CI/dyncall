@@ -6,7 +6,7 @@
  Description: Type and calling-convention signature character defines
  License:
 
-   Copyright (c) 2007-2018 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2007-2020 Daniel Adler <dadler@uni-goettingen.de>, 
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -59,14 +59,21 @@ typedef char DCsigchar;
 #define DC_SIGCHAR_STRUCT       'T'
 #define DC_SIGCHAR_ENDARG       ')' /* also works for end struct */
 
-/* callback signatures */
+/* calling convention / mode signatures */
 
-#define DC_SIGCHAR_CC_PREFIX        '_'
-#define DC_SIGCHAR_CC_ELLIPSIS      'e'
-#define DC_SIGCHAR_CC_STDCALL       's'
-#define DC_SIGCHAR_CC_FASTCALL_GNU  'f'
-#define DC_SIGCHAR_CC_FASTCALL_MS   'F'
-#define DC_SIGCHAR_CC_THISCALL_MS   '+'
+#define DC_SIGCHAR_CC_PREFIX           '_'
+#define DC_SIGCHAR_CC_DEFAULT          ':'
+#define DC_SIGCHAR_CC_ELLIPSIS         'e'
+#define DC_SIGCHAR_CC_ELLIPSIS_VARARGS '.'
+#define DC_SIGCHAR_CC_CDECL            'c'
+#define DC_SIGCHAR_CC_STDCALL          's'
+#define DC_SIGCHAR_CC_FASTCALL_MS      'F'
+#define DC_SIGCHAR_CC_FASTCALL_GNU     'f'
+#define DC_SIGCHAR_CC_THISCALL_MS      '+'
+#define DC_SIGCHAR_CC_THISCALL_GNU     '#' /* GNU thiscalls are cdecl, but keep specific sig char for clarity */
+#define DC_SIGCHAR_CC_ARM_ARM          'A'
+#define DC_SIGCHAR_CC_ARM_THUMB        'a'
+#define DC_SIGCHAR_CC_SYSCALL          '$'
 
 #endif /* DYNCALL_SIGNATURE_H */
 

@@ -116,7 +116,7 @@ ENTRY_C(dcCall_ppc64)
 
 	srwi r5,r5,3            /* r5 = size in double words */
 
-	cmpi cr0,r5,0           /* if stacksize != 0 .. */
+	cmpi cr0,0,r5,0         /* if stacksize != 0 .. */
 	beq  cr0,.copy_done
 
 	mtctr r5                /* copy loop */

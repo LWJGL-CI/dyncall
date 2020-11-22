@@ -6,7 +6,7 @@
  Description: ARM 64-bit ABI implementation
  License:
 
-   Copyright (c) 2015-2018 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2015-2020 Daniel Adler <dadler@uni-goettingen.de>, 
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -26,6 +26,9 @@
 
 #include "dyncall_callvm_arm64.h"
 #include "dyncall_alloc.h"
+
+
+void dcCall_arm64(DCpointer target, DCpointer data, DCsize size, DCpointer regdata);
 
 
 static void reset(DCCallVM* in_p)

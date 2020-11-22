@@ -6,7 +6,7 @@
  Description: 
  License:
 
-   Copyright (c) 2007-2018 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2007-2020 Daniel Adler <dadler@uni-goettingen.de>, 
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -42,13 +42,29 @@
 */
 
 #include "dyncall_callvm_ppc32.h"
-#include "dyncall_call_ppc32.h"
 #include "dyncall_alloc.h"
 #include "dyncall_macros.h"
 #include "dyncall_types.h"
 #include "dyncall_utils.h"
 
+
+/* 
+** PowerPC 32-bit calling convention call
+**
+** - hybrid return-type call (bool ... pointer)
+**
+*/
+
+/* Darwin ABI */
+void dcCall_ppc32_darwin(DCpointer target, DCRegData_ppc32* ppc32data, DCsize stksize, DCpointer stkdata);
+
+/* System V ABI */
+void dcCall_ppc32_sysv(DCpointer target, DCRegData_ppc32* ppc32data, DCsize stksize, DCpointer stkdata);
+
+/* syscall @@@ Bus Error on Darwin */
+void dcCall_ppc32_syscall(DCpointer target, DCRegData_ppc32* ppc32data, DCsize stksize, DCpointer stkdata);
 /* Support for Mac OS X (Darwin) and Systen V ABI for Power PC 32-bit */
+
 
 #if defined(DC_UNIX)
 #  if defined(DC__OS_Darwin)

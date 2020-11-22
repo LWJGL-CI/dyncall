@@ -7,6 +7,8 @@
  License:
 
    Copyright (c) 2014-2015 Masanori Mitsugi <mitsugi@linux.vnet.ibm.com>
+                      2020 Tassilo Philipp <tphilipp@potion-studios.com>
+ 
 
    Permission to use, copy, modify, and distribute this software for any
    purpose with or without fee is hereby granted, provided that the above
@@ -38,10 +40,24 @@
 */
 
 #include "dyncall_callvm_ppc64.h"
-#include "dyncall_call_ppc64.h"
 #include "dyncall_alloc.h"
 #include "dyncall_macros.h"
 #include "dyncall_types.h"
+
+
+/* 
+** PowerPC 64-bit calling convention call
+**
+** - hybrid return-type call (bool ... pointer)
+**
+*/
+
+void dcCall_ppc64(DCpointer target, DCRegData_ppc64* ppc64data, DCsize stksize, DCpointer stkdata);
+
+/* syscall */
+void dcCall_ppc64_syscall(DCpointer target, DCRegData_ppc64* ppc64data, DCsize stksize, DCpointer stkdata);
+
+
 
 /* Support for Power PC 64-bit */
 

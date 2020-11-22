@@ -592,7 +592,7 @@
 
 ; --------------------- further notes ------------------->
 
-; when passing less arguments than stack params, involving an ellipse, spill area still spills all registers,
+; when passing less arguments than stack params, involving an ellipsis, spill area still spills all registers,
 ; excluding named ones, e.g.:
 ;
 ; void c(int a, ...) { ... }

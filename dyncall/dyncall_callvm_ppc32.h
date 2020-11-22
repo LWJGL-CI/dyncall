@@ -6,7 +6,7 @@
  Description: 
  License:
 
-   Copyright (c) 2007-2018 Daniel Adler <dadler@uni-goettingen.de>, 
+   Copyright (c) 2007-2020 Daniel Adler <dadler@uni-goettingen.de>, 
                            Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
@@ -41,20 +41,24 @@
 */
 
 
-#include "dyncall_call_ppc32.h"
 #include "dyncall_callvm.h"
 #include "dyncall_vector.h"
 
-typedef struct DCCallVM_ppc32_ DCCallVM_ppc32;
-
-struct DCCallVM_ppc32_
+typedef struct
 {
-  DCCallVM  mInterface;
-  int       mIntRegs;
-  int       mFloatRegs;
-  struct DCRegData_ppc32_ mRegData;
+  DCint     mIntData[8];
+  DCdouble  mFloatData[13];	/* 13 for darwin, 8 for sysv */
+} DCRegData_ppc32;
+
+
+typedef struct
+{
+  DCCallVM        mInterface;
+  int             mIntRegs;
+  int             mFloatRegs;
+  DCRegData_ppc32 mRegData;
   DCVecHead mVecHead;
-};
+} DCCallVM_ppc32;
 
 #endif /* DYNCALL_CALLVM_PPC32_H */
 

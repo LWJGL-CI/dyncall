@@ -1,5 +1,28 @@
 This file lists bigger/noteworthy changes, only...
 
+Version 1.2 (upcoming)
+dyncall:
+  o extended signature with more chars for calling convention switching (only for modes
+    that coexist on a platform with other conventions)
+  o made "formatted" call interface use calling convention signature chars
+  o added helper function dcGetModeFromCCSigChar() mapping callconv sig chars to respective mode
+  o removed some unnecessary headers (only contained internal used forward declarations)
+  o support clang's integrated as (didn't build on non-Darwin PPC32 platforms)
+dyncallback:
+  o support clang's integrated as (didn't build on non-Darwin PPC32 platforms)
+dynload:
+  o fix to build with musl libc
+doc:
+  o manual now specifying calling convention signature chars
+bindings:
+  o python: Python 3 support, Python 2 unicode support, added get_path function, changing
+    'Z' conversions to only immutable types and 'p' to mutable types (and handles), bytearray
+    support, support to specify calling convention
+  o shell: can reference own executable now and support for more calling conventions
+  o shell: syscall support
+tests:
+  o extended callf testcode to test callconv mode switch signature chars (including syscalls)
+
 Version 1.1 (2020/01/11)
 dyncall:
   o support for soft-float MIPS o32 & n64 (big- and little-endian, each)

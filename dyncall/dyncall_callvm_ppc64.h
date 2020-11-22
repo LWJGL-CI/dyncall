@@ -7,6 +7,7 @@
  License:
 
    Copyright (c) 2014-2015 Masanori Mitsugi <mitsugi@linux.vnet.ibm.com>
+                      2020 Tassilo Philipp <tphilipp@potion-studios.com>
 
    Permission to use, copy, modify, and distribute this software for any
    purpose with or without fee is hereby granted, provided that the above
@@ -39,20 +40,25 @@
 */
 
 
-#include "dyncall_call_ppc64.h"
 #include "dyncall_callvm.h"
 #include "dyncall_vector.h"
 
-typedef struct DCCallVM_ppc64_ DCCallVM_ppc64;
 
-struct DCCallVM_ppc64_
+typedef struct
 {
-  DCCallVM  mInterface;
-  int       mIntRegs;
-  int       mFloatRegs;
-  struct DCRegData_ppc64_ mRegData;
-  DCVecHead mVecHead;
-};
+  DClonglong mIntData[8];
+  DCdouble   mFloatData[13];
+} DCRegData_ppc64;
+
+typedef struct
+{
+  DCCallVM        mInterface;
+  int             mIntRegs;
+  int             mFloatRegs;
+  DCRegData_ppc64 mRegData;
+  DCVecHead       mVecHead;
+} DCCallVM_ppc64;
+
 
 #endif /* DYNCALL_CALLVM_PPC64_H */
 
